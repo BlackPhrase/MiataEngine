@@ -17,39 +17,23 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+// in_null.c -- for systems without a mouse
+
 #include "quakedef.hpp"
 
-void CDAudio_Play(byte track, qboolean looping)
+void IN_Init (void)
 {
 }
 
-
-void CDAudio_Stop(void)
+void IN_Shutdown (void)
 {
 }
 
-
-void CDAudio_Pause(void)
+void IN_Commands (void)
 {
 }
 
-
-void CDAudio_Resume(void)
+void IN_Move (usercmd_t *cmd)
 {
 }
 
-
-void CDAudio_Update(void)
-{
-}
-
-
-int CDAudio_Init(void)
-{
-	return 0;
-}
-
-
-void CDAudio_Shutdown(void)
-{
-}

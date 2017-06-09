@@ -17,7 +17,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// vid_null.c -- null video driver to aid porting efforts
+
+// vid_null.cpp -- null video driver to aid porting efforts
 
 #include "quakedef.hpp"
 #include "d_local.hpp"
@@ -34,15 +35,15 @@ byte	surfcache[256*1024];
 unsigned short	d_8to16table[256];
 unsigned	d_8to24table[256];
 
-void	VID_SetPalette (unsigned char *palette)
+void VID_SetPalette (unsigned char *palette)
 {
 }
 
-void	VID_ShiftPalette (unsigned char *palette)
+void VID_ShiftPalette (unsigned char *palette)
 {
 }
 
-void	VID_Init (unsigned char *palette)
+void VID_Init (unsigned char *palette)
 {
 	vid.maxwarpwidth = vid.width = vid.conwidth = BASEWIDTH;
 	vid.maxwarpheight = vid.height = vid.conheight = BASEHEIGHT;
@@ -57,13 +58,13 @@ void	VID_Init (unsigned char *palette)
 	D_InitCaches (surfcache, sizeof(surfcache));
 }
 
-void	VID_Shutdown (void)
+void VID_Shutdown()
 {
 }
 
-void	VID_Update (vrect_t *rects)
+void VID_Update (vrect_t *rects)
 {
-}
+};
 
 /*
 ================
@@ -72,8 +73,7 @@ D_BeginDirectRect
 */
 void D_BeginDirectRect (int x, int y, byte *pbitmap, int width, int height)
 {
-}
-
+};
 
 /*
 ================
@@ -82,6 +82,4 @@ D_EndDirectRect
 */
 void D_EndDirectRect (int x, int y, int width, int height)
 {
-}
-
-
+};
