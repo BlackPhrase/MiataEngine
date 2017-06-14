@@ -17,19 +17,22 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+
 // view.h
 
-extern	cvar_t		v_gamma;
+#pragma once
 
-extern	byte		gammatable[256];	// palette is sent through this
-extern	byte		ramps[3][256];
-extern float v_blend[4];
-
+extern cvar_t v_gamma;
 extern cvar_t lcd_x;
 
+//extern byte gammatable[256];	// palette is sent through this
+//extern byte ramps[3][256];
+
+#ifdef GLQUAKE
+	extern float v_blend[4];
+#endif
 
 void V_Init (void);
 void V_RenderView (void);
 float V_CalcRoll (vec3_t angles, vec3_t velocity);
 void V_UpdatePalette (void);
-

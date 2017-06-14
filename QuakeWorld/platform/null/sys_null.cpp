@@ -17,6 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+
 // sys_null.h -- null system driver to aid porting efforts
 
 #include "quakedef.hpp"
@@ -33,7 +34,7 @@ FILE IO
 #define MAX_HANDLES             10
 FILE    *sys_handles[MAX_HANDLES];
 
-int             findhandle (void)
+int findhandle (void)
 {
 	int             i;
 	
@@ -135,7 +136,6 @@ void Sys_mkdir (char *path)
 {
 }
 
-
 /*
 ===============================================================================
 
@@ -148,12 +148,15 @@ void Sys_MakeCodeWriteable (unsigned long startaddr, unsigned long length)
 {
 }
 
+void Sys_DebugLog(char *file, char *fmt, ...)
+{
+}
 
 void Sys_Error (char *error, ...)
 {
 	va_list         argptr;
 
-	printf ("Sys_Error: ");   
+	printf ("Sys_Error: "); // I_Error
 	va_start (argptr,error);
 	vprintf (error,argptr);
 	va_end (argptr);
@@ -210,9 +213,9 @@ void Sys_LowFPPrecision (void)
 
 void main (int argc, char **argv)
 {
-	static quakeparms_t    parms;
+	static quakeparms_t parms; // quakeparms_t parms;
 
-	parms.memsize = 8*1024*1024;
+	parms.memsize = 8*1024*1024; // 5861376
 	parms.membase = malloc (parms.memsize);
 	parms.basedir = ".";
 
@@ -228,5 +231,3 @@ void main (int argc, char **argv)
 		Host_Frame (0.1);
 	}
 }
-
-

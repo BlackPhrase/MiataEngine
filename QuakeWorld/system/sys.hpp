@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 // returns the file size
 // return -1 if file is not present
-// the file should be in BINARY mode for stupid OSs that care
+// the file should be in BINARY mode for stupid OSes that care
 int Sys_FileOpenRead (char *path, int *hndl);
 
 int Sys_FileOpenWrite (char *path);
@@ -54,7 +54,7 @@ void Sys_Printf (char *fmt, ...);
 
 void Sys_Quit (void);
 
-double Sys_FloatTime (void);
+double Sys_FloatTime (void); // Sys_DoubleTime
 
 char *Sys_ConsoleInput (void);
 
@@ -68,4 +68,3 @@ void Sys_SendKeyEvents (void);
 void Sys_LowFPPrecision (void);
 void Sys_HighFPPrecision (void);
 void Sys_SetFPCW (void);
-
