@@ -94,6 +94,7 @@ void Cbuf_AddText (char *text)
 		Con_Printf ("Cbuf_AddText: overflow\n");
 		return;
 	}
+
 	SZ_Write (&cmd_text, text, Q_strlen (text));
 }
 

@@ -102,6 +102,9 @@ char		m_return_reason [32];
 
 void M_ConfigureNetSubsystem(void);
 
+//=============================================================================
+/* Support Routines */
+
 /*
 ================
 M_DrawCharacter

@@ -113,7 +113,6 @@ void D_DrawTurbulent8Span (void)
 
 #endif	// !id386
 
-
 /*
 =============
 Turbulent8
@@ -446,4 +445,3 @@ void D_DrawZSpans (espan_t *pspan)
 }
 
 #endif
-

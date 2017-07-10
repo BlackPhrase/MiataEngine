@@ -207,7 +207,7 @@ void R_AddEfrags (entity_t *ent)
 	if (!ent->model)
 		return;
 
-	if (ent == cl_entities)
+	if (ent == &r_worldentity)
 		return;		// never add the world
 
 	r_addent = ent;

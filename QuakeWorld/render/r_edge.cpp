@@ -86,7 +86,7 @@ void R_DrawCulledPolys (void)
 	surf_t			*s;
 	msurface_t		*pface;
 
-	currententity = &cl_entities[0];
+	currententity = &r_worldentity;
 
 	if (r_worldpolysbacktofront)
 	{
@@ -729,13 +729,9 @@ void R_ScanEdges (void)
 			VID_LockBuffer ();
 		
 			if (r_drawculledpolys)
-			{
 				R_DrawCulledPolys ();
-			}
 			else
-			{
 				D_DrawSurfaces ();
-			}
 
 		// clear the surface span pointers
 			for (s = &surfaces[1] ; s<surface_p ; s++)

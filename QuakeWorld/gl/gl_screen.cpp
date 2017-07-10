@@ -88,6 +88,7 @@ cvar_t		scr_showram = {"showram","1"};
 cvar_t		scr_showturtle = {"showturtle","0"};
 cvar_t		scr_showpause = {"showpause","1"};
 cvar_t		scr_printspeed = {"scr_printspeed","8"};
+cvar_t			scr_allowsnap = {"scr_allowsnap", "1"};
 cvar_t		gl_triplebuffer = {"gl_triplebuffer", "1", true };
 
 extern	cvar_t	crosshair;
@@ -116,6 +117,7 @@ float		scr_disabled_time;
 qboolean	block_drawing;
 
 void SCR_ScreenShot_f (void);
+void SCR_RSShot_f (void);
 
 /*
 ===============================================================================
@@ -254,7 +256,6 @@ Internal use only
 */
 static void SCR_CalcRefdef (void)
 {
-	vrect_t		vrect;
 	float		size;
 	int		h;
 	qboolean		full = false;
@@ -301,11 +302,14 @@ static void SCR_CalcRefdef (void)
 	if (cl.intermission)
 	{
 		full = true;
-		size = 100;
+		size = 100.0;
 		sb_lines = 0;
 	}
 	size /= 100.0;
 
+	if (!cl_sbar.value && full)
+		h = vid.height;
+	else
 	h = vid.height - sb_lines;
 
 	r_refdef.vrect.width = vid.width * size;
@@ -316,9 +320,10 @@ static void SCR_CalcRefdef (void)
 	}
 
 	r_refdef.vrect.height = vid.height * size;
+	if (cl_sbar.value || !full) {
 	if (r_refdef.vrect.height > vid.height - sb_lines)
 		r_refdef.vrect.height = vid.height - sb_lines;
-	if (r_refdef.vrect.height > vid.height)
+	} else if (r_refdef.vrect.height > vid.height)
 			r_refdef.vrect.height = vid.height;
 	r_refdef.vrect.x = (vid.width - r_refdef.vrect.width)/2;
 	if (full)
@@ -369,7 +374,6 @@ SCR_Init
 */
 void SCR_Init (void)
 {
-
 	Cvar_RegisterVariable (&scr_fov);
 	Cvar_RegisterVariable (&scr_viewsize);
 	Cvar_RegisterVariable (&scr_conspeed);
@@ -378,12 +382,14 @@ void SCR_Init (void)
 	Cvar_RegisterVariable (&scr_showpause);
 	Cvar_RegisterVariable (&scr_centertime);
 	Cvar_RegisterVariable (&scr_printspeed);
+	Cvar_RegisterVariable (&scr_allowsnap);
 	Cvar_RegisterVariable (&gl_triplebuffer);
 
 //
 // register our commands
 //
 	Cmd_AddCommand ("screenshot",SCR_ScreenShot_f);
+	Cmd_AddCommand ("snap",SCR_RSShot_f);
 	Cmd_AddCommand ("sizeup",SCR_SizeUp_f);
 	Cmd_AddCommand ("sizedown",SCR_SizeDown_f);
 
@@ -451,6 +457,34 @@ void SCR_DrawNet (void)
 
 	Draw_Pic (scr_vrect.x+64, scr_vrect.y, scr_net);
 }
+
+void SCR_DrawFPS (void)
+{
+	extern cvar_t show_fps;
+	static double lastframetime;
+	double t;
+	extern int fps_count;
+	static lastfps;
+	int x, y;
+	char st[80];
+
+	if (!show_fps.value)
+		return;
+
+	t = Sys_DoubleTime();
+	if ((t - lastframetime) >= 1.0) {
+		lastfps = fps_count;
+		fps_count = 0;
+		lastframetime = t;
+	}
+
+	sprintf(st, "%3d FPS", lastfps);
+	x = vid.width - strlen(st) * 8 - 8;
+	y = vid.height - sb_lines - 8;
+//	Draw_TileClear(x, y, strlen(st) * 8, 8);
+	Draw_String(x, y, st);
+}
+
 
 /*
 ==============
@@ -880,6 +914,9 @@ void SCR_UpdateScreen (void)
 	//
 	SCR_TileClear ();
 
+	if (r_netgraph.value)
+		R_NetGraph ();
+
 	if (scr_drawdialog)
 	{
 		Sbar_Draw ();
@@ -904,10 +941,11 @@ void SCR_UpdateScreen (void)
 	else
 	{
 		if (crosshair.value)
-			Draw_Character (scr_vrect.x + scr_vrect.width/2, scr_vrect.y + scr_vrect.height/2, '+');
+			Draw_Crosshair();
 		
 		SCR_DrawRam ();
 		SCR_DrawNet ();
+		SCR_DrawFPS ();
 		SCR_DrawTurtle ();
 		SCR_DrawPause ();
 		SCR_CheckDrawCenterString ();
@@ -920,4 +958,3 @@ void SCR_UpdateScreen (void)
 
 	GL_EndRendering ();
 }
-
