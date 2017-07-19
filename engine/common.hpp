@@ -33,6 +33,10 @@ typedef unsigned char 		byte;
 	typedef enum {false, true}	qboolean;
 #endif
 
+#define	MAX_INFO_STRING	196
+#define	MAX_SERVERINFO_STRING	512
+#define	MAX_LOCALINFO_STRING	32768
+
 //============================================================================
 
 typedef struct sizebuf_s

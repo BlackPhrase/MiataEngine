@@ -692,12 +692,12 @@ ED_NewString
 */
 char *ED_NewString (char *string)
 {
-	char	*new, *new_p;
+	char	*pnew, *new_p;
 	int		i,l;
 	
 	l = strlen(string) + 1;
-	new = Hunk_Alloc (l);
-	new_p = new;
+	pnew = Hunk_Alloc (l);
+	new_p = pnew;
 
 	for (i=0 ; i< l ; i++)
 	{
@@ -713,7 +713,7 @@ char *ED_NewString (char *string)
 			*new_p++ = string[i];
 	}
 	
-	return new;
+	return pnew;
 }
 
 
