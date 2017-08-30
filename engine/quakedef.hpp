@@ -227,9 +227,7 @@ typedef struct
 	int		effects;
 } entity_state_t;
 
-
 #include "wad.hpp"
-#include "draw.hpp"
 #include "cvar.hpp"
 #include "screen.hpp"
 #include "net.hpp"
@@ -237,7 +235,7 @@ typedef struct
 #include "cmd.hpp"
 #include "sbar.hpp"
 #include "sound.hpp"
-#include "render.hpp"
+#include "ref.hpp"
 #include "client.hpp"
 #include "progs.hpp"
 #include "server.hpp"

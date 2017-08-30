@@ -29,7 +29,15 @@ else
 	CLANG_FORMAT="$PROGRAMFILES\LLVM\bin\clang-format"
 fi
 
-for DIRECTORY in launcher mainui engine vgui_connector
+for DIRECTORY in dedicated
+				 engine
+				 game
+				 input
+				 launcher
+				 menu
+				 network
+				 render
+				 sound
 do
     echo "Formatting code under $DIRECTORY/"
     find "$DIRECTORY" \( -name '*.h' -or -name '*.hpp' -or -name '*.c' -or -name '*.cpp' \) -print0 | xargs -0 "$CLANG_FORMAT" -i -style=file

@@ -18,11 +18,41 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-/* crc.h */
+#include "qwsvdef.h"
 
-#pragma once
+int		pr_argc;
 
-void CRC_Init(unsigned short *crcvalue);
-void CRC_ProcessByte(unsigned short *crcvalue, byte data);
-unsigned short CRC_Value(unsigned short crcvalue);
-unsigned short CRC_Block (byte *start, int count);
+
+//=============================================================================
+
+char *pr_strtbl[MAX_PRSTR];
+int num_prstr;
+
+char *PR_GetString(int num)
+{
+	if (num < 0) {
+//Con_DPrintf("GET:%d == %s\n", num, pr_strtbl[-num]);
+		return pr_strtbl[-num];
+	}
+	return pr_strings + num;
+}
+
+int PR_SetString(char *s)
+{
+	int i;
+
+	if (s - pr_strings < 0) {
+		for (i = 0; i <= num_prstr; i++)
+			if (pr_strtbl[i] == s)
+				break;
+		if (i < num_prstr)
+			return -i;
+		if (num_prstr == MAX_PRSTR - 1)
+			Sys_Error("MAX_PRSTR");
+		num_prstr++;
+		pr_strtbl[num_prstr] = s;
+//Con_DPrintf("SET:%d == %s\n", -num_prstr, s);
+		return -num_prstr;
+	}
+	return (int)(s - pr_strings);
+}

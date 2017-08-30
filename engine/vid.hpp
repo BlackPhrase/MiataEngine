@@ -17,6 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+
 // vid.h -- video driver defs
 
 #define VID_CBITS	6
@@ -54,38 +55,29 @@ typedef struct
 } viddef_t;
 
 extern	viddef_t	vid;				// global video state
-extern	unsigned short	d_8to16table[256];
-extern	unsigned	d_8to24table[256];
-extern void (*vid_menudrawfn)(void);
-extern void (*vid_menukeyfn)(int key);
 
-void	VID_SetPalette (unsigned char *palette);
-// called at startup and after any gamma correction
+// Video module initialisation etc
 
-void	VID_ShiftPalette (unsigned char *palette);
-// called for bonus and pain flashes, and for underwater color changes
-
-void	VID_Init (unsigned char *palette);
+void	VID_Init ();
 // Called at startup to set up translation tables, takes 256 8 bit RGB values
 // the palette data will go away after the call, so it must be copied off if
 // the video driver will need it again
 
-void	VID_Shutdown (void);
+void	VID_Shutdown ();
 // Called at shutdown
 
-void	VID_Update (vrect_t *rects);
+//void	VID_Update (vrect_t *rects);
 // flushes the given rectangles from the view buffer to the screen
 
-int VID_SetMode (int modenum, unsigned char *palette);
+void	VID_CheckChanges ();
+
+//int VID_SetMode (int modenum, unsigned char *palette);
 // sets the mode; only used by the Quake engine for resetting to mode 0 (the
 // base mode) on memory allocation failures
 
-void VID_HandlePause (qboolean pause);
+//void VID_HandlePause (bool pause);
 // called only on Win32, when pause happens, so the mouse can be released
 
-void VID_LockBuffer (void);
-void VID_UnlockBuffer (void);
-
-#ifdef GLQUAKE
-qboolean VID_Is8bit(void);
-#endif
+void	VID_MenuInit( void );
+void	VID_MenuDraw( void );
+const char *VID_MenuKey( int );

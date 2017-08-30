@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // sys.h -- non-portable functions
 
-void Sys_Init (void);
+void Sys_Init ();
 
 //
 // file IO
@@ -55,19 +55,19 @@ void Sys_Error (char *error, ...);
 void Sys_Printf (char *fmt, ...);
 // send text to the console
 
-void Sys_Quit (void);
+void Sys_Quit ();
 
-double Sys_FloatTime (void); // Sys_DoubleTime
+double Sys_FloatTime (); // Sys_DoubleTime
 
-char *Sys_ConsoleInput (void);
+char *Sys_ConsoleInput ();
 
-void Sys_Sleep (void);
+void Sys_Sleep ();
 // called to yield for a little bit so as
 // not to hog cpu when paused or debugging
 
-void Sys_SendKeyEvents (void);
+void Sys_SendKeyEvents ();
 // Perform Key_Event () callbacks until the input que is empty
 
-void Sys_LowFPPrecision (void);
-void Sys_HighFPPrecision (void);
-void Sys_SetFPCW (void);
+void Sys_LowFPPrecision ();
+void Sys_HighFPPrecision ();
+void Sys_SetFPCW ();
