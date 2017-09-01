@@ -1,24 +1,11 @@
-/*
-=============
-main
-=============
-*/
+
 void main(int argc, char *argv[])
 {
 	double			time, oldtime, newtime;
-	quakeparms_t	parms;
-	fd_set	fdset;
+	
 	extern	int		net_socket;
-    struct timeval timeout;
+    
 	int j;
-
-	memset (&parms, 0, sizeof(parms));
-
-	COM_InitArgv (argc, argv);	
-	parms.argc = com_argc;
-	parms.argv = com_argv;
-
-	parms.memsize = 16*1024*1024;
 
 	j = COM_CheckParm("-mem");
 	if (j)
@@ -34,22 +21,8 @@ void main(int argc, char *argv[])
 		parms.basedir = "/raid/quake/v2";
 */
 
-	SV_Init (&parms);
-
-// run one frame immediately for first heartbeat
-	SV_Frame (0.1);		
-
-//
-// main loop
-//
-	oldtime = Sys_DoubleTime () - 0.1;
 	while (1)
 	{
-	// select on the net socket and stdin
-	// the only reason we have a timeout at all is so that if the last
-	// connected client times out, the message would not otherwise
-	// be printed until the next event.
-		FD_ZERO(&fdset);
 		if (do_stdin)
 			FD_SET(0, &fdset);
 		FD_SET(net_socket, &fdset);
@@ -59,10 +32,6 @@ void main(int argc, char *argv[])
 			continue;
 		stdin_ready = FD_ISSET(0, &fdset);
 
-	// find time passed since last cycle
-		newtime = Sys_DoubleTime ();
-		time = newtime - oldtime;
-		oldtime = newtime;
 		
 		SV_Frame (time);		
 		
@@ -72,3 +41,55 @@ void main(int argc, char *argv[])
 	}	
 }
 
+
+int main (int argc, char **argv)
+{
+    MSG        msg;
+	double			time, oldtime;
+	static	char	cwd[1024];
+
+	parms.memsize = 16384*1024;
+	parms.membase = malloc (parms.memsize);
+
+	_getcwd (cwd, sizeof(cwd));
+	if (cwd[Q_strlen(cwd)-1] == '\\')
+		cwd[Q_strlen(cwd)-1] = 0;
+	parms.basedir = cwd; //"f:/quake";
+//	parms.basedir = "f:\\quake";
+
+	COM_InitArgv (argc, argv);
+
+	// dedicated server ONLY!
+	if (!COM_CheckParm ("-dedicated"))
+	{
+		memcpy (newargv, argv, argc*4);
+		newargv[argc] = "-dedicated";
+		argc++;
+		argv = newargv;
+		COM_InitArgv (argc, argv);
+	}
+
+	parms.argc = argc;
+	parms.argv = argv;
+
+	
+
+	oldtime = Sys_FloatTime ();
+
+    /* main window message loop */
+	while (1)
+	{
+		time = Sys_FloatTime();
+		if (time - oldtime < sys_ticrate.value )
+		{
+			Sleep(1);
+			continue;
+		}
+
+		Host_Frame ( time - oldtime );
+		oldtime = time;
+	}
+
+    /* return success of application */
+    return TRUE;
+}

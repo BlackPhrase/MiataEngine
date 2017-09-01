@@ -97,19 +97,6 @@ typedef struct
 } frame_t;
 
 
-typedef struct
-{
-	int		destcolor[3];
-	int		percent;		// 0-256
-} cshift_t;
-
-#define	CSHIFT_CONTENTS	0
-#define	CSHIFT_DAMAGE	1
-#define	CSHIFT_BONUS	2
-#define	CSHIFT_POWERUP	3
-#define	NUM_CSHIFTS		4
-
-
 //
 // client_state_t should hold all pieces of the client state
 //
@@ -124,14 +111,6 @@ typedef struct
 	float	minlight;			// don't add when contributing less
 	float   color[4];
 } dlight_t;
-
-typedef struct
-{
-	int		length;
-	char	map[MAX_STYLESTRING];
-} lightstyle_t;
-
-
 
 #define	MAX_EFRAGS		512
 
@@ -295,40 +274,14 @@ typedef struct
 // cvars
 //
 extern  cvar_t	cl_warncmd;
-extern	cvar_t	cl_upspeed;
-extern	cvar_t	cl_forwardspeed;
-extern	cvar_t	cl_backspeed;
-extern	cvar_t	cl_sidespeed;
-
-extern	cvar_t	cl_movespeedkey;
-
-extern	cvar_t	cl_yawspeed;
-extern	cvar_t	cl_pitchspeed;
-
-extern	cvar_t	cl_anglespeedkey;
 
 extern	cvar_t	cl_shownet;
 extern	cvar_t	cl_sbar;
 extern	cvar_t	cl_hudswap;
 
-extern	cvar_t	cl_pitchdriftspeed;
-extern	cvar_t	lookspring;
-extern	cvar_t	lookstrafe;
-extern	cvar_t	sensitivity;
-
-extern	cvar_t	m_pitch;
-extern	cvar_t	m_yaw;
-extern	cvar_t	m_forward;
-extern	cvar_t	m_side;
-
 extern cvar_t		_windowed_mouse;
 
 extern	cvar_t	name;
-
-
-#define	MAX_STATIC_ENTITIES	128			// torches, etc
-
-extern	client_state_t	cl;
 
 // FIXME, allocate dynamically
 extern	entity_state_t	cl_baselines[MAX_EDICTS];
@@ -342,24 +295,7 @@ extern float	server_version;	// version of server we connected to
 
 //=============================================================================
 
-
-//
-// cl_main
-//
-dlight_t *CL_AllocDlight (int key);
-void	CL_DecayLights (void);
-
-void CL_Init (void);
 void Host_WriteConfiguration (void);
-
-void CL_EstablishConnection (char *host);
-
-void CL_Disconnect (void);
-void CL_Disconnect_f (void);
-void CL_NextDemo (void);
-qboolean CL_DemoBehind(void);
-
-void CL_BeginServerConnect(void);
 
 #define			MAX_VISEDICTS	256
 extern	int				cl_numvisedicts, cl_oldnumvisedicts;
@@ -368,50 +304,12 @@ extern	entity_t		cl_visedicts_list[2][MAX_VISEDICTS];
 
 extern char emodel_name[], pmodel_name[], prespawn_name[], modellist_name[], soundlist_name[];
 
-//
-// cl_input
-//
-typedef struct
-{
-	int		down[2];		// key nums holding it down
-	int		state;			// low bit is down state
-} kbutton_t;
-
-extern	kbutton_t	in_mlook, in_klook;
-extern 	kbutton_t 	in_strafe;
-extern 	kbutton_t 	in_speed;
-
-void CL_InitInput (void);
-void CL_SendCmd (void);
-void CL_SendMove (usercmd_t *cmd);
-
-void CL_ParseTEnt (void);
-void CL_UpdateTEnts (void);
-
-void CL_ClearState (void);
-
-void CL_ReadPackets (void);
-
-int  CL_ReadFromServer (void);
-void CL_WriteToServer (usercmd_t *cmd);
-void CL_BaseMove (usercmd_t *cmd);
-
-
-float CL_KeyState (kbutton_t *key);
-char *Key_KeynumToString (int keynum);
 
 //
 // cl_demo.c
 //
-void CL_StopPlayback (void);
 qboolean CL_GetMessage (void);
 void CL_WriteDemoCmd (usercmd_t *pcmd);
-
-void CL_Stop_f (void);
-void CL_Record_f (void);
-void CL_ReRecord_f (void);
-void CL_PlayDemo_f (void);
-void CL_TimeDemo_f (void);
 
 //
 // cl_parse.c
@@ -428,60 +326,6 @@ void CL_NextUpload(void);
 void CL_StartUpload (byte *data, int size);
 void CL_StopUpload(void);
 
-//
-// view.c
-//
-void V_StartPitchDrift (void);
-void V_StopPitchDrift (void);
-
-void V_RenderView (void);
-void V_UpdatePalette (void);
-void V_Register (void);
-void V_ParseDamage (void);
-void V_SetContentsColor (int contents);
-void V_CalcBlend (void);
-
-
-//
-// cl_tent
-//
-void CL_InitTEnts (void);
-void CL_ClearTEnts (void);
-
-//
-// cl_ents.c
-//
-void CL_SetSolidPlayers (int playernum);
-void CL_SetUpPlayerPrediction(qboolean dopred);
-void CL_EmitEntities (void);
-void CL_ClearProjectiles (void);
-void CL_ParseProjectiles (void);
-void CL_ParsePacketEntities (qboolean delta);
-void CL_SetSolidEntities (void);
-void CL_ParsePlayerinfo (void);
-
-//
-// cl_pred.c
-//
-void CL_InitPrediction (void);
-void CL_PredictMove (void);
-void CL_PredictUsercmd (player_state_t *from, player_state_t *to, usercmd_t *u, qboolean spectator);
-
-//
-// cl_cam.c
-//
-#define CAM_NONE	0
-#define CAM_TRACK	1
-
-extern	int		autocam;
-extern int spec_track; // player# of who we are tracking
-
-qboolean Cam_DrawViewModel(void);
-qboolean Cam_DrawPlayer(int playernum);
-void Cam_Track(usercmd_t *cmd);
-void Cam_FinishMove(usercmd_t *cmd);
-void Cam_Reset(void);
-void CL_InitCam(void);
 
 //
 // skin.c

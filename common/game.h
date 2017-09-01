@@ -17,25 +17,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-/*
-Copyright (C) 1997-2001 Id Software, Inc.
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
 
 // game.h -- game dll information visible to server
 
@@ -183,9 +164,9 @@ typedef struct
 	cvar_t	*(*cvar_forceset) (char *var_name, char *value);
 
 	// ClientCommand and ServerCommand parameter access
-	int		(*argc) (void);
+	int		(*argc) ();
 	char	*(*argv) (int n);
-	char	*(*args) (void);	// concatenation of all argv >= 1
+	char	*(*args) ();	// concatenation of all argv >= 1
 
 	// add commands to the server console as if they were typed in
 	// for map changing, etc
@@ -204,8 +185,8 @@ typedef struct
 	// the init function will only be called when a game starts,
 	// not each time a level is loaded.  Persistant data for clients
 	// and the server can be allocated in init
-	void		(*Init) (void);
-	void		(*Shutdown) (void);
+	void		(*Init) ();
+	void		(*Shutdown) ();
 
 	// each new level entered will cause a call to SpawnEntities
 	void		(*SpawnEntities) (char *mapname, char *entstring, char *spawnpoint);
@@ -229,13 +210,13 @@ typedef struct
 	void		(*ClientCommand) (edict_t *ent);
 	void		(*ClientThink) (edict_t *ent, usercmd_t *cmd);
 
-	void		(*RunFrame) (void);
+	void		(*RunFrame) ();
 
 	// ServerCommand will be called when an "sv <command>" command is issued on the
 	// server console.
 	// The game can issue gi.argc() / gi.argv() commands to get the rest
 	// of the parameters
-	void		(*ServerCommand) (void);
+	void		(*ServerCommand) ();
 
 	//
 	// global variables shared between game and server

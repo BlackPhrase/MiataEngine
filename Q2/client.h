@@ -262,25 +262,10 @@ extern	cvar_t	*cl_upspeed;
 extern	cvar_t	*cl_forwardspeed;
 extern	cvar_t	*cl_sidespeed;
 
-extern	cvar_t	*cl_yawspeed;
-extern	cvar_t	*cl_pitchspeed;
-
 extern	cvar_t	*cl_run;
 
-extern	cvar_t	*cl_anglespeedkey;
-
-extern	cvar_t	*cl_shownet;
 extern	cvar_t	*cl_showmiss;
 extern	cvar_t	*cl_showclamp;
-
-extern	cvar_t	*lookspring;
-extern	cvar_t	*lookstrafe;
-extern	cvar_t	*sensitivity;
-
-extern	cvar_t	*m_pitch;
-extern	cvar_t	*m_yaw;
-extern	cvar_t	*m_forward;
-extern	cvar_t	*m_side;
 
 extern	cvar_t	*freelook;
 
@@ -452,11 +437,6 @@ void CL_ParseLayout (void);
 //
 extern	refexport_t	re;		// interface to refresh .dll
 
-void CL_Init (void);
-
-void CL_FixUpGender(void);
-void CL_Disconnect (void);
-void CL_Disconnect_f (void);
 void CL_GetChallengePacket (void);
 void CL_PingServers_f (void);
 void CL_Snd_Restart_f (void);
@@ -473,33 +453,12 @@ typedef struct
 	int			state;
 } kbutton_t;
 
-extern	kbutton_t	in_mlook, in_klook;
-extern 	kbutton_t 	in_strafe;
-extern 	kbutton_t 	in_speed;
-
-void CL_InitInput (void);
-void CL_SendCmd (void);
-void CL_SendMove (usercmd_t *cmd);
-
-void CL_ClearState (void);
-
-void CL_ReadPackets (void);
-
-int  CL_ReadFromServer (void);
-void CL_WriteToServer (usercmd_t *cmd);
-void CL_BaseMove (usercmd_t *cmd);
-
 void IN_CenterView (void);
-
-float CL_KeyState (kbutton_t *key);
-char *Key_KeynumToString (int keynum);
 
 //
 // cl_demo.c
 //
 void CL_WriteDemoMessage (void);
-void CL_Stop_f (void);
-void CL_Record_f (void);
 
 //
 // cl_parse.c

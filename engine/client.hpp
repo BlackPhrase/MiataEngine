@@ -17,6 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+
 // client.h
 
 typedef struct
@@ -27,9 +28,9 @@ typedef struct
 	float	forwardmove;
 	float	sidemove;
 	float	upmove;
-#ifdef QUAKE2
+
 	byte	lightlevel;
-#endif
+
 } usercmd_t;
 
 typedef struct
@@ -61,7 +62,6 @@ typedef struct
 
 #define	NAME_LENGTH	64
 
-
 //
 // client_state_t should hold all pieces of the client state
 //
@@ -81,7 +81,6 @@ typedef struct
 	qboolean	dark;			// subtracts light instead of adding
 #endif
 } dlight_t;
-
 
 #define	MAX_BEAMS	24
 typedef struct
@@ -179,16 +178,16 @@ typedef struct
 // pitch drifting vars
 	float		idealpitch;
 	float		pitchvel;
-	qboolean	nodrift;
+	bool	nodrift;
 	float		driftmove;
 	double		laststop;
 
 	float		viewheight;
 	float		crouch;			// local amount for smoothing stepups
 
-	qboolean	paused;			// send over by server
-	qboolean	onground;
-	qboolean	inwater;
+	bool	paused;			// send over by server
+	bool	onground;
+	bool	inwater;
 	
 	int			intermission;	// don't change view angle, full screen, etc
 	int			completed_time;	// latched at intermission start
@@ -234,40 +233,39 @@ typedef struct
 #endif
 } client_state_t;
 
-
 //
 // cvars
 //
-extern	cvar_t	cl_name;
-extern	cvar_t	cl_color;
+extern	cvar_t	*cl_name;
+extern	cvar_t	*cl_color;
 
-extern	cvar_t	cl_upspeed;
-extern	cvar_t	cl_forwardspeed;
-extern	cvar_t	cl_backspeed;
-extern	cvar_t	cl_sidespeed;
+extern	cvar_t	*cl_upspeed;
+extern	cvar_t	*cl_forwardspeed;
+extern	cvar_t	*cl_backspeed;
+extern	cvar_t	*cl_sidespeed;
 
-extern	cvar_t	cl_movespeedkey;
+//extern	cvar_t	*cl_movespeedkey;
 
-extern	cvar_t	cl_yawspeed;
-extern	cvar_t	cl_pitchspeed;
+extern	cvar_t	*cl_yawspeed;
+extern	cvar_t	*cl_pitchspeed;
 
-extern	cvar_t	cl_anglespeedkey;
+extern	cvar_t	*cl_anglespeedkey;
 
-extern	cvar_t	cl_autofire;
+//extern	cvar_t	*cl_autofire;
 
-extern	cvar_t	cl_shownet;
-extern	cvar_t	cl_nolerp;
+extern	cvar_t	*cl_shownet;
+//extern	cvar_t	*cl_nolerp;
 
-extern	cvar_t	cl_pitchdriftspeed;
-extern	cvar_t	lookspring;
-extern	cvar_t	lookstrafe;
-extern	cvar_t	sensitivity;
+//extern	cvar_t	*cl_pitchdriftspeed;
 
-extern	cvar_t	m_pitch;
-extern	cvar_t	m_yaw;
-extern	cvar_t	m_forward;
-extern	cvar_t	m_side;
+extern	cvar_t	*lookspring;
+extern	cvar_t	*lookstrafe;
+extern	cvar_t	*sensitivity;
 
+extern	cvar_t	*m_pitch;
+extern	cvar_t	*m_yaw;
+extern	cvar_t	*m_forward;
+extern	cvar_t	*m_side;
 
 #define	MAX_TEMP_ENTITIES	64			// lightning bolts, etc
 #define	MAX_STATIC_ENTITIES	128			// torches, etc
@@ -289,19 +287,18 @@ extern	beam_t			cl_beams[MAX_BEAMS];
 // cl_main
 //
 dlight_t *CL_AllocDlight (int key);
-void	CL_DecayLights (void);
+void	CL_DecayLights ();
 
-void CL_Init (void);
+void CL_Init ();
 
-void CL_EstablishConnection (char *host);
-void CL_Signon1 (void);
-void CL_Signon2 (void);
-void CL_Signon3 (void);
-void CL_Signon4 (void);
+void CL_EstablishConnection (const char *host);
 
-void CL_Disconnect (void);
-void CL_Disconnect_f (void);
-void CL_NextDemo (void);
+void CL_Disconnect ();
+void CL_Disconnect_f ();
+void CL_NextDemo ();
+qboolean CL_DemoBehind();
+
+void CL_BeginServerConnect();
 
 #define			MAX_VISEDICTS	256
 extern	int				cl_numvisedicts;
@@ -320,56 +317,94 @@ extern	kbutton_t	in_mlook, in_klook;
 extern 	kbutton_t 	in_strafe;
 extern 	kbutton_t 	in_speed;
 
-void CL_InitInput (void);
-void CL_SendCmd (void);
+void CL_InitInput ();
+void CL_SendCmd ();
 void CL_SendMove (usercmd_t *cmd);
 
-void CL_ParseTEnt (void);
-void CL_UpdateTEnts (void);
+void CL_ParseTEnt ();
+void CL_UpdateTEnts ();
 
-void CL_ClearState (void);
+void CL_ClearState ();
 
+void CL_ReadPackets ();
 
-int  CL_ReadFromServer (void);
+int  CL_ReadFromServer ();
 void CL_WriteToServer (usercmd_t *cmd);
 void CL_BaseMove (usercmd_t *cmd);
 
-
 float CL_KeyState (kbutton_t *key);
-char *Key_KeynumToString (int keynum);
 
 //
 // cl_demo.c
 //
-void CL_StopPlayback (void);
-int CL_GetMessage (void);
+void CL_StopPlayback ();
+int CL_GetMessage ();
 
-void CL_Stop_f (void);
-void CL_Record_f (void);
-void CL_PlayDemo_f (void);
-void CL_TimeDemo_f (void);
+void CL_Stop_f ();
+void CL_Record_f ();
+//void CL_ReRecord_f ();
+void CL_PlayDemo_f ();
+void CL_TimeDemo_f ();
 
 //
 // cl_parse.c
 //
-void CL_ParseServerMessage (void);
+void CL_ParseServerMessage ();
 void CL_NewTranslation (int slot);
 
 //
 // view
 //
-void V_StartPitchDrift (void);
-void V_StopPitchDrift (void);
+void V_StartPitchDrift ();
+void V_StopPitchDrift ();
 
-void V_RenderView (void);
-void V_UpdatePalette (void);
-void V_Register (void);
-void V_ParseDamage (void);
+void V_RenderView ();
+void V_UpdatePalette ();
+void V_Register ();
+void V_ParseDamage ();
 void V_SetContentsColor (int contents);
-
+void V_CalcBlend ();
 
 //
 // cl_tent
 //
-void CL_InitTEnts (void);
-void CL_SignonReply (void);
+void CL_InitTEnts ();
+void CL_ClearTEnts ();
+
+void CL_SignonReply ();
+
+
+//
+// cl_ents.c
+//
+void CL_SetSolidPlayers (int playernum);
+void CL_SetUpPlayerPrediction(qboolean dopred);
+void CL_EmitEntities ();
+void CL_ClearProjectiles ();
+void CL_ParseProjectiles ();
+void CL_ParsePacketEntities (qboolean delta);
+void CL_SetSolidEntities ();
+void CL_ParsePlayerinfo ();
+
+//
+// cl_pred.c
+//
+void CL_InitPrediction ();
+void CL_PredictMove ();
+void CL_PredictUsercmd (player_state_t *from, player_state_t *to, usercmd_t *u, qboolean spectator);
+
+//
+// cl_cam.c
+//
+#define CAM_NONE	0
+#define CAM_TRACK	1
+
+extern int autocam;
+extern int spec_track; // player# of who we are tracking
+
+qboolean Cam_DrawViewModel();
+qboolean Cam_DrawPlayer(int playernum);
+void Cam_Track(usercmd_t *cmd);
+void Cam_FinishMove(usercmd_t *cmd);
+void Cam_Reset();
+void CL_InitCam();

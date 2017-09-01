@@ -75,10 +75,15 @@ to the new value before sending out any replies.
 
 */
 
+#include "NetChannel.hpp"
+
 int		net_drop;
 cvar_t	showpackets = {"showpackets", "0"};
 cvar_t	showdrop = {"showdrop", "0"};
 cvar_t	qport = {"qport", "0"};
+
+CNetChannel::CNetChannel() = default;
+CNetChannel::~CNetChannel() = default;
 
 /*
 ===============
@@ -86,7 +91,7 @@ Netchan_Init
 
 ===============
 */
-void Netchan_Init (void)
+void CNetChannel::Init()
 {
 	int		port;
 
@@ -151,7 +156,6 @@ void Netchan_OutOfBandPrint (netadr_t adr, char *format, ...)
 	Netchan_OutOfBand (adr, strlen(string), (byte *)string);
 }
 
-
 /*
 ==============
 Netchan_Setup
@@ -159,22 +163,19 @@ Netchan_Setup
 called to open a channel to a remote system
 ==============
 */
-void Netchan_Setup (netchan_t *chan, netadr_t adr, int qport)
+void CNetChannel::Setup(netadr_t adr, int qport)
 {
-	memset (chan, 0, sizeof(*chan));
+	remote_address = adr;
+	last_received = realtime;
 	
-	chan->remote_address = adr;
-	chan->last_received = realtime;
-	
-	chan->message.data = chan->message_buf;
-	chan->message.allowoverflow = true;
-	chan->message.maxsize = sizeof(chan->message_buf);
+	message.data = chan->message_buf;
+	message.allowoverflow = true;
+	message.maxsize = sizeof(chan->message_buf);
 
-	chan->qport = qport;
+	this->qport = qport;
 	
-	chan->rate = 1.0/2500;
+	rate = 1.0/2500;
 }
-
 
 /*
 ===============
@@ -184,13 +185,14 @@ Returns true if the bandwidth choke isn't active
 ================
 */
 #define	MAX_BACKUP	200
-qboolean Netchan_CanPacket (netchan_t *chan)
+
+bool CNetChannel::CanPacket()
 {
-	if (chan->cleartime < realtime + MAX_BACKUP*chan->rate)
+	if(cleartime < realtime + MAX_BACKUP*rate)
 		return true;
+	
 	return false;
 }
-
 
 /*
 ===============
@@ -199,12 +201,13 @@ Netchan_CanReliable
 Returns true if the bandwidth choke isn't 
 ================
 */
-qboolean Netchan_CanReliable (netchan_t *chan)
+bool CNetChannel::CanReliable()
 {
-	if (chan->reliable_length)
-		return false;			// waiting for ack
-	return Netchan_CanPacket (chan);
-}
+	if(reliable_length)
+		return false; // waiting for ack
+	
+	return CanPacket();
+};
 
 #ifdef SERVERONLY
 qboolean ServerPaused(void);
@@ -220,7 +223,7 @@ transmition / retransmition of the reliable messages.
 A 0 length will still generate a packet and deal with the reliable messages.
 ================
 */
-void Netchan_Transmit (netchan_t *chan, int length, byte *data)
+void CNetChannel::Transmit(netchan_t *chan, int length, byte *data)
 {
 	sizebuf_t	send;
 	byte		send_buf[MAX_MSGLEN + PACKET_HEADER];
@@ -311,7 +314,7 @@ void Netchan_Transmit (netchan_t *chan, int length, byte *data)
 			, chan->incoming_reliable_sequence
 			, send.cursize);
 
-}
+};
 
 /*
 =================
@@ -321,7 +324,7 @@ called when the current net_message is from remote_address
 modifies net_message so that it points to the packet payload
 =================
 */
-qboolean Netchan_Process (netchan_t *chan)
+bool CNetChannel::Process(netchan_t *chan)
 {
 	unsigned		sequence, sequence_ack;
 	unsigned		reliable_ack, reliable_message;
@@ -448,5 +451,4 @@ qboolean Netchan_Process (netchan_t *chan)
 	chan->last_received = realtime;
 
 	return true;
-}
-
+};

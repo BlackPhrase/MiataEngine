@@ -121,23 +121,18 @@ typedef struct
 	particle_t	*particles;
 } refdef_t;
 
-
-
 #define	API_VERSION		3
 
 //
 // these are the functions exported by the refresh module
 //
-typedef struct
+struct IRender
 {
-	// if api_version is different, the dll cannot be used
-	int		api_version;
-
 	// called when the library is loaded
-	qboolean	(*Init) ( void *hinstance, void *wndproc );
+	virtual bool	(*Init) ( void *hinstance, void *wndproc ) = 0;
 
 	// called before the library is unloaded
-	void	(*Shutdown) (void);
+	virtual void	(*Shutdown) () = 0;
 
 	// All data that will be used in a level should be
 	// registered before rendering any frames to prevent disk hits,
@@ -152,35 +147,34 @@ typedef struct
 	// are flood filled to eliminate mip map edge errors, and pics have
 	// an implicit "pics/" prepended to the name. (a pic name that starts with a
 	// slash will not use the "pics/" prefix or the ".pcx" postfix)
-	void	(*BeginRegistration) (char *map);
-	struct model_s *(*RegisterModel) (char *name);
-	struct image_s *(*RegisterSkin) (char *name);
-	struct image_s *(*RegisterPic) (char *name);
-	void	(*SetSky) (char *name, float rotate, vec3_t axis);
-	void	(*EndRegistration) (void);
+	virtual void	(*BeginRegistration) (char *map) = 0;
+	virtual struct model_s *(*RegisterModel) (char *name) = 0;
+	virtual struct image_s *(*RegisterSkin) (char *name) = 0;
+	virtual struct image_s *(*RegisterPic) (char *name) = 0;
+	virtual void	(*SetSky) (char *name, float rotate, vec3_t axis) = 0;
+	virtual void	(*EndRegistration) () = 0;
 
-	void	(*RenderFrame) (refdef_t *fd);
+	virtual void	(*RenderFrame) (refdef_t *fd) = 0;
 
-	void	(*DrawGetPicSize) (int *w, int *h, char *name);	// will return 0 0 if not found
-	void	(*DrawPic) (int x, int y, char *name);
-	void	(*DrawStretchPic) (int x, int y, int w, int h, char *name);
-	void	(*DrawChar) (int x, int y, int c);
-	void	(*DrawTileClear) (int x, int y, int w, int h, char *name);
-	void	(*DrawFill) (int x, int y, int w, int h, int c);
-	void	(*DrawFadeScreen) (void);
+	virtual void	(*DrawGetPicSize) (int *w, int *h, char *name) = 0;	// will return 0 0 if not found
+	virtual void	(*DrawPic) (int x, int y, char *name) = 0;
+	virtual void	(*DrawStretchPic) (int x, int y, int w, int h, char *name) = 0;
+	virtual void	(*DrawChar) (int x, int y, int c) = 0;
+	virtual void	(*DrawTileClear) (int x, int y, int w, int h, char *name) = 0;
+	virtual void	(*DrawFill) (int x, int y, int w, int h, int c) = 0;
+	virtual void	(*DrawFadeScreen) () = 0;
 
 	// Draw images for cinematic rendering (which can have a different palette). Note that calls
-	void	(*DrawStretchRaw) (int x, int y, int w, int h, int cols, int rows, byte *data);
+	virtual void	(*DrawStretchRaw) (int x, int y, int w, int h, int cols, int rows, byte *data) = 0;
 
 	/*
 	** video mode and refresh state management entry points
 	*/
-	void	(*CinematicSetPalette)( const unsigned char *palette);	// NULL = game palette
-	void	(*BeginFrame)( float camera_separation );
-	void	(*EndFrame) (void);
+	virtual void	(*CinematicSetPalette)( const unsigned char *palette) = 0;	// NULL = game palette
+	virtual void	(*BeginFrame)( float camera_separation ) = 0;
+	virtual void	(*EndFrame) () = 0;
 
-	void	(*AppActivate)( qboolean activate );
-
+	virtual void	(*AppActivate)( qboolean activate ) = 0;
 } refexport_t;
 
 //
@@ -190,9 +184,9 @@ typedef struct
 {
 	void	(*Sys_Error) (int err_level, char *str, ...);
 
-	void	(*Cmd_AddCommand) (char *name, void(*cmd)(void));
+	void	(*Cmd_AddCommand) (char *name, void(*cmd)());
 	void	(*Cmd_RemoveCommand) (char *name);
-	int		(*Cmd_Argc) (void);
+	int		(*Cmd_Argc) ();
 	char	*(*Cmd_Argv) (int i);
 	void	(*Cmd_ExecuteText) (int exec_when, char *text);
 
@@ -208,7 +202,7 @@ typedef struct
 
 	// gamedir will be the current directory that generated
 	// files should be stored to, ie: "f:\quake\id1"
-	char	*(*FS_Gamedir) (void);
+	char	*(*FS_Gamedir) ();
 
 	cvar_t	*(*Cvar_Get) (char *name, char *value, int flags);
 	cvar_t	*(*Cvar_Set)( char *name, char *value );
@@ -219,6 +213,6 @@ typedef struct
 	void		(*Vid_NewWindow)( int width, int height );
 } refimport_t;
 
-
 // this is the only function actually exported at the linker level
-typedef	refexport_t	(*GetRefAPI_t) (refimport_t);
+// if api_version is different, the dll cannot be used
+typedef	refexport_t	(*GetRefAPI_t) (int api_version, refimport_t);

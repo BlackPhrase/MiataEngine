@@ -1,14 +1,13 @@
 /*
 ==================
 main
-
 ==================
 */
-char	*newargv[256];
+char *newargv[256];
 
 int main (int argc, char **argv)
 {
-	quakeparms_t	parms;
+	quakeparms_t	parms{};
 	double			newtime, time, oldtime;
 	static	char	cwd[1024];
 	struct timeval	timeout;
@@ -38,10 +37,11 @@ int main (int argc, char **argv)
 	parms.basedir = ".";
 	parms.cachedir = NULL;
 
-	SV_Init (&parms);
+	printf ("Host_Init\n");
+	Host_Init (&parms);
 
 // run one frame immediately for first heartbeat
-	SV_Frame (0.1);		
+	Host_Frame (0.1);		
 
 //
 // main loop
@@ -65,28 +65,17 @@ int main (int argc, char **argv)
 		time = newtime - oldtime;
 		oldtime = newtime;
 		
-		SV_Frame (time);				
+		Host_Frame (time);				
 	}	
 
 	return true;
 }
 
-/*
-==================
-main
-
-==================
-*/
-char	*newargv[256];
-
 int main (int argc, char **argv)
 {
     MSG        msg;
-	quakeparms_t	parms;
 	double			time, oldtime;
 	static	char	cwd[1024];
-
-	memset (&parms, 0, sizeof(parms));
 
 	parms.memsize = 16384*1024;
 	parms.membase = malloc (parms.memsize);
@@ -112,8 +101,7 @@ int main (int argc, char **argv)
 	parms.argc = argc;
 	parms.argv = argv;
 
-	printf ("Host_Init\n");
-	Host_Init (&parms);
+	
 
 	oldtime = Sys_FloatTime ();
 
