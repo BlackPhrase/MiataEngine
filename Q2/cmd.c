@@ -34,36 +34,11 @@ typedef struct cmdalias_s
 
 cmdalias_t	*cmd_alias;
 
-qboolean	cmd_wait;
-
 #define	ALIAS_LOOP_COUNT	16
 int		alias_count;		// for detecting runaway loops
 
 
 //=============================================================================
-
-/*
-============
-Cmd_Wait_f
-
-Causes execution of the remainder of the command buffer to be delayed until
-next frame.  This allows commands like:
-bind g "impulse 5 ; +attack ; wait ; -attack ; impulse 2"
-============
-*/
-void Cmd_Wait_f (void)
-{
-	cmd_wait = true;
-}
-
-
-/*
-=============================================================================
-
-						COMMAND BUFFER
-
-=============================================================================
-*/
 
 sizebuf_t	cmd_text;
 byte		cmd_text_buf[8192];
@@ -79,65 +54,6 @@ void Cbuf_Init (void)
 {
 	SZ_Init (&cmd_text, cmd_text_buf, sizeof(cmd_text_buf));
 }
-
-/*
-============
-Cbuf_AddText
-
-Adds command text at the end of the buffer
-============
-*/
-void Cbuf_AddText (char *text)
-{
-	int		l;
-	
-	l = strlen (text);
-
-	if (cmd_text.cursize + l >= cmd_text.maxsize)
-	{
-		Com_Printf ("Cbuf_AddText: overflow\n");
-		return;
-	}
-	SZ_Write (&cmd_text, text, strlen (text));
-}
-
-
-/*
-============
-Cbuf_InsertText
-
-Adds command text immediately after the current command
-Adds a \n to the text
-FIXME: actually change the command buffer to do less copying
-============
-*/
-void Cbuf_InsertText (char *text)
-{
-	char	*temp;
-	int		templen;
-
-// copy off any commands still remaining in the exec buffer
-	templen = cmd_text.cursize;
-	if (templen)
-	{
-		temp = Z_Malloc (templen);
-		memcpy (temp, cmd_text.data, templen);
-		SZ_Clear (&cmd_text);
-	}
-	else
-		temp = NULL;	// shut up compiler
-		
-// add the entire text of the file
-	Cbuf_AddText (text);
-	
-// add the copied off data
-	if (templen)
-	{
-		SZ_Write (&cmd_text, temp, templen);
-		Z_Free (temp);
-	}
-}
-
 
 /*
 ============
@@ -484,55 +400,14 @@ void Cmd_Alias_f (void)
 =============================================================================
 */
 
-typedef struct cmd_function_s
-{
-	struct cmd_function_s	*next;
-	char					*name;
-	xcommand_t				function;
-} cmd_function_t;
-
-
-static	int			cmd_argc;
 static	char		*cmd_argv[MAX_STRING_TOKENS];
 static	char		*cmd_null_string = "";
 static	char		cmd_args[MAX_STRING_CHARS];
 
-static	cmd_function_t	*cmd_functions;		// possible commands to execute
-
-/*
-============
-Cmd_Argc
-============
-*/
-int		Cmd_Argc (void)
-{
-	return cmd_argc;
-}
-
-/*
-============
-Cmd_Argv
-============
-*/
-char	*Cmd_Argv (int arg)
-{
-	if ( (unsigned)arg >= cmd_argc )
-		return cmd_null_string;
-	return cmd_argv[arg];	
-}
-
-/*
-============
-Cmd_Args
-
-Returns a single string containing argv(1) to argv(argc()-1)
-============
-*/
-char		*Cmd_Args (void)
+char *Cmd_Args (void)
 {
 	return cmd_args;
 }
-
 
 /*
 ======================
@@ -743,26 +618,6 @@ void	Cmd_RemoveCommand (char *cmd_name)
 		back = &cmd->next;
 	}
 }
-
-/*
-============
-Cmd_Exists
-============
-*/
-qboolean	Cmd_Exists (char *cmd_name)
-{
-	cmd_function_t	*cmd;
-
-	for (cmd=cmd_functions ; cmd ; cmd=cmd->next)
-	{
-		if (!strcmp (cmd_name,cmd->name))
-			return true;
-	}
-
-	return false;
-}
-
-
 
 /*
 ============

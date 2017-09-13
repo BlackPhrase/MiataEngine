@@ -8,7 +8,7 @@ file(GLOB ENGINE_SOURCES
 )
 
 # Add platform-specific sources
-add_subdirectory(platform)
+#add_subdirectory(platform)
 
 # Build as module library
 add_library(${PROJECT_NAME} MODULE ${ENGINE_SOURCES})
@@ -17,3 +17,7 @@ add_library(${PROJECT_NAME} MODULE ${ENGINE_SOURCES})
 set_target_properties(${PROJECT_NAME} PROPERTIES
 	OUTPUT_NAME "engine"
 )
+
+if(NOT WIN32)
+	target_link_libraries(${PROJECT_NAME} -ldl)
+endif()

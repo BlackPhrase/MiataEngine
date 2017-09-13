@@ -8,10 +8,12 @@ bool CMenu::Init()
 	return true;
 };
 
-void CMenu::CShutdown()
+void CMenu::Shutdown()
 {
+	
 };
 
 void CMenu::Frame()
 {
+	
 };

@@ -142,13 +142,13 @@ extern	float	LittleFloat (float l);
 //============================================================================
 
 
-int	COM_Argc (void);
+int	COM_Argc ();
 char *COM_Argv (int arg);	// range and null checked
 void COM_ClearArgv (int arg);
 int COM_CheckParm (char *parm);
 void COM_AddParm (char *parm);
 
-void COM_Init (void);
+void COM_Init ();
 void COM_InitArgv (int argc, char **argv);
 
 char *CopyString (char *in);
@@ -356,7 +356,7 @@ The game starts with a Cbuf_AddText ("exec quake.rc\n"); Cbuf_Execute ();
 #define	EXEC_INSERT	1		// insert at current position, but don't run yet
 #define	EXEC_APPEND	2		// add to end of the command buffer
 
-void Cbuf_Init (void);
+void Cbuf_Init ();
 // allocates an initial text buffer that will grow as needed
 
 void Cbuf_AddText (char *text);
@@ -374,19 +374,19 @@ void Cbuf_ExecuteText (int exec_when, char *text);
 void Cbuf_AddEarlyCommands (qboolean clear);
 // adds all the +set commands from the command line
 
-qboolean Cbuf_AddLateCommands (void);
+qboolean Cbuf_AddLateCommands ();
 // adds all the remaining + commands from the command line
 // Returns true if any late commands were added, which
 // will keep the demoloop from immediately starting
 
-void Cbuf_Execute (void);
+void Cbuf_Execute ();
 // Pulls off \n terminated lines of text from the command buffer and sends
 // them through Cmd_ExecuteString.  Stops when the buffer is empty.
 // Normally called once per frame, but may be explicitly invoked.
 // Do not call inside a command function!
 
-void Cbuf_CopyToDefer (void);
-void Cbuf_InsertFromDefer (void);
+void Cbuf_CopyToDefer ();
+void Cbuf_InsertFromDefer ();
 // These two functions are used to defer any pending commands while a map
 // is being loaded
 
@@ -399,28 +399,19 @@ then searches for a command or variable that matches the first token.
 
 */
 
-typedef void (*xcommand_t) (void);
-
-void	Cmd_Init (void);
+void	Cmd_Init ();
 
 void	Cmd_AddCommand (char *cmd_name, xcommand_t function);
-// called by the init functions of other parts of the program to
-// register commands and functions to call for them.
-// The cmd_name is referenced later, so it should not be in temp memory
 // if function is NULL, the command will be forwarded to the server
 // as a clc_stringcmd instead of executed locally
-void	Cmd_RemoveCommand (char *cmd_name);
-
-qboolean Cmd_Exists (char *cmd_name);
-// used by the cvar code to check for cvar / command name overlap
 
 char 	*Cmd_CompleteCommand (char *partial);
 // attempts to match a partial command for automatic command line completion
 // returns NULL if nothing fits
 
-int		Cmd_Argc (void);
+int		Cmd_Argc ();
 char	*Cmd_Argv (int arg);
-char	*Cmd_Args (void);
+char	*Cmd_Args ();
 // The functions that execute commands get their parameters with these
 // functions. Cmd_Argv () will return an empty string, not a NULL
 // if arg > argc, so string operations are always safe.
@@ -433,7 +424,7 @@ void	Cmd_ExecuteString (char *text);
 // Parses a single line of text into arguments and tries to execute it
 // as if it was typed at the console
 
-void	Cmd_ForwardToServer (void);
+void	Cmd_ForwardToServer ();
 // adds the current command line as a clc_stringcmd to the client message.
 // things like godmode, noclip, etc, are commands directed to the server,
 // so when they are typed in at the console, they will need to be forwarded.
@@ -460,38 +451,24 @@ Cvars are restricted from having the same names as commands to keep this
 interface from being ambiguous.
 */
 
-extern	cvar_t	*cvar_vars;
-
 cvar_t *Cvar_Get (char *var_name, char *value, int flags);
 // creates the variable if it doesn't exist, or returns the existing one
 // if it exists, the value will not be changed, but flags will be ORed in
 // that allows variables to be unarchived without needing bitflags
-
-cvar_t 	*Cvar_Set (char *var_name, char *value);
-// will create the variable if it doesn't exist
 
 cvar_t *Cvar_ForceSet (char *var_name, char *value);
 // will set the variable even if NOSET or LATCH
 
 cvar_t 	*Cvar_FullSet (char *var_name, char *value, int flags);
 
-void	Cvar_SetValue (char *var_name, float value);
-// expands value to a string and calls Cvar_Set
-
-float	Cvar_VariableValue (char *var_name);
-// returns 0 if not defined or non numeric
-
-char	*Cvar_VariableString (char *var_name);
-// returns an empty string if not defined
-
 char 	*Cvar_CompleteVariable (char *partial);
 // attempts to match a partial variable name for command line completion
 // returns NULL if nothing fits
 
-void	Cvar_GetLatchedVars (void);
+void	Cvar_GetLatchedVars ();
 // any CVAR_LATCHED variables that have been set will now take effect
 
-qboolean Cvar_Command (void);
+qboolean Cvar_Command ();
 // called by Cmd_ExecuteString when Cmd_Argv(0) doesn't match a known
 // command.  Returns true if the command was a variable reference that
 // was handled. (print or change)
@@ -500,49 +477,25 @@ void 	Cvar_WriteVariables (char *path);
 // appends lines containing "set variable value" for all variables
 // with the archive flag set to true.
 
-void	Cvar_Init (void);
+void	Cvar_Init ();
 
-char	*Cvar_Userinfo (void);
+char	*Cvar_Userinfo ();
 // returns an info string containing all the CVAR_USERINFO cvars
 
-char	*Cvar_Serverinfo (void);
+char	*Cvar_Serverinfo ();
 // returns an info string containing all the CVAR_SERVERINFO cvars
 
 extern	qboolean	userinfo_modified;
 // this is set each time a CVAR_USERINFO variable is changed
 // so that the client knows to send it to the server
 
-/*
-==============================================================
-
-NET
-
-==============================================================
-*/
-
-// net.h -- quake's interface to the networking layer
-
 #define	PORT_ANY	-1
 
 #define	MAX_MSGLEN		1400		// max length of a message
 #define	PACKET_HEADER	10			// two ints and a short
 
-typedef enum {NA_LOOPBACK, NA_BROADCAST, NA_IP, NA_IPX, NA_BROADCAST_IPX} netadrtype_t;
 
 typedef enum {NS_CLIENT, NS_SERVER} netsrc_t;
-
-typedef struct
-{
-	netadrtype_t	type;
-
-	byte	ip[4];
-	byte	ipx[10];
-
-	unsigned short	port;
-} netadr_t;
-
-void		NET_Init (void);
-void		NET_Shutdown (void);
 
 void		NET_Config (qboolean multiplayer);
 
@@ -551,10 +504,6 @@ void		NET_SendPacket (netsrc_t sock, int length, void *data, netadr_t to);
 
 qboolean	NET_CompareAdr (netadr_t a, netadr_t b);
 qboolean	NET_CompareBaseAdr (netadr_t a, netadr_t b);
-qboolean	NET_IsLocalAddress (netadr_t adr);
-char		*NET_AdrToString (netadr_t a);
-qboolean	NET_StringToAdr (char *s, netadr_t *a);
-void		NET_Sleep(int msec);
 
 //============================================================================
 
@@ -601,11 +550,9 @@ extern	sizebuf_t	net_message;
 extern	byte		net_message_buffer[MAX_MSGLEN];
 
 
-void Netchan_Init (void);
 void Netchan_Setup (netsrc_t sock, netchan_t *chan, netadr_t adr, int qport);
 
 qboolean Netchan_NeedReliable (netchan_t *chan);
-void Netchan_Transmit (netchan_t *chan, int length, byte *data);
 void Netchan_OutOfBand (int net_socket, netadr_t adr, int length, byte *data);
 void Netchan_OutOfBandPrint (int net_socket, netadr_t adr, char *format, ...);
 qboolean Netchan_Process (netchan_t *chan, sizebuf_t *msg);
@@ -627,9 +574,9 @@ CMODEL
 cmodel_t	*CM_LoadMap (char *name, qboolean clientload, unsigned *checksum);
 cmodel_t	*CM_InlineModel (char *name);	// *1, *2, etc
 
-int			CM_NumClusters (void);
-int			CM_NumInlineModels (void);
-char		*CM_EntityString (void);
+int			CM_NumClusters ();
+int			CM_NumInlineModels ();
+char		*CM_EntityString ();
 
 // creates a clipping hull for an arbitrary box
 int			CM_HeadnodeForBox (vec3_t mins, vec3_t maxs);
@@ -692,27 +639,17 @@ FILESYSTEM
 ==============================================================
 */
 
-void	FS_InitFilesystem (void);
 void	FS_SetGamedir (char *dir);
-char	*FS_Gamedir (void);
+char	*FS_Gamedir ();
 char	*FS_NextPath (char *prevpath);
-void	FS_ExecAutoexec (void);
+void	FS_ExecAutoexec ();
 
 int		FS_FOpenFile (char *filename, FILE **file);
 void	FS_FCloseFile (FILE *f);
 // note: this can't be called from another DLL, due to MS libc issues
 
-int		FS_LoadFile (char *path, void **buffer);
-// a null buffer will just return the file length without loading
-// a -1 length is not present
-
 void	FS_Read (void *buffer, int len, FILE *f);
 // properly handles partial reads
-
-void	FS_FreeFile (void *buffer);
-
-void	FS_CreatePath (char *path);
-
 
 /*
 ==============================================================
@@ -735,20 +672,20 @@ MISC
 #define PRINT_DEVELOPER	1	// only print when "developer 1"
 
 void		Com_BeginRedirect (int target, char *buffer, int buffersize, void (*flush));
-void		Com_EndRedirect (void);
+void		Com_EndRedirect ();
 void 		Com_Printf (char *fmt, ...);
 void 		Com_DPrintf (char *fmt, ...);
 void 		Com_Error (int code, char *fmt, ...);
-void 		Com_Quit (void);
+void 		Com_Quit ();
 
-int			Com_ServerState (void);		// this should have just been a cvar...
+int			Com_ServerState ();		// this should have just been a cvar...
 void		Com_SetServerState (int state);
 
 unsigned	Com_BlockChecksum (void *buffer, int length);
 byte		COM_BlockSequenceCRCByte (byte *base, int length, int sequence);
 
-float	frand(void);	// 0 ti 1
-float	crand(void);	// -1 to 1
+float	frand();	// 0 ti 1
+float	crand();	// -1 to 1
 
 extern	cvar_t	*developer;
 extern	cvar_t	*dedicated;
@@ -770,7 +707,7 @@ void Z_FreeTags (int tag);
 
 void Qcommon_Init (int argc, char **argv);
 void Qcommon_Frame (int msec);
-void Qcommon_Shutdown (void);
+void Qcommon_Shutdown ();
 
 #define NUMVERTEXNORMALS	162
 extern	vec3_t	bytedirs[NUMVERTEXNORMALS];
@@ -787,21 +724,21 @@ NON-PORTABLE SYSTEM SERVICES
 ==============================================================
 */
 
-void	Sys_Init (void);
+void	Sys_Init ();
 
-void	Sys_AppActivate (void);
+void	Sys_AppActivate ();
 
-void	Sys_UnloadGame (void);
+void	Sys_UnloadGame ();
 void	*Sys_GetGameAPI (void *parms);
 // loads the game dll and calls the api init function
 
-char	*Sys_ConsoleInput (void);
+char	*Sys_ConsoleInput ();
 void	Sys_ConsoleOutput (char *string);
-void	Sys_SendKeyEvents (void);
+void	Sys_SendKeyEvents ();
 void	Sys_Error (char *error, ...);
-void	Sys_Quit (void);
+void	Sys_Quit ();
 char	*Sys_GetClipboardData( void );
-void	Sys_CopyProtect (void);
+void	Sys_CopyProtect ();
 
 /*
 ==============================================================
@@ -811,14 +748,14 @@ CLIENT / SERVER SYSTEMS
 ==============================================================
 */
 
-void CL_Init (void);
-void CL_Drop (void);
-void CL_Shutdown (void);
+void CL_Init ();
+void CL_Drop ();
+void CL_Shutdown ();
 void CL_Frame (int msec);
 void Con_Print (char *text);
-void SCR_BeginLoadingPlaque (void);
+void SCR_BeginLoadingPlaque ();
 
-void SV_Init (void);
+void SV_Init ();
 void SV_Shutdown (char *finalmsg, qboolean reconnect);
 void SV_Frame (int msec);
 

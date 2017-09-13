@@ -23,13 +23,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 extern polydesc_t r_polydesc;
 
 void R_BuildPolygonFromSurface(msurface_t *fa);
-void R_PolygonCalculateGradients (void);
+void R_PolygonCalculateGradients(void);
 
-extern void R_PolyChooseSpanletRoutine( float alpha, qboolean isturbulent );
+extern void R_PolyChooseSpanletRoutine(float alpha, qboolean isturbulent);
 
-extern vec5_t r_clip_verts[2][MAXWORKINGVERTS+2];
+extern vec5_t r_clip_verts[2][MAXWORKINGVERTS + 2];
 
-extern void	R_ClipAndDrawPoly( float alpha, qboolean isturbulent, qboolean textured );
+extern void R_ClipAndDrawPoly(float alpha, qboolean isturbulent, qboolean textured);
 
 /*
 ** R_DrawSprite
@@ -37,13 +37,12 @@ extern void	R_ClipAndDrawPoly( float alpha, qboolean isturbulent, qboolean textu
 ** Draw currententity / currentmodel as a single texture
 ** mapped polygon
 */
-void R_DrawSprite (void)
+void R_DrawSprite(void)
 {
-	vec5_t		*pverts;
-	vec3_t		left, up, right, down;
-	dsprite_t	*s_psprite;
-	dsprframe_t	*s_psprframe;
-
+	vec5_t *pverts;
+	vec3_t left, up, right, down;
+	dsprite_t *s_psprite;
+	dsprframe_t *s_psprframe;
 
 	s_psprite = (dsprite_t *)currentmodel->extradata;
 #if 0
@@ -59,28 +58,28 @@ void R_DrawSprite (void)
 
 	s_psprframe = &s_psprite->frames[currententity->frame];
 
-	r_polydesc.pixels       = currentmodel->skins[currententity->frame]->pixels[0];
-	r_polydesc.pixel_width  = s_psprframe->width;
+	r_polydesc.pixels = currentmodel->skins[currententity->frame]->pixels[0];
+	r_polydesc.pixel_width = s_psprframe->width;
 	r_polydesc.pixel_height = s_psprframe->height;
-	r_polydesc.dist         = 0;
+	r_polydesc.dist = 0;
 
 	// generate the sprite's axes, completely parallel to the viewplane.
-	VectorCopy (vup, r_polydesc.vup);
-	VectorCopy (vright, r_polydesc.vright);
-	VectorCopy (vpn, r_polydesc.vpn);
+	VectorCopy(vup, r_polydesc.vup);
+	VectorCopy(vright, r_polydesc.vright);
+	VectorCopy(vpn, r_polydesc.vpn);
 
-// build the sprite poster in worldspace
-	VectorScale (r_polydesc.vright, 
-		s_psprframe->width - s_psprframe->origin_x, right);
-	VectorScale (r_polydesc.vup, 
-		s_psprframe->height - s_psprframe->origin_y, up);
-	VectorScale (r_polydesc.vright,
-		-s_psprframe->origin_x, left);
-	VectorScale (r_polydesc.vup,
-		-s_psprframe->origin_y, down);
+	// build the sprite poster in worldspace
+	VectorScale(r_polydesc.vright,
+	            s_psprframe->width - s_psprframe->origin_x, right);
+	VectorScale(r_polydesc.vup,
+	            s_psprframe->height - s_psprframe->origin_y, up);
+	VectorScale(r_polydesc.vright,
+	            -s_psprframe->origin_x, left);
+	VectorScale(r_polydesc.vup,
+	            -s_psprframe->origin_y, down);
 
 	// invert UP vector for sprites
-	VectorInverse( r_polydesc.vup );
+	VectorInverse(r_polydesc.vup);
 
 	pverts = r_clip_verts[0];
 
@@ -109,15 +108,14 @@ void R_DrawSprite (void)
 	pverts[3][4] = s_psprframe->height;
 
 	r_polydesc.nump = 4;
-	r_polydesc.s_offset = ( r_polydesc.pixel_width  >> 1);
-	r_polydesc.t_offset = ( r_polydesc.pixel_height >> 1);
-	VectorCopy( modelorg, r_polydesc.viewer_position );
+	r_polydesc.s_offset = (r_polydesc.pixel_width >> 1);
+	r_polydesc.t_offset = (r_polydesc.pixel_height >> 1);
+	VectorCopy(modelorg, r_polydesc.viewer_position);
 
 	r_polydesc.stipple_parity = 1;
-	if ( currententity->flags & RF_TRANSLUCENT )
-		R_ClipAndDrawPoly ( currententity->alpha, false, true );
+	if(currententity->flags & RF_TRANSLUCENT)
+		R_ClipAndDrawPoly(currententity->alpha, false, true);
 	else
-		R_ClipAndDrawPoly ( 1.0F, false, true );
+		R_ClipAndDrawPoly(1.0F, false, true);
 	r_polydesc.stipple_parity = 0;
 }
-
