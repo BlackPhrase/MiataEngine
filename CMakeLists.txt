@@ -15,6 +15,11 @@ file(WRITE "BuildNum.ini" ${IDTECH2RED_BUILD})
 set(CMAKE_SHARED_LIBRARY_PREFIX "")
 set(CMAKE_SHARED_MODULE_PREFIX "")
 
+# Set C++ code standard
+set(CMAKE_CXX_STANDARD 14) #17 ?
+set(CMAKE_CXX_EXTENSIONS ON)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 # Specify output directory (for compiled binaries)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/../bin)
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/../bin)
