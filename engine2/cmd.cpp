@@ -174,9 +174,7 @@ Creates a new command that executes a command string (possibly ; seperated)
 
 char *CopyString(char *in)
 {
-	char *out;
-
-	out = Z_Malloc(strlen(in) + 1);
+	char *out = Z_Malloc(strlen(in) + 1);
 	strcpy(out, in);
 	return out;
 }
@@ -253,13 +251,6 @@ void Cmd_Init()
 	Cmd_AddCommand("wait", Cmd_Wait_f);
 }
 
-/*
-============
-Cmd_Args
-
-Returns a single string containing argv(1) to argv(argc()-1)
-============
-*/
 char *Cmd_Args()
 {
 	if(!cmd_args)
@@ -274,7 +265,7 @@ Cmd_TokenizeString
 Parses the given string into command line tokens.
 ============
 */
-void Cmd_TokenizeString(char *text)
+void Cmd_TokenizeString(const char *text)
 {
 	int i;
 
@@ -323,23 +314,20 @@ void Cmd_TokenizeString(char *text)
 Cmd_CompleteCommand
 ============
 */
-char *Cmd_CompleteCommand(char *partial)
+char *Cmd_CompleteCommand(const char *partial)
 {
-	cmd_function_t *cmd;
-	int len;
-
-	len = Q_strlen(partial);
+	auto len{Q_strlen(partial)};
 
 	if(!len)
 		return NULL;
 
 	// check functions
-	for(cmd = cmd_functions; cmd; cmd = cmd->next)
+	for(cmd_function_t *cmd = cmd_functions; cmd; cmd = cmd->next)
 		if(!Q_strncmp(partial, cmd->name, len))
 			return cmd->name;
 
 	return NULL;
-}
+};
 
 /*
 ===================
@@ -348,28 +336,31 @@ Cmd_ForwardToServer
 Sends the entire command line over to the server
 ===================
 */
-void Cmd_ForwardToServer()
+void Cmd_ForwardToServer(const CCmdArgs &aArgs)
 {
 	if(cls.state != ca_connected)
 	{
-		Con_Printf("Can't \"%s\", not connected\n", Cmd_Argv(0));
+		Con_Printf("Can't \"%s\", not connected\n", aArgs.GetByIndex(0));
 		return;
-	}
+	};
 
+	// not really connected
 	if(cls.demoplayback)
-		return; // not really connected
+		return;
 
 	MSG_WriteByte(&cls.message, clc_stringcmd);
-	if(Q_strcasecmp(Cmd_Argv(0), "cmd") != 0)
+
+	if(Q_strcasecmp(aArgs.GetByIndex(0), "cmd") != 0)
 	{
-		SZ_Print(&cls.message, Cmd_Argv(0));
+		SZ_Print(&cls.message, aArgs.GetByIndex(0));
 		SZ_Print(&cls.message, " ");
-	}
+	};
+
 	if(Cmd_Argc() > 1)
 		SZ_Print(&cls.message, Cmd_Args());
 	else
 		SZ_Print(&cls.message, "\n");
-}
+};
 
 /*
 ================
@@ -380,16 +371,14 @@ where the given parameter apears, or 0 if not present
 ================
 */
 
-int Cmd_CheckParm(char *parm)
+int Cmd_CheckParm(const char *parm)
 {
-	int i;
-
 	if(!parm)
 		Sys_Error("Cmd_CheckParm: NULL");
 
-	for(i = 1; i < Cmd_Argc(); i++)
+	for(int i = 1; i < Cmd_Argc(); i++)
 		if(!Q_strcasecmp(parm, Cmd_Argv(i)))
 			return i;
 
 	return 0;
-}
+};

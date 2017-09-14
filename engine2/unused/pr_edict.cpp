@@ -52,7 +52,7 @@ instead of being removed and recreated, which can cause interpolated
 angles and bad trails.
 =================
 */
-edict_t *ED_Alloc(void)
+edict_t *ED_Alloc()
 {
 	int i;
 	edict_t *e;
@@ -107,60 +107,6 @@ void ED_Free(edict_t *ed)
 }
 
 //===========================================================================
-
-/*
-============
-PR_GlobalString
-
-Returns a string with a description and the contents of a global,
-padded to 20 field width
-============
-*/
-char *PR_GlobalString(int ofs)
-{
-	char *s;
-	int i;
-	ddef_t *def;
-	void *val;
-	static char line[128];
-
-	val = (void *)&pr_globals[ofs];
-	def = ED_GlobalAtOfs(ofs);
-	if(!def)
-		sprintf(line, "%i(???)", ofs);
-	else
-	{
-		s = PR_ValueString(def->type, val);
-		sprintf(line, "%i(%s)%s", ofs, pr_strings + def->s_name, s);
-	}
-
-	i = strlen(line);
-	for(; i < 20; i++)
-		strcat(line, " ");
-	strcat(line, " ");
-
-	return line;
-}
-
-char *PR_GlobalStringNoContents(int ofs)
-{
-	int i;
-	ddef_t *def;
-	static char line[128];
-
-	def = ED_GlobalAtOfs(ofs);
-	if(!def)
-		sprintf(line, "%i(???)", ofs);
-	else
-		sprintf(line, "%i(%s)", ofs, pr_strings + def->s_name);
-
-	i = strlen(line);
-	for(; i < 20; i++)
-		strcat(line, " ");
-	strcat(line, " ");
-
-	return line;
-}
 
 /*
 =============
@@ -271,7 +217,7 @@ ED_PrintEdicts
 For debugging, prints all the entities in the current server
 =============
 */
-void ED_PrintEdicts(void)
+void ED_PrintEdicts()
 {
 	int i;
 
@@ -287,7 +233,7 @@ ED_PrintEdict_f
 For debugging, prints a single edicy
 =============
 */
-void ED_PrintEdict_f(void)
+void ED_PrintEdict_f()
 {
 	int i;
 
@@ -307,7 +253,7 @@ ED_Count
 For debugging
 =============
 */
-void ED_Count(void)
+void ED_Count()
 {
 	int i;
 	edict_t *ent;
@@ -343,37 +289,6 @@ void ED_Count(void)
 FIXME: need to tag constants, doesn't really work
 ==============================================================================
 */
-
-/*
-=============
-ED_WriteGlobals
-=============
-*/
-void ED_WriteGlobals(FILE *f)
-{
-	ddef_t *def;
-	int i;
-	char *name;
-	int type;
-
-	fprintf(f, "{\n");
-	for(i = 0; i < progs->numglobaldefs; i++)
-	{
-		def = &pr_globaldefs[i];
-		type = def->type;
-		if(!(def->type & DEF_SAVEGLOBAL))
-			continue;
-		type &= ~DEF_SAVEGLOBAL;
-
-		if(type != ev_string && type != ev_float && type != ev_entity)
-			continue;
-
-		name = pr_strings + def->s_name;
-		fprintf(f, "\"%s\" ", name);
-		fprintf(f, "\"%s\"\n", PR_UglyValueString(type, (eval_t *)&pr_globals[def->ofs]));
-	}
-	fprintf(f, "}\n");
-}
 
 /*
 =============
@@ -637,7 +552,7 @@ void ED_LoadFromFile(char *data)
 PR_Init
 ===============
 */
-void PR_Init(void)
+void PR_Init()
 {
 	Cmd_AddCommand("edict", ED_PrintEdict_f);
 	Cmd_AddCommand("edicts", ED_PrintEdicts);
