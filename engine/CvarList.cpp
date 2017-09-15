@@ -80,7 +80,7 @@ IConVar *CCvarList::Create(const char *name, const char *defvalue, int flags, co
 Cvar_FindVar
 ============
 */
-IConVar *CCvarList::Find(const char *name)
+IConVar *CCvarList::Find(const char *name) const
 {
 	//printf("Trying to find the cvar %s...\n", name);
 	
@@ -92,7 +92,7 @@ IConVar *CCvarList::Find(const char *name)
 	return nullptr;
 };
 
-IConVar *CCvarList::FindPartial(const char *name, int length)
+IConVar *CCvarList::FindPartial(const char *name, int length) const
 {
 	for(auto It : mlstCvars)
 		if(!Q_strncmp(It->GetName(), name, length))

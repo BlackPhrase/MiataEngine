@@ -1,28 +1,4 @@
-/*
-Copyright (C) 1996-1997 Id Software, Inc.
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
-
-// defs common to client and server
-
-#define GLQUAKE_VERSION 1.00
-#define	VERSION		2.40
-#define LINUX_VERSION 0.98
 
 
 #if (defined(_M_IX86) || defined(__i386__)) && !defined(id386)
@@ -35,39 +11,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #undef id386
 #endif
 
-#if id386
-#define UNALIGNED_OK	1	// set to 0 if unaligned accesses are not supported
-#else
-#define UNALIGNED_OK	0
-#endif
-
-// !!! if this is changed, it must be changed in d_ifacea.h too !!!
-#define CACHE_SIZE	32		// used to align key data structures
-
-#define UNUSED(x)	(x = x)	// for pesky compiler / lint warnings
-
-#define	MINIMUM_MEMORY	0x550000
-
-// up / down
-#define	PITCH	0
-
-// left / right
-#define	YAW		1
-
-// fall over
-#define	ROLL	2
-
-
-#define	MAX_SCOREBOARD		16		// max numbers of players
-
-#define	SOUND_CHANNELS		8
-
-
-#define	MAX_QPATH		64			// max length of a quake game pathname
-#define	MAX_OSPATH		128			// max length of a filesystem pathname
-
-#define	ON_EPSILON		0.1			// point on plane side epsilon
-
 #define	MAX_MSGLEN		1450		// max length of a reliable message
 #define	MAX_DATAGRAM	1450		// max length of unreliable message
 
@@ -75,13 +18,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // per-level limits
 //
 #define	MAX_EDICTS		768			// FIXME: ouch! ouch! ouch!
-#define	MAX_LIGHTSTYLES	64
-#define	MAX_MODELS		256			// these are sent over the net as bytes
-#define	MAX_SOUNDS		256			// so they cannot be blindly increased
-
-#define	SAVEGAME_COMMENT_LENGTH	39
-
-#define	MAX_STYLESTRING	64
 
 //
 // stats are integers communicated to the client by the server

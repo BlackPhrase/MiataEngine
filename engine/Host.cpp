@@ -20,11 +20,14 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <cstdio>
 #include "Host.hpp"
 #include "ModuleLoader.hpp"
+#include "Logger.hpp"
+#include "EngineInterface.hpp"
 #include "CvarList.hpp"
-#include "CvarManager.hpp"
+#include "CvarController.hpp"
 #include "CmdList.hpp"
 #include "CmdExecutor.hpp"
 #include "CmdBuffer.hpp"
+#include "CmdArgs.hpp"
 #include "IGame.hpp"
 #include "IClientGame.hpp"
 #include "IMenu.hpp"
@@ -46,7 +49,7 @@ CHost::~CHost() = default;
 Host_Init
 ====================
 */
-bool CHost::Init(/*quakeparms_t *parms*/)
+bool CHost::Init(quakeparms_t *parms)
 {
 	// Already done
 	if(host_initialized)
@@ -54,24 +57,25 @@ bool CHost::Init(/*quakeparms_t *parms*/)
 	
 	//minimum_memory = MINIMUM_MEMORY;
 
-	//if(COM_CheckParm("-minmemory"))
+	//if(mpCmdLine->CheckParm("-minmemory"))
 		//parms->memsize = minimum_memory;
 
-	//host_parms = *parms;
+	host_parms = *parms;
 
 	//if(parms->memsize < minimum_memory)
 		//Sys_Error("Only %4.1f megs of memory available, can't execute game", parms->memsize / (float)0x100000);
 
-	//com_argc = parms->argc;
-	//com_argv = parms->argv;
+	//mpCmdLine = std::make_unique<CCmdArgs>(parms->argc, parms->argv);
 	
 	mpModuleLoader = std::make_unique<CModuleLoader>();
+	mpLogger = std::make_unique<CLogger>();
+	mpEngineInterface = std::make_unique<CEngineInterface>(mpLogger.get());
 	
 	mpCvarList = std::make_unique<CCvarList>();
 	mpCmdList = std::make_unique<CCmdList>();
-	mpCvarManager = std::make_unique<CCvarManager>(mpCvarList.get(), mpCmdList.get());
-	mpCmdExecutor = std::make_unique<CCmdExecutor>(mpCvarList.get(), mpCmdList.get(), mpCvarManager.get());
-	mpCmdBuffer = std::make_unique<CCmdBuffer>(mpCmdExecutor.get());
+	mpCvarController = std::make_unique<CCvarController>(mpCvarList.get(), mpCmdList.get());
+	mpCmdExecutor = std::make_unique<CCmdExecutor>(mpCvarList.get(), mpCmdList.get(), mpCvarController.get());
+	mpCmdBuffer = std::make_unique<CCmdBuffer>(mpLogger.get(), mpCmdExecutor.get());
 	
 	mpCvarList->Create("developer", "1");
 	
@@ -135,13 +139,13 @@ bool CHost::Init(/*quakeparms_t *parms*/)
 	mpNetwork = mpModuleLoader->LoadModule<INetwork>("network", "GetNetwork");
 	mpNetwork->Init();
 	
-	/*
-	SV_Init();
+	//SV_Init();
 
-	Con_Printf("Exe: " __TIME__ " " __DATE__ "\n");
+	mpLogger->Printf("Exe: " __TIME__ " " __DATE__ "\n");
 	
-	Con_Printf("%4.1f megabyte heap\n", parms->memsize / (1024 * 1024.0));
+	//mpLogger->Printf("%4.1f megabyte heap\n", parms->memsize / (1024 * 1024.0));
 
+	/*
 	R_InitTextures(); // needed even for dedicated servers
 
 	if(cls.state != ca_dedicated)
@@ -230,7 +234,7 @@ void CHost::Shutdown()
 
 	Host_WriteConfiguration();
 
-	CDAudio_Shutdown();
+	mpCDAudio->Shutdown();
 	*/
 	
 	mpNetwork->Shutdown();
@@ -281,7 +285,13 @@ void CHost::Frame(double time) // was float
 			c++;
 	};
 
-	//Con_Printf("serverprofile: %2i clients %2i msec\n", c, m);
+	mpLogger->Printf("serverprofile: %2i clients %2i msec\n", c, m);
+	
+	static int tempframe{0};
+	++tempframe;
+	
+	if(tempframe >= 10000)
+		Shutdown();
 };
 
 /*

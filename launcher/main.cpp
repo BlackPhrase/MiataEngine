@@ -2,7 +2,13 @@
 #include "shared_lib.hpp"
 #include "IHost.hpp"
 
-int main(int argc, char **argv)
+#ifdef _WIN32
+	#include <windows.h>
+	
+	int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+#else
+	int main(int argc, char **argv)
+#endif
 {
 	shiftutil::shared_lib EngineLib("engine");
 	
@@ -19,7 +25,13 @@ int main(int argc, char **argv)
 	if(!pHost)
 		return EXIT_FAILURE;
 	
-	pHost->Init();
+	quakeparms_t host_parms{};
+	
+	// TODO
+	host_parms.argc = 0;
+	host_parms.argv = nullptr;
+	
+	pHost->Init(&host_parms);
 	
 	static int frame{0};
 	

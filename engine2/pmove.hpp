@@ -91,8 +91,8 @@ extern int onground;
 extern int waterlevel;
 extern int watertype;
 
-void PlayerMove(void);
-void Pmove_Init(void);
+void PlayerMove();
+void Pmove_Init();
 
 int PM_HullPointContents(hull_t *hull, int num, vec3_t p);
 

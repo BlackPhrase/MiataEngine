@@ -1,28 +1,30 @@
 /*
 Copyright (C) 1996-1997 Id Software, Inc.
+Copyright (C) 2017 Sh1ft0x0EF
 
-This program is free software; you can redistribute it and/or
+This program is free software: you can redistribute it and/or
 modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
+as published by the Free Software Foundation, either version 3
 of the License, or (at your option) any later version.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
+along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+
+/// @file
+/// @brief bsp file format description
 
 #pragma once
 
 // upper design bounds
 
-#define MAX_MAP_HULLS 4
+constexpr auto MAX_MAP_HULLS = 4;
 
 #define MAX_MAP_MODELS 256
 #define MAX_MAP_BRUSHES 4096
@@ -44,47 +46,50 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define MAX_MAP_LIGHTING 0x100000
 #define MAX_MAP_VISIBILITY 0x100000
 
-#define MAX_MAP_PORTALS 65536
+constexpr auto MAX_MAP_PORTALS = 65536;
 
 // key / value pair sizes
 
-#define MAX_KEY 32
-#define MAX_VALUE 1024
+constexpr auto MAX_KEY = 32;
+constexpr auto MAX_VALUE = 1024;
 
 //=============================================================================
 
-#define BSPVERSION 29
-#define TOOLVERSION 2
+constexpr auto BSPVERSION = 29;
+constexpr auto TOOLVERSION = 2;
 
 typedef struct
 {
 	int fileofs, filelen;
 } lump_t;
 
-#define LUMP_ENTITIES 0
-#define LUMP_PLANES 1
-#define LUMP_TEXTURES 2
-#define LUMP_VERTEXES 3
-#define LUMP_VISIBILITY 4
-#define LUMP_NODES 5
-#define LUMP_TEXINFO 6
-#define LUMP_FACES 7
-#define LUMP_LIGHTING 8
-#define LUMP_CLIPNODES 9
-#define LUMP_LEAFS 10
-#define LUMP_MARKSURFACES 11
-#define LUMP_EDGES 12
-#define LUMP_SURFEDGES 13
-#define LUMP_MODELS 14
+enum
+{
+	LUMP_ENTITIES = 0,
+	LUMP_PLANES,
+	LUMP_TEXTURES,
+	LUMP_VERTEXES,
+	LUMP_VISIBILITY,
+	LUMP_NODES,
+	LUMP_TEXINFO,
+	LUMP_FACES,
+	LUMP_LIGHTING,
+	LUMP_CLIPNODES,
+	LUMP_LEAFS,
+	LUMP_MARKSURFACES,
+	LUMP_EDGES,
+	LUMP_SURFEDGES,
+	LUMP_MODELS,
 
-#define HEADER_LUMPS 15
+	HEADER_LUMPS
+};
 
 typedef struct
 {
-	float mins[3], maxs[3];
-	float origin[3];
+	vec3_t mins, maxs;
+	vec3_t origin;
 	int headnode[MAX_MAP_HULLS];
-	int visleafs; // not including the solid leaf 0
+	int visleafs; ///< not including the solid leaf 0
 	int firstface, numfaces;
 } dmodel_t;
 
@@ -101,6 +106,7 @@ typedef struct
 } dmiptexlump_t;
 
 #define MIPLEVELS 4
+
 typedef struct miptex_s
 {
 	char name[16];
@@ -110,7 +116,7 @@ typedef struct miptex_s
 
 typedef struct
 {
-	float point[3];
+	vec3_t point;
 } dvertex_t;
 
 // 0-2 are axial planes
@@ -125,7 +131,7 @@ typedef struct
 
 typedef struct
 {
-	float normal[3];
+	vec3_t normal;
 	float dist;
 	int type; // PLANE_X - PLANE_ANYZ ?remove? trivial to regenerate
 } dplane_t;
@@ -273,9 +279,9 @@ extern int dsurfedges[MAX_MAP_SURFEDGES];
 void DecompressVis(byte *in, byte *decompressed);
 int CompressVis(byte *vis, byte *dest);
 
-void LoadBSPFile(char *filename);
-void WriteBSPFile(char *filename);
-void PrintBSPFileSizes(void);
+void LoadBSPFile(const char *filename);
+void WriteBSPFile(const char *filename);
+void PrintBSPFileSizes();
 
 //===============
 
@@ -297,16 +303,16 @@ typedef struct
 extern int num_entities;
 extern entity_t entities[MAX_MAP_ENTITIES];
 
-void ParseEntities(void);
-void UnparseEntities(void);
+void ParseEntities();
+void UnparseEntities();
 
-void SetKeyValue(entity_t *ent, char *key, char *value);
-char *ValueForKey(entity_t *ent, char *key);
+void SetKeyValue(entity_t *ent, const char *key, const char *value);
+char *ValueForKey(entity_t *ent, const char *key);
 // will return "" if not present
 
-vec_t FloatForKey(entity_t *ent, char *key);
-void GetVectorForKey(entity_t *ent, char *key, vec3_t vec);
+vec_t FloatForKey(entity_t *ent, const char *key);
+void GetVectorForKey(entity_t *ent, const char *key, vec3_t vec);
 
-epair_t *ParseEpair(void);
+epair_t *ParseEpair();
 
-#endif
+#endif // QUAKE_GAME

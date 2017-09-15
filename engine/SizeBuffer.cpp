@@ -20,13 +20,27 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "quakedef.hpp"
 #include "SizeBuffer.hpp"
 
-CSizeBuffer::CSizeBuffer(const char *name)
+CSizeBuffer::CSizeBuffer(const char *name, int length)
 {
-	this->name = name;
+	Init(name, length);
 };
 
 CSizeBuffer::CSizeBuffer() = default;
-CSizeBuffer::~CSizeBuffer() = default;
+
+CSizeBuffer::~CSizeBuffer()
+{
+	if(this->data)
+		delete [] data;
+};
+
+void CSizeBuffer::Init(const char *name, int startsize)
+{
+	this->name = name;
+	this->data = new byte[startsize];
+	this->maxsize = startsize; // length
+	
+	Clear();
+};
 
 void CSizeBuffer::Clear()
 {

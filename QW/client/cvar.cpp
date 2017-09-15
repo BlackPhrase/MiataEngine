@@ -1,53 +1,4 @@
 
-char	*cvar_null_string = "";
-
-/*
-============
-Cvar_FindVar
-============
-*/
-cvar_t *Cvar_FindVar (char *var_name)
-{
-	cvar_t	*var;
-	
-	for (var=cvar_vars ; var ; var=var->next)
-		if (!Q_strcmp (var_name, var->name))
-			return var;
-
-	return NULL;
-}
-
-/*
-============
-Cvar_VariableValue
-============
-*/
-float	Cvar_VariableValue (char *var_name)
-{
-	cvar_t	*var;
-	
-	var = Cvar_FindVar (var_name);
-	if (!var)
-		return 0;
-	return Q_atof (var->string);
-}
-
-
-/*
-============
-Cvar_VariableString
-============
-*/
-char *Cvar_VariableString (char *var_name)
-{
-	cvar_t *var;
-	
-	var = Cvar_FindVar (var_name);
-	if (!var)
-		return cvar_null_string;
-	return var->string;
-}
-
 
 /*
 ============
@@ -82,21 +33,8 @@ char *Cvar_CompleteVariable (char *partial)
 void SV_SendServerInfoChange(char *key, char *value);
 #endif
 
-/*
-============
-Cvar_Set
-============
-*/
 void Cvar_Set (char *var_name, char *value)
 {
-	cvar_t	*var;
-	
-	var = Cvar_FindVar (var_name);
-	if (!var)
-	{	// there is an error in C code if this happens
-		Con_Printf ("Cvar_Set: variable %s not found\n", var_name);
-		return;
-	}
 
 #ifdef SERVERONLY
 	if (var->info)
@@ -122,19 +60,6 @@ void Cvar_Set (char *var_name, char *value)
 	var->string = Z_Malloc (Q_strlen(value)+1);
 	Q_strcpy (var->string, value);
 	var->value = Q_atof (var->string);
-}
-
-/*
-============
-Cvar_SetValue
-============
-*/
-void Cvar_SetValue (char *var_name, float value)
-{
-	char	val[32];
-	
-	sprintf (val, "%f",value);
-	Cvar_Set (var_name, val);
 }
 
 
@@ -174,49 +99,3 @@ void Cvar_RegisterVariable (cvar_t *variable)
 // set it through the function to be consistant
 	Cvar_Set (variable->name, value);
 }
-
-/*
-============
-Cvar_Command
-
-Handles variable inspection and changing from the console
-============
-*/
-qboolean	Cvar_Command (void)
-{
-	cvar_t			*v;
-
-// check variables
-	v = Cvar_FindVar (Cmd_Argv(0));
-	if (!v)
-		return false;
-		
-// perform a variable print or set
-	if (Cmd_Argc() == 1)
-	{
-		Con_Printf ("\"%s\" is \"%s\"\n", v->name, v->string);
-		return true;
-	}
-
-	Cvar_Set (v->name, Cmd_Argv(1));
-	return true;
-}
-
-
-/*
-============
-Cvar_WriteVariables
-
-Writes lines containing "set variable value" for all variables
-with the archive flag set to true.
-============
-*/
-void Cvar_WriteVariables (FILE *f)
-{
-	cvar_t	*var;
-	
-	for (var = cvar_vars ; var ; var = var->next)
-		if (var->archive)
-			fprintf (f, "%s \"%s\"\n", var->name, var->string);
-}
-

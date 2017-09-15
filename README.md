@@ -1,5 +1,7 @@
 # IdTech 2 Red Engine
 
+[![Build Status](https://travis-ci.org/Sh1ft0x0EF/IdTech2-Red.svg)](https://travis-ci.org/Sh1ft0x0EF/IdTech2-Red)
+
 A modernized version of a Quake/Quake2 engine
 
 ## License

@@ -20,6 +20,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "quakedef.hpp"
 #include "CmdBuffer.hpp"
 #include "CmdExecutor.hpp"
+#include "Logger.hpp"
 
 //=============================================================================
 
@@ -47,7 +48,8 @@ void Cmd_Wait_f()
 =============================================================================
 */
 
-CCmdBuffer::CCmdBuffer(CCmdExecutor *apExecutor) : mpExecutor(apExecutor){}
+CCmdBuffer::CCmdBuffer(CLogger *apLogger, CCmdExecutor *apExecutor)
+	: mpLogger(apLogger), mpExecutor(apExecutor){}
 CCmdBuffer::~CCmdBuffer() = default;
 
 /*
@@ -57,7 +59,7 @@ Cbuf_Init
 */
 void CCmdBuffer::Init()
 {
-	//SZ_Alloc(&cmd_text, 8192); // space for commands and script files
+	cmd_text.Init("CmdBuffer", 8192); // space for commands and script files
 };
 
 /*
@@ -73,7 +75,7 @@ void CCmdBuffer::AddText(const char *text)
 
 	if(cmd_text.cursize + l >= cmd_text.maxsize)
 	{
-		//Con_Printf("Cbuf_AddText: overflow\n"); // Com_Printf
+		mpLogger->Printf("Cbuf_AddText: overflow\n");
 		return;
 	};
 
@@ -91,10 +93,10 @@ FIXME: actually change the command buffer to do less copying
 */
 void CCmdBuffer::InsertText(const char *text)
 {
-	char *temp{nullptr};
-
-	// copy off any commands still remaining in the exec buffer
+	// Copy off any commands still remaining in the exec buffer
 	int templen{cmd_text.cursize};
+	
+	char *temp{nullptr};
 	
 	if(templen)
 	{
@@ -103,10 +105,10 @@ void CCmdBuffer::InsertText(const char *text)
 		cmd_text.Clear();
 	};
 
-	// add the entire text of the file
+	// Add the entire text of the file
 	AddText(text);
 
-	// add the copied off data
+	// Add the copied off data
 	if(templen)
 	{
 		cmd_text.Write(temp, templen);

@@ -51,14 +51,14 @@ public:
 	void SizeUp();
 	void SizeDown();
 
-	//void BringDownConsole ();
+	//void BringDownConsole();
 
 	void CenterPrint(const char *str);
 
 	void BeginLoadingPlaque();
 	void EndLoadingPlaque();
 
-	//int ModalMessage (const char *text);
+	//int ModalMessage(const char *text);
 
-	//void UpdateWholeScreen ();
+	//void UpdateWholeScreen();
 };

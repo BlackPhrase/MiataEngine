@@ -23,7 +23,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "CmdExecutor.hpp"
 #include "CvarList.hpp"
 #include "CmdList.hpp"
-#include "CvarManager.hpp"
+#include "CvarController.hpp"
 #include "CmdArgs.hpp"
 
 /*
@@ -36,8 +36,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 cmd_source_t cmd_source;
 
-CCmdExecutor::CCmdExecutor(CCvarList *apCvarList, CCmdList *apCmdList, CCvarManager *apCvarManager)
-	: mpCvarList(apCvarList), mpCmdList(apCmdList), mpCvarManager(apCvarManager){}
+CCmdExecutor::CCmdExecutor(CCvarList *apCvarList, CCmdList *apCmdList, CCvarController *apCvarController)
+	: mpCvarList(apCvarList), mpCmdList(apCmdList), mpCvarController(apCvarController){}
 CCmdExecutor::~CCmdExecutor() = default;
 
 /*
@@ -115,6 +115,6 @@ bool CCmdExecutor::HandleCvarCommand(const CCmdArgs &aArgs)
 		return true;
 	};
 	
-	mpCvarManager->SetCvarString(pVar->GetName(), aArgs.GetByIndex(1)); // TODO: fix
+	mpCvarController->SetCvarString(pVar->GetName(), aArgs.GetByIndex(1)); // TODO: fix
 	return true;
 };

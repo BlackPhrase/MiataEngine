@@ -75,18 +75,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 typedef struct sizebuf_s
 {
 	qboolean	allowoverflow;	// if false, do a Com_Error
-	qboolean	overflowed;		// set to true if the buffer size failed
-	byte	*data;
-	int		maxsize;
-	int		cursize;
+	
 	int		readcount;
 } sizebuf_t;
-
-void SZ_Init (sizebuf_t *buf, byte *data, int length);
-void SZ_Clear (sizebuf_t *buf);
-void *SZ_GetSpace (sizebuf_t *buf, int length);
-void SZ_Write (sizebuf_t *buf, void *data, int length);
-void SZ_Print (sizebuf_t *buf, char *data);	// strcats onto the sizebuf
 
 //============================================================================
 
@@ -130,8 +121,6 @@ void	MSG_ReadData (sizebuf_t *sb, void *buffer, int size);
 
 //============================================================================
 
-extern	qboolean		bigendien;
-
 extern	short	BigShort (short l);
 extern	short	LittleShort (short l);
 extern	int		BigLong (int l);
@@ -145,27 +134,16 @@ extern	float	LittleFloat (float l);
 int	COM_Argc ();
 char *COM_Argv (int arg);	// range and null checked
 void COM_ClearArgv (int arg);
-int COM_CheckParm (char *parm);
+
 void COM_AddParm (char *parm);
 
 void COM_Init ();
-void COM_InitArgv (int argc, char **argv);
 
-char *CopyString (char *in);
+char *CopyString (const char *in);
 
 //============================================================================
 
-void Info_Print (char *s);
-
-
-/* crc.h */
-
-void CRC_Init(unsigned short *crcvalue);
-void CRC_ProcessByte(unsigned short *crcvalue, byte data);
-unsigned short CRC_Value(unsigned short crcvalue);
-unsigned short CRC_Block (byte *start, int count);
-
-
+void Info_Print (const char *s);
 
 /*
 ==============================================================
@@ -340,50 +318,20 @@ Command text buffering and command execution
 ==============================================================
 */
 
-/*
-
-Any number of commands can be added in a frame, from several different sources.
-Most commands come from either keybindings or console line input, but remote
-servers can also send across commands and entire text files can be execed.
-
-The + command line options are also added to the command buffer.
-
-The game starts with a Cbuf_AddText ("exec quake.rc\n"); Cbuf_Execute ();
-
-*/
-
 #define	EXEC_NOW	0		// don't return until completed
 #define	EXEC_INSERT	1		// insert at current position, but don't run yet
 #define	EXEC_APPEND	2		// add to end of the command buffer
 
-void Cbuf_Init ();
-// allocates an initial text buffer that will grow as needed
-
-void Cbuf_AddText (char *text);
-// as new commands are generated from the console or keybindings,
-// the text is added to the end of the command buffer.
-
-void Cbuf_InsertText (char *text);
-// when a command wants to issue other commands immediately, the text is
-// inserted at the beginning of the buffer, before any remaining unexecuted
-// commands.
-
 void Cbuf_ExecuteText (int exec_when, char *text);
 // this can be used in place of either Cbuf_AddText or Cbuf_InsertText
 
-void Cbuf_AddEarlyCommands (qboolean clear);
+void Cbuf_AddEarlyCommands (bool clear);
 // adds all the +set commands from the command line
 
 qboolean Cbuf_AddLateCommands ();
 // adds all the remaining + commands from the command line
 // Returns true if any late commands were added, which
 // will keep the demoloop from immediately starting
-
-void Cbuf_Execute ();
-// Pulls off \n terminated lines of text from the command buffer and sends
-// them through Cmd_ExecuteString.  Stops when the buffer is empty.
-// Normally called once per frame, but may be explicitly invoked.
-// Do not call inside a command function!
 
 void Cbuf_CopyToDefer ();
 void Cbuf_InsertFromDefer ();
@@ -489,76 +437,8 @@ extern	qboolean	userinfo_modified;
 // this is set each time a CVAR_USERINFO variable is changed
 // so that the client knows to send it to the server
 
-#define	PORT_ANY	-1
-
 #define	MAX_MSGLEN		1400		// max length of a message
 #define	PACKET_HEADER	10			// two ints and a short
-
-
-typedef enum {NS_CLIENT, NS_SERVER} netsrc_t;
-
-void		NET_Config (qboolean multiplayer);
-
-qboolean	NET_GetPacket (netsrc_t sock, netadr_t *net_from, sizebuf_t *net_message);
-void		NET_SendPacket (netsrc_t sock, int length, void *data, netadr_t to);
-
-qboolean	NET_CompareAdr (netadr_t a, netadr_t b);
-qboolean	NET_CompareBaseAdr (netadr_t a, netadr_t b);
-
-//============================================================================
-
-#define	OLD_AVG		0.99		// total = oldtotal*OLD_AVG + new*(1-OLD_AVG)
-
-#define	MAX_LATENT	32
-
-typedef struct
-{
-	qboolean	fatal_error;
-
-	netsrc_t	sock;
-
-	int			dropped;			// between last packet and previous
-
-	int			last_received;		// for timeouts
-	int			last_sent;			// for retransmits
-
-	netadr_t	remote_address;
-	int			qport;				// qport value to write when transmitting
-
-// sequencing variables
-	int			incoming_sequence;
-	int			incoming_acknowledged;
-	int			incoming_reliable_acknowledged;	// single bit
-
-	int			incoming_reliable_sequence;		// single bit, maintained local
-
-	int			outgoing_sequence;
-	int			reliable_sequence;			// single bit
-	int			last_reliable_sequence;		// sequence number of last send
-
-// reliable staging and holding areas
-	sizebuf_t	message;		// writing buffer to send to server
-	byte		message_buf[MAX_MSGLEN-16];		// leave space for header
-
-// message is copied to this buffer when it is first transfered
-	int			reliable_length;
-	byte		reliable_buf[MAX_MSGLEN-16];	// unacked reliable message
-} netchan_t;
-
-extern	netadr_t	net_from;
-extern	sizebuf_t	net_message;
-extern	byte		net_message_buffer[MAX_MSGLEN];
-
-
-void Netchan_Setup (netsrc_t sock, netchan_t *chan, netadr_t adr, int qport);
-
-qboolean Netchan_NeedReliable (netchan_t *chan);
-void Netchan_OutOfBand (int net_socket, netadr_t adr, int length, byte *data);
-void Netchan_OutOfBandPrint (int net_socket, netadr_t adr, char *format, ...);
-qboolean Netchan_Process (netchan_t *chan, sizebuf_t *msg);
-
-qboolean Netchan_CanReliable (netchan_t *chan);
-
 
 /*
 ==============================================================

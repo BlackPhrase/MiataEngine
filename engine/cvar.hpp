@@ -48,22 +48,12 @@ public:
 	float GetFloat() const {return 0.0f;}
 	bool GetBool() const {return false;}
 private:
-	const char *m_name{""};
 	std::string string{""};
+	
+	cvar_t *next{nullptr};
+	
+	const char *m_name{""};
 	const char *m_desc{""};
-
-	bool archive /*info in qw*/{false}; // set to true to cause it to be saved to vars.rc
-	bool server{false};                 // notifies players when changed
 	
 	int m_flags{0};
-
-	cvar_t *next{nullptr};
 };
-
-const char *Cvar_CompleteVariable(const char *partial);
-// attempts to match a partial variable name for command line completion
-// returns NULL if nothing fits
-
-//void Cvar_WriteVariables(FILE *f);
-// Writes lines containing "set variable value" for all variables
-// with the archive flag set to true.

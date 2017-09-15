@@ -154,5 +154,3 @@ typedef struct
 	float	radsuit_finished;
 	float	speed;
 } entvars_t;
-
-#define PROGHEADER_CRC 31586

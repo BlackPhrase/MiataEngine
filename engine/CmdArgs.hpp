@@ -16,6 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+/// @file
+/// @brief command (line) arguments
+
 #pragma once
 
 #include <string>
@@ -31,16 +34,22 @@ public:
 	~CCmdArgs();
 	
 	// The functions that execute commands get their parameters with these
-	// functions.
+	// functions. Cmd_Argv () will return an empty string, not a NULL
+	// if arg > argc, so string operations are allways safe.
 	
-	/// Will return an empty string, not a nullptr
-	/// if arg > argc, so string operations are always safe
+	/// Takes a null terminated string
+	/// Does not need to be /n terminated
+	/// Breaks the string up into arg tokens
+	//void TokenizeString(const char *text);
+	
 	const char *GetByIndex(int id) const;
 	
-	///
+	/// Returns the position (1 to argc-1) in the command's argument list
+	/// where the given parameter apears, or 0 if not present
+	//int CheckParm(const char *parm);
+	
 	int GetCount() const {return mvArgs.size();}
 	
-	///
 	const char *ToString() const;
 private:
 	tStringVec mvArgs;

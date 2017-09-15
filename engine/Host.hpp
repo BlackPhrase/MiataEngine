@@ -29,11 +29,14 @@ struct IInput;
 struct ISound;
 struct INetwork;
 class CModuleLoader;
+class CLogger;
+class CEngineInterface;
 class CCvarList;
-class CCvarManager;
+class CCvarController;
 class CCmdList;
 class CCmdExecutor;
 class CCmdBuffer;
+class CCmdArgs;
 
 class CHost : public IHost
 {
@@ -41,7 +44,7 @@ public:
 	CHost();
 	~CHost();
 	
-	bool Init() override;
+	bool Init(quakeparms_t *parms) override;
 	void Shutdown() override;
 	
 	void Frame(double frametime) override;
@@ -57,12 +60,17 @@ private:
 	
 	void _Frame(double frametime);
 	
+	quakeparms_t host_parms{};
+	
 	std::unique_ptr<CModuleLoader> mpModuleLoader;
+	std::unique_ptr<CLogger> mpLogger;
+	std::unique_ptr<CEngineInterface> mpEngineInterface;
 	std::unique_ptr<CCvarList> mpCvarList;
-	std::unique_ptr<CCvarManager> mpCvarManager;
+	std::unique_ptr<CCvarController> mpCvarController;
 	std::unique_ptr<CCmdList> mpCmdList;
 	std::unique_ptr<CCmdExecutor> mpCmdExecutor;
 	std::unique_ptr<CCmdBuffer> mpCmdBuffer;
+	std::unique_ptr<CCmdArgs> mpCmdLine;
 	
 	IGame *mpGame{nullptr};
 	IClientGame *mpClGame{nullptr};

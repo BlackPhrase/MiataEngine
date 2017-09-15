@@ -24,9 +24,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 class CSizeBuffer final
 {
 public:
-	CSizeBuffer(const char *name);
+	CSizeBuffer(const char *name, int length);
 	CSizeBuffer();
 	~CSizeBuffer();
+	
+	void Init(const char *name, int length);
 	
 	void Clear();
 	

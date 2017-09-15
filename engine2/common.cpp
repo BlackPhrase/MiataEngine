@@ -408,8 +408,7 @@ void SZ_Alloc(sizebuf_t *buf, int startsize)
 	if(startsize < 256)
 		startsize = 256;
 	buf->data = Hunk_AllocName(startsize, "sizebuf");
-	buf->maxsize = startsize;
-	buf->cursize = 0;
+	
 }
 
 void SZ_Free(sizebuf_t *buf)
@@ -624,49 +623,6 @@ int COM_CheckParm(char *parm)
 	return 0;
 }
 
-/*
-================
-COM_CheckRegistered
-
-Looks for the pop.txt file and verifies it.
-Sets the "registered" cvar.
-Immediately exits out if an alternate game was attempted to be started without
-being registered.
-================
-*/
-void COM_CheckRegistered()
-{
-	int h;
-	unsigned short check[128];
-	int i;
-
-	COM_OpenFile("gfx/pop.lmp", &h);
-	static_registered = 0;
-
-	if(h == -1)
-	{
-#if WINDED
-		Sys_Error("This dedicated server requires a full registered copy of Quake");
-#endif
-		Con_Printf("Playing shareware version.\n");
-		if(com_modified)
-			Sys_Error("You must have the registered version to use modified games");
-		return;
-	}
-
-	Sys_FileRead(h, check, sizeof(check));
-	COM_CloseFile(h);
-
-	for(i = 0; i < 128; i++)
-		if(pop[i] != (unsigned short)BigShort(check[i]))
-			Sys_Error("Corrupted data file.");
-
-	Cvar_Set("cmdline", com_cmdline);
-	Cvar_Set("registered", "1");
-	static_registered = 1;
-	Con_Printf("Playing registered version.\n");
-}
-
 void COM_Path_f();
 
 /*
@@ -767,12 +723,10 @@ void COM_Init(char *basedir)
 		LittleFloat = FloatSwap;
 	}
 
-	Cvar_RegisterVariable(&registered);
 	Cvar_RegisterVariable(&cmdline);
 	Cmd_AddCommand("path", COM_Path_f);
 
 	COM_InitFilesystem();
-	COM_CheckRegistered();
 }
 
 /*

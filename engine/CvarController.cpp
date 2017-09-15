@@ -18,38 +18,16 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "quakedef.hpp"
-#include "CvarManager.hpp"
+#include "CvarController.hpp"
 #include "CvarList.hpp"
 #include "CmdList.hpp"
 
-CCvarManager::CCvarManager(CCvarList *apCvarList, CCmdList *apCmdList) : mpCvarList(apCvarList), mpCmdList(apCmdList){}
+CCvarController::CCvarController(CCvarList *apCvarList, CCmdList *apCmdList)
+	: mpCvarList(apCvarList), mpCmdList(apCmdList){}
+CCvarController::~CCvarController() = default;
 
-CCvarManager::~CCvarManager()
-{
-	for(auto It : mlstListeners)
-		It->Release();
-	
-	mlstListeners.clear();
-};
-
-void CCvarManager::AddListener(ICvarChangeListener *apListener)
-{
-	mlstListeners.push_back(apListener);
-};
-
-void CCvarManager::RemoveListener(ICvarChangeListener *apListener)
-{
-	//mlstListeners.erase();
-	// TODO
-};
-
-void CCvarManager::BroadcastCvarChange(IConVar *apVar, const char *asOldValue)
-{
-	//for(auto It : mlstListeners)
-		//It->OnCvarChange(apVar, asOldValue);
-};
-
-bool CCvarManager::RegisterCvar(IConVar *apVar)
+/*
+bool CCvarController::RegisterCvar(IConVar *apVar)
 {
 	// check for overlap with a command
 	if(mpCmdList->Exists(apVar->GetName()))
@@ -60,13 +38,14 @@ bool CCvarManager::RegisterCvar(IConVar *apVar)
 	
 	return mpCvarList->Register(apVar);
 };
+*/
 
 /*
 ============
 Cvar_CompleteVariable
 ============
 */
-const char *CCvarManager::CompleteVariable(const char *partial)
+const char *CCvarController::CompleteVariable(const char *partial)
 {
 	auto len{Q_strlen(partial)};
 
@@ -83,10 +62,29 @@ const char *CCvarManager::CompleteVariable(const char *partial)
 
 /*
 ============
+Cvar_WriteVariables
+
+Writes lines containing "set variable value" for all variables
+with the archive flag set to true.
+============
+*/
+/*
+void CCvarController::WriteVariables(FILE *f)
+{
+	// TODO
+	// CCvarDumper?
+	//for(auto var = cvar_vars; var; var = var->next)
+		//if(var->GetFlags() & (int)eConVarFlags::Archive)
+			//fprintf(f, "%s \"%s\"\n", var->GetName(), var->GetString());
+};
+*/
+
+/*
+============
 Cvar_Set
 ============
 */
-void CCvarManager::SetCvarString(const char *var_name, const char *value)
+void CCvarController::SetCvarString(const char *var_name, const char *value)
 {
 	auto *var{mpCvarList->Find(var_name)};
 	
@@ -113,7 +111,7 @@ void CCvarManager::SetCvarString(const char *var_name, const char *value)
 Cvar_SetValue
 ============
 */
-void CCvarManager::SetCvarFloat(const char *var_name, float value)
+void CCvarController::SetCvarFloat(const char *var_name, float value)
 {
 	char val[32]{};
 
@@ -126,7 +124,7 @@ void CCvarManager::SetCvarFloat(const char *var_name, float value)
 Cvar_VariableString
 ============
 */
-const char *CCvarManager::GetCvarString(const char *var_name, const char *defval)
+const char *CCvarController::GetCvarString(const char *var_name, const char *defval)
 {
 	auto *pVar{mpCvarList->Find(var_name)};
 	
@@ -141,7 +139,7 @@ const char *CCvarManager::GetCvarString(const char *var_name, const char *defval
 Cvar_VariableValue
 ============
 */
-float CCvarManager::GetCvarFloat(const char *var_name, float defval)
+float CCvarController::GetCvarFloat(const char *var_name, float defval)
 {
 	auto *pVar{mpCvarList->Find(var_name)};
 	

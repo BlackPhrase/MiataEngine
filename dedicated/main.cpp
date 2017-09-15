@@ -19,15 +19,15 @@ int main(int argc, char **argv)
 	if(!pHost)
 		return EXIT_FAILURE;
 	
-	pHost->Init();
+	quakeparms_t host_parms{};
 	
-	static int frame{0};
+	host_parms.argc = argc;
+	host_parms.argv = argv;
 	
-	while(frame < 1000)
-	{
-		++frame;
+	pHost->Init(&host_parms);
+	
+	while(true)
 		pHost->Frame(0.1);
-	};
 	
 	pHost->Shutdown();
 	

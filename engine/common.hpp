@@ -30,7 +30,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 typedef struct sizebuf_s sizebuf_t;
 
-void SZ_Alloc(sizebuf_t *buf, int startsize);
+sizebuf_t *SZ_Alloc(const char *name, int startsize);
 void SZ_Free(sizebuf_t *buf);
 
 //============================================================================
@@ -90,6 +90,7 @@ extern int msg_readcount;
 extern bool msg_badread; // set if a read goes beyond end of message
 
 void MSG_BeginReading();
+
 int MSG_ReadChar();
 int MSG_ReadByte();
 int MSG_ReadShort();
@@ -123,13 +124,6 @@ extern char com_token[1024];
 extern bool com_eof;
 
 char *COM_Parse(const char *data);
-
-extern int com_argc;
-extern char **com_argv;
-
-int COM_CheckParm(const char *parm);
-void COM_Init(const char *path);
-void COM_InitArgv(int argc, char **argv);
 
 char *COM_SkipPath(const char *pathname);
 void COM_StripExtension(const char *in, char *out);

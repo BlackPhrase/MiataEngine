@@ -40,20 +40,7 @@ int		alias_count;		// for detecting runaway loops
 
 //=============================================================================
 
-sizebuf_t	cmd_text;
-byte		cmd_text_buf[8192];
-
 byte		defer_text_buf[8192];
-
-/*
-============
-Cbuf_Init
-============
-*/
-void Cbuf_Init (void)
-{
-	SZ_Init (&cmd_text, cmd_text_buf, sizeof(cmd_text_buf));
-}
 
 /*
 ============

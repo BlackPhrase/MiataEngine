@@ -18,9 +18,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-#pragma once
+/// @file
+/// @brief communications protocols
 
-// protocol.h -- communications protocols
+#pragma once
 
 #define PROTOCOL_VERSION 15
 

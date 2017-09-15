@@ -38,12 +38,13 @@ The game starts with a Cbuf_AddText ("exec quake.rc\n"); Cbuf_Execute ();
 
 */
 
+class CLogger;
 class CCmdExecutor;
 
 class CCmdBuffer final
 {
 public:
-	CCmdBuffer(CCmdExecutor *apExecutor);
+	CCmdBuffer(CLogger *apLogger, CCmdExecutor *apExecutor);
 	~CCmdBuffer();
 	
 	/// Allocates an initial text buffer that will grow as needed
@@ -59,12 +60,13 @@ public:
 	void InsertText(const char *text);
 	
 	/// Pulls off \n terminated lines of text from the command buffer and sends
-	/// them through Cmd_ExecuteString.  Stops when the buffer is empty.
+	/// them to the command executor.  Stops when the buffer is empty.
 	/// Normally called once per frame, but may be explicitly invoked.
 	/// Do not call inside a command function!
 	void Execute();
 private:
 	CSizeBuffer cmd_text;
 	
+	CLogger *mpLogger{nullptr};
 	CCmdExecutor *mpExecutor{nullptr};
 };

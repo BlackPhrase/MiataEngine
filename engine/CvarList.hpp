@@ -19,24 +19,23 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 #include <list>
+#include "ICvarList.hpp"
 
 struct IConVar;
 using tCvarList = std::list<IConVar*>;
 
-class CCvarList final
+class CCvarList final : public ICvarList
 {
 public:
 	CCvarList();
 	~CCvarList();
 	
-	/// Registers a cvar that already has the name, string, and optionally the
-	/// archive elements set.
-	bool Register(IConVar *variable);
+	bool Register(IConVar *variable) override;
 	
 	IConVar *Create(const char *name, const char *defvalue, int flags = 0, const char *desc = "");
 	
-	IConVar *Find(const char *var_name /*bool partial = false*/);
-	IConVar *FindPartial(const char *var_name, int length);
+	IConVar *Find(const char *var_name /*bool partial = false*/) const override;
+	IConVar *FindPartial(const char *var_name, int length) const;
 private:
 	tCvarList mlstCvars;
 };

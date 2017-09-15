@@ -29,16 +29,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 extern int m_activenet;
 
-//
-// menus
-//
-void M_Keydown(int key);
-void M_Draw();
 void M_ToggleMenu_f();
+void M_Menu_Quit_f();
+//void M_Menu_Main_f ();
+
 qpic_t *M_CachePic(char *path);
 void M_DrawTextBox(int x, int y, int width, int lines);
-void M_Menu_Quit_f();
 
-//void M_Menu_Main_f ();
 //void M_ForceMenuOff ();
 //void M_AddToServerList (netadr_t adr, char *info);
