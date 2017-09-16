@@ -22,19 +22,20 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 #include <memory>
 #include "shared_lib.hpp"
+#include "EngineInterface.hpp"
 
 using tSharedLibVec = std::vector<shiftutil::shared_lib*>;
 
 class CModuleLoader final
 {
 public:
-	CModuleLoader();
+	CModuleLoader(IEngineInterface *apEngineInterface);
 	~CModuleLoader();
 	
 	template<typename T>
 	T *LoadModule(const char *name, const char *ExportFunc)
 	{
-		using pfnFactory = T *(*)();
+		using pfnFactory = T *(*)(IEngineInterface *apEngineInterface);
 		
 		std::unique_ptr<shiftutil::shared_lib> ModuleLib = std::make_unique<shiftutil::shared_lib>(name);
 		
@@ -46,7 +47,7 @@ public:
 		if(!fnGetFactory)
 			return nullptr;
 		
-		T *pInterface{fnGetFactory()};
+		T *pInterface{fnGetFactory(mpEngineInterface)};
 		
 		if(!pInterface)
 			return nullptr;
@@ -56,5 +57,7 @@ public:
 		return pInterface;
 	};
 private:
+	IEngineInterface *mpEngineInterface{nullptr};
+	
 	tSharedLibVec mvModuleLibs;
 };

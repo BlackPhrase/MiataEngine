@@ -50,9 +50,9 @@ public:
 			mpDispatcher->BroadcastCvarChange(this, oldval.c_str());
 	};
 	
-	void SetInt(int value) override {string = std::to_string(value);}
-	void SetFloat(float value) override {string = std::to_string(value);}
-	void SetBool(bool value) override {string = std::to_string(value);}
+	void SetInt(int value) override {SetString(std::to_string(value).c_str());}
+	void SetFloat(float value) override {SetString(std::to_string(value).c_str());}
+	void SetBool(bool value) override {SetString(std::to_string(value).c_str());}
 	
 	const char *GetString() const override {return string.c_str();}
 	int GetInt() const override {return (int)GetFloat();}

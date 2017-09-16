@@ -1,8 +1,8 @@
 #include "commontypes.hpp"
 #include "Network.hpp"
 
-C_EXPORT INetwork *GetNetwork()
+C_EXPORT INetwork *GetNetwork(IEngineInterface *apEngineInterface)
 {
-	static CNetwork Network;
+	static CNetwork Network(apEngineInterface);
 	return &Network;
 };

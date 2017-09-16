@@ -21,6 +21,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "quakedef.hpp"
 #include "CmdExecutor.hpp"
+#include "Logger.hpp"
 #include "CvarList.hpp"
 #include "CmdList.hpp"
 #include "CmdArgs.hpp"
@@ -35,8 +36,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 cmd_source_t cmd_source;
 
-CCmdExecutor::CCmdExecutor(CCvarList *apCvarList, CCmdList *apCmdList)
-	: mpCvarList(apCvarList), mpCmdList(apCmdList){}
+CCmdExecutor::CCmdExecutor(CLogger *apLogger, CCvarList *apCvarList, CCmdList *apCmdList)
+	: mpLogger(apLogger), mpCvarList(apCvarList), mpCmdList(apCmdList){}
 CCmdExecutor::~CCmdExecutor() = default;
 
 /*
@@ -82,8 +83,7 @@ void CCmdExecutor::ExecString(const char *text, cmd_source_t src)
 	// check cvars
 	if(!HandleCvarCommand(Args))
 	{
-		//Con_Printf("Unknown command \"%s\"\n", Args.GetByIndex(0));
-		printf("Unknown command \"%s\"\n", Args.GetByIndex(0));
+		mpLogger->Printf("Unknown command \"%s\"\n", Args.GetByIndex(0));
 		return;
 	};
 };
@@ -109,11 +109,10 @@ bool CCmdExecutor::HandleCvarCommand(const CCmdArgs &aArgs)
 	// perform a variable print or set
 	if(aArgs.GetCount() == 1)
 	{
-		//Con_Printf("\"%s\" is \"%s\"\n", pVar->GetName(), pVar->GetString());
-		printf("\"%s\" is \"%s\"\n", pVar->GetName(), pVar->GetString());
+		mpLogger->Printf("\"%s\" is \"%s\"\n", pVar->GetName(), pVar->GetString());
 		return true;
 	};
 	
-	pVar->SetString(aArgs.GetByIndex(1)); // TODO: notify listeners abound the change
+	pVar->SetString(aArgs.GetByIndex(1));
 	return true;
 };

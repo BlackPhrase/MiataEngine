@@ -62,6 +62,8 @@ bool CHost::Init(quakeparms_t *parms)
 	if(host_initialized)
 		return true;
 	
+	mpCmdLine = std::make_unique<CCmdArgs>(parms->argc, parms->argv);
+	
 	//minimum_memory = MINIMUM_MEMORY;
 
 	//if(mpCmdLine->CheckParm("-minmemory"))
@@ -72,17 +74,15 @@ bool CHost::Init(quakeparms_t *parms)
 	//if(parms->memsize < minimum_memory)
 		//Sys_Error("Only %4.1f megs of memory available, can't execute game", parms->memsize / (float)0x100000);
 
-	//mpCmdLine = std::make_unique<CCmdArgs>(parms->argc, parms->argv);
-	
-	mpModuleLoader = std::make_unique<CModuleLoader>();
 	mpLogger = std::make_unique<CLogger>();
 	mpEngineInterface = std::make_unique<CEngineInterface>(mpLogger.get());
+	mpModuleLoader = std::make_unique<CModuleLoader>(mpEngineInterface.get());
 	
 	mpCvarDispatcher = std::make_unique<CCvarDispatcher>();
 	mpCvarList = std::make_unique<CCvarList>(mpCvarDispatcher.get());
 	mpCmdList = std::make_unique<CCmdList>();
 	mpCvarController = std::make_unique<CCvarController>(mpCvarList.get(), mpCmdList.get());
-	mpCmdExecutor = std::make_unique<CCmdExecutor>(mpCvarList.get(), mpCmdList.get());
+	mpCmdExecutor = std::make_unique<CCmdExecutor>(mpLogger.get(), mpCvarList.get(), mpCmdList.get());
 	mpCmdBuffer = std::make_unique<CCmdBuffer>(mpLogger.get(), mpCmdExecutor.get());
 	
 	mpCvarList->Create("developer", "1");
@@ -105,6 +105,10 @@ bool CHost::Init(quakeparms_t *parms)
 	
 	//Memory_Init(parms->membase, parms->memsize);
 	
+	//mpLogger->Printf("id Tech 2 Red Engine v" VERSION " build " BUILD);
+	mpLogger->Printf("Build date: " __TIME__ " " __DATE__ "\n");
+	mpLogger->Printf("%4.1f megabyte heap\n", parms->memsize / (1024 * 1024.0));
+
 	mpCmdBuffer->Init();
 	
 	/*
@@ -132,9 +136,6 @@ bool CHost::Init(quakeparms_t *parms)
 	
 	mpGame = mpModuleLoader->LoadModule<IGame>("game", "GetGame");
 	mpGame->Init();
-
-	mpLogger->Printf("Exe: " __TIME__ " " __DATE__ "\n");
-	mpLogger->Printf("%4.1f megabyte heap\n", parms->memsize / (1024 * 1024.0));
 
 	//R_InitTextures(); // needed even for dedicated servers
 
@@ -262,7 +263,8 @@ void CHost::Frame()
 	Update(0.1);
 	double time2 = 0.0; //Sys_FloatTime();
 	
-	Render();
+	if(!host_parms.dedicated)
+		Render();
 
 	//if(serverprofile.value)
 	{
@@ -338,11 +340,10 @@ void CHost::Update(double frametime)
 		mpSound->Frame();
 		mpInput->Frame();
 		mpClGame->Frame();
-		
-		mpVideo->CheckChanges();
 	};
 };
 
 void CHost::Render()
 {
+	mpVideo->CheckChanges();
 };

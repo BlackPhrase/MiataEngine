@@ -1,8 +1,8 @@
 #include "commontypes.hpp"
 #include "ClientGame.hpp"
 
-C_EXPORT IClientGame *GetClientGame()
+C_EXPORT IClientGame *GetClientGame(IEngineInterface *apEngineInterface)
 {
-	static CClientGame ClientGame;
+	static CClientGame ClientGame(apEngineInterface);
 	return &ClientGame;
 };

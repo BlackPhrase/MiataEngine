@@ -38,7 +38,7 @@ add_subdirectory(network)
 add_subdirectory(game)
 
 if(NOT IDTECH2RED_DEDICATED)
-	#add_subdirectory(launcher)
+	add_subdirectory(launcher)
 	#add_subdirectory(render)
 	add_subdirectory(video)
 	add_subdirectory(input)

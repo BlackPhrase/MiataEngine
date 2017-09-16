@@ -2,13 +2,13 @@
 #include "shared_lib.hpp"
 #include "IHost.hpp"
 
-#ifdef _WIN32
-	#include <windows.h>
+//#ifdef _WIN32
+	//#include <windows.h>
 	
-	int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
-#else
+	//int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+//#else
 	int main(int argc, char **argv)
-#endif
+//#endif
 {
 	shiftutil::shared_lib EngineLib("engine");
 	
@@ -28,18 +28,13 @@
 	quakeparms_t host_parms{};
 	
 	// TODO
-	host_parms.argc = 0;
-	host_parms.argv = nullptr;
+	//host_parms.argc = 0;
+	//host_parms.argv = nullptr;
 	
 	pHost->Init(&host_parms);
 	
-	static int frame{0};
-	
-	while(frame < 1000)
-	{
-		++frame;
-		pHost->Frame(0.1);
-	};
+	while(true)
+		pHost->Frame();
 	
 	pHost->Shutdown();
 	

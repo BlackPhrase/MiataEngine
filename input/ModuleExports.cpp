@@ -1,8 +1,8 @@
 #include "commontypes.hpp"
 #include "Input.hpp"
 
-C_EXPORT IInput *GetInput()
+C_EXPORT IInput *GetInput(IEngineInterface *apEngineInterface)
 {
-	static CInput Input;
+	static CInput Input(apEngineInterface);
 	return &Input;
 };

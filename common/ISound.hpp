@@ -21,6 +21,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+#include "IEngineInterface.hpp"
+
 struct ISound
 {
 	///
@@ -33,4 +35,4 @@ struct ISound
 	virtual void Frame() = 0;
 };
 
-using pfnGetSound = ISound *(*)();
+using pfnGetSound = ISound *(*)(IEngineInterface *apEngineInterface);

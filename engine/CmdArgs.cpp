@@ -23,8 +23,8 @@ static const char *cmd_null_string{""};
 
 CCmdArgs::CCmdArgs(int argc, char **argv)
 {
-	for(auto i = 0; i < argc; ++i)
-		mvArgs.emplace_back(std::string(argv[argc]));
+	//for(auto i = 0; i < argc; ++i)
+		//mvArgs.emplace_back(argv[argc]); // TODO: fix
 };
 
 CCmdArgs::CCmdArgs(const char *args)

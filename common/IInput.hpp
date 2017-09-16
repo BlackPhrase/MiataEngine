@@ -21,6 +21,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+#include "IEngineInterface.hpp"
+
 struct IInput
 {
 	///
@@ -33,4 +35,4 @@ struct IInput
 	virtual void Frame() = 0;
 };
 
-using pfnGetInput = IInput *(*)();
+using pfnGetInput = IInput *(*)(IEngineInterface *apEngineInterface);

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "IEngineInterface.hpp"
+
 struct IVideo
 {
 	virtual bool Init() = 0;
@@ -14,4 +16,4 @@ struct IVideo
 	virtual void CheckChanges() = 0;
 };
 
-using pfnGetVideo = IVideo *(*)();
+using pfnGetVideo = IVideo *(*)(IEngineInterface *apEngineInterface);

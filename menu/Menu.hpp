@@ -5,11 +5,13 @@
 class CMenu final : public IMenu
 {
 public:
-	CMenu();
+	CMenu(IEngineInterface *apEngine);
 	~CMenu();
 
 	bool Init() override;
 	void Shutdown() override;
 
 	void Frame() override;
+private:
+	IEngineInterface *mpEngine{nullptr};
 };

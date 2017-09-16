@@ -23,6 +23,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "cmd.hpp"
 
+class CLogger;
 class CCvarList;
 class CCmdList;
 class CCmdArgs;
@@ -30,7 +31,7 @@ class CCmdArgs;
 class CCmdExecutor final
 {
 public:
-	CCmdExecutor(CCvarList *apCvarList, CCmdList *apCmdList);
+	CCmdExecutor(CLogger *apLogger, CCvarList *apCvarList, CCmdList *apCmdList);
 	~CCmdExecutor();
 	
 	// Parses a single line of text into arguments and tries to execute it.
@@ -42,6 +43,7 @@ private:
 	// was handled. (print or change)
 	bool HandleCvarCommand(const CCmdArgs &aArgs);
 	
+	CLogger *mpLogger{nullptr};
 	CCvarList *mpCvarList{nullptr};
 	CCmdList *mpCmdList{nullptr};
 };

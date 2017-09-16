@@ -5,11 +5,13 @@
 class CInput final : public IInput
 {
 public:
-	CInput();
+	CInput(IEngineInterface *apEngine);
 	~CInput();
 	
 	bool Init() override;
 	void Shutdown() override;
 	
 	void Frame() override;
+private:
+	IEngineInterface *mpEngine{nullptr};
 };

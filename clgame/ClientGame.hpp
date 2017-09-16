@@ -82,11 +82,13 @@ void CL_DrawInventory(void);
 class CClientGame final : public IClientGame
 {
 public:
-	CClientGame();
+	CClientGame(IEngineInterface *apEngine);
 	~CClientGame();
 	
 	bool Init() override;
 	void Shutdown() override;
 	
 	void Frame() override;
+private:
+	IEngineInterface *mpEngine{nullptr};
 };

@@ -22,6 +22,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 #include "commontypes.hpp"
+#include "IEngineInterface.hpp"
 
 /*
 ==============================================================
@@ -84,7 +85,7 @@ struct INetwork
 	//virtual bool StringToAdr(const char *asAdr, INetAdr &aAdr) = 0;
 };
 
-using pfnGetNetwork = INetwork *(*)();
+using pfnGetNetwork = INetwork *(*)(IEngineInterface *apEngineInterface);
 
 struct INetMsg
 {

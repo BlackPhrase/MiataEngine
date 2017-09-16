@@ -5,7 +5,7 @@
 class CVideo final : public IVideo
 {
 public:
-	CVideo();
+	CVideo(IEngineInterface *apEngine);
 	~CVideo();
 	
 	bool Init() override;
@@ -14,4 +14,6 @@ public:
 	//void Frame() override;
 	
 	void CheckChanges() override;
+private:
+	IEngineInterface *mpEngine{nullptr};
 };

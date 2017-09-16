@@ -5,11 +5,13 @@
 class CGame final : public IGame
 {
 public:
-	CGame();
+	CGame(IEngineInterface *apEngine);
 	~CGame();
 	
 	bool Init() override;
 	void Shutdown() override;
 	
 	void Frame() override;
+private:
+	IEngineInterface *mpEngine{nullptr};
 };

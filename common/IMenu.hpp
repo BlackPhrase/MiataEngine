@@ -21,6 +21,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+#include "IEngineInterface.hpp"
+
 struct IMenu
 {
 	///
@@ -42,4 +44,4 @@ struct IMenu
 	//virtual void OnEvent(event type, data) = 0;
 };
 
-using pfnGetMenu = IMenu *(*)();
+using pfnGetMenu = IMenu *(*)(IEngineInterface *apEngineInterface);
