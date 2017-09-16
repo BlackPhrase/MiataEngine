@@ -31,25 +31,37 @@ public:
 	cvar_t(const char *name, const char *defvalue, int flags = 0, const char *desc = "")
 		: m_name(name), string(defvalue), m_flags(flags), m_desc(desc){}
 	
-	void Release(){delete this;}
+	void SetDispatcher(ICvarDispatcher *dispatcher) override {mpDispatcher = dispatcher;}
 	
-	const char *GetName() const {return m_name;}
-	const char *GetDesc() const {return m_desc;}
+	void Release() override {delete this;}
 	
-	int GetFlags() const {return m_flags;}
+	const char *GetName() const override {return m_name;}
+	const char *GetDesc() const override {return m_desc;}
 	
-	void SetString(const char *value){string = value;}
-	void SetInt(int value){string = std::to_string(value);}
-	void SetFloat(float value){string = std::to_string(value);}
-	void SetBool(bool value){string = std::to_string(value);}
+	int GetFlags() const override {return m_flags;}
 	
-	const char *GetString() const {return string.c_str();}
-	int GetInt() const {return (int)GetFloat();}
-	float GetFloat() const {return 0.0f;}
-	bool GetBool() const {return false;}
+	void SetString(const char *value) override
+	{
+		std::string oldval{string};
+		
+		string = value;
+		
+		if(mpDispatcher)
+			mpDispatcher->BroadcastCvarChange(this, oldval.c_str());
+	};
+	
+	void SetInt(int value) override {string = std::to_string(value);}
+	void SetFloat(float value) override {string = std::to_string(value);}
+	void SetBool(bool value) override {string = std::to_string(value);}
+	
+	const char *GetString() const override {return string.c_str();}
+	int GetInt() const override {return (int)GetFloat();}
+	float GetFloat() const override {return 0.0f;}
+	bool GetBool() const override {return false;}
 private:
 	std::string string{""};
 	
+	ICvarDispatcher *mpDispatcher{nullptr};
 	cvar_t *next{nullptr};
 	
 	const char *m_name{""};

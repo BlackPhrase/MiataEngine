@@ -28,11 +28,13 @@ struct IMenu;
 struct IInput;
 struct ISound;
 struct INetwork;
+struct IVideo;
 class CModuleLoader;
 class CLogger;
 class CEngineInterface;
 class CCvarList;
 class CCvarController;
+class CCvarDispatcher;
 class CCmdList;
 class CCmdExecutor;
 class CCmdBuffer;
@@ -47,7 +49,7 @@ public:
 	bool Init(quakeparms_t *parms) override;
 	void Shutdown() override;
 	
-	void Frame(double frametime) override;
+	void Frame() override;
 	
 	void ClearMemory();
 	
@@ -58,7 +60,8 @@ public:
 private:
 	void InitCommands();
 	
-	void _Frame(double frametime);
+	void Update(double frametime);
+	void Render();
 	
 	quakeparms_t host_parms{};
 	
@@ -67,6 +70,7 @@ private:
 	std::unique_ptr<CEngineInterface> mpEngineInterface;
 	std::unique_ptr<CCvarList> mpCvarList;
 	std::unique_ptr<CCvarController> mpCvarController;
+	std::unique_ptr<CCvarDispatcher> mpCvarDispatcher;
 	std::unique_ptr<CCmdList> mpCmdList;
 	std::unique_ptr<CCmdExecutor> mpCmdExecutor;
 	std::unique_ptr<CCmdBuffer> mpCmdBuffer;
@@ -78,6 +82,7 @@ private:
 	IInput *mpInput{nullptr};
 	ISound *mpSound{nullptr};
 	INetwork *mpNetwork{nullptr};
+	IVideo *mpVideo{nullptr};
 	
 	bool host_initialized{false}; ///< true if into command execution
 };

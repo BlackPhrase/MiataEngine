@@ -24,7 +24,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "CvarList.hpp"
 #include "IConVar.hpp"
 
-CCvarList::CCvarList() = default;
+CCvarList::CCvarList(ICvarDispatcher *apCvarDispatcher)
+	: mpCvarDispatcher(apCvarDispatcher){}
 
 CCvarList::~CCvarList()
 {
@@ -53,7 +54,17 @@ bool CCvarList::Register(IConVar *variable)
 	
 	//printf("Got a new cvar %s!\n", variable->GetName());
 	
-	mlstCvars.push_back(variable);
+	//try
+	{
+		if(mpCvarDispatcher)
+			variable->SetDispatcher(mpCvarDispatcher);
+		
+		mlstCvars.push_back(variable);
+	}
+	//catch(...)
+	{
+		//return false;
+	};
 	
 	// link the variable in
 	//variable->next = cvar_vars;

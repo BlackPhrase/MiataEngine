@@ -42,6 +42,8 @@ struct quakeparms_t
 	
 	void *membase{nullptr};
 	int memsize{0};
+	
+	bool dedicated{false}; ///< dedicated server mode
 };
 
 struct IHost
@@ -49,7 +51,7 @@ struct IHost
 	virtual bool Init(quakeparms_t *parms) = 0;
 	virtual void Shutdown() = 0;
 
-	virtual void Frame(double frametime) = 0;
+	virtual void Frame() = 0;
 };
 
 using pfnGetHost = IHost *(*)();

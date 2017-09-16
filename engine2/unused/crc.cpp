@@ -17,6 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+
 /* crc.c */
 
 #include "quakedef.hpp"
@@ -68,25 +69,26 @@ static unsigned short crctable[256] =
 void CRC_Init(unsigned short *crcvalue)
 {
 	*crcvalue = CRC_INIT_VALUE;
-}
+};
 
 void CRC_ProcessByte(unsigned short *crcvalue, byte data)
 {
 	*crcvalue = (*crcvalue << 8) ^ crctable[(*crcvalue >> 8) ^ data];
-}
+};
 
 unsigned short CRC_Value(unsigned short crcvalue)
 {
 	return crcvalue ^ CRC_XOR_VALUE;
-}
+};
 
 unsigned short CRC_Block(byte *start, int count)
 {
 	unsigned short crc;
 
 	CRC_Init(&crc);
+	
 	while(count--)
 		crc = (crc << 8) ^ crctable[(crc >> 8) ^ *start++];
 
 	return crc;
-}
+};

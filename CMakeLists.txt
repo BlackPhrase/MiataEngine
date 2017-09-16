@@ -8,8 +8,9 @@ option(IDTECH2RED_DEDICATED "Skip building of client-side modules" ON)
 file(READ "BuildNum.ini" IDTECH2RED_PREVBUILD LIMIT 4)
 math(EXPR IDTECH2RED_BUILD "${IDTECH2RED_PREVBUILD} + 1")
 #set(IDTECH2RED_PREVBUILD ${IDTECH2RED_BUILD} CACHE INTERNAL "Previous build number")
-message(STATUS "Starting Build #" ${IDTECH2RED_BUILD})
 file(WRITE "BuildNum.ini" ${IDTECH2RED_BUILD})
+
+message(STATUS "Starting Build #" ${IDTECH2RED_BUILD})
 
 # Don't add the "lib" prefix for shared libs
 set(CMAKE_SHARED_LIBRARY_PREFIX "")
@@ -39,6 +40,7 @@ add_subdirectory(game)
 if(NOT IDTECH2RED_DEDICATED)
 	#add_subdirectory(launcher)
 	#add_subdirectory(render)
+	add_subdirectory(video)
 	add_subdirectory(input)
 	#add_subdirectory(sound)
 	add_subdirectory(menu)

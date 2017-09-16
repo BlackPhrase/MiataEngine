@@ -25,13 +25,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 class CCvarList;
 class CCmdList;
-class CCvarController;
 class CCmdArgs;
 
 class CCmdExecutor final
 {
 public:
-	CCmdExecutor(CCvarList *apCvarList, CCmdList *apCmdList, CCvarController *apCvarController);
+	CCmdExecutor(CCvarList *apCvarList, CCmdList *apCmdList);
 	~CCmdExecutor();
 	
 	// Parses a single line of text into arguments and tries to execute it.
@@ -45,5 +44,4 @@ private:
 	
 	CCvarList *mpCvarList{nullptr};
 	CCmdList *mpCmdList{nullptr};
-	CCvarController *mpCvarController{nullptr};
 };

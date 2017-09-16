@@ -35,7 +35,7 @@ Memory is cleared / released when a server or client begins, not when they end.
 
 quakeparms_t host_parms;
 
-qboolean host_initialized; // true if into command execution
+bool host_initialized; // true if into command execution
 
 double host_frametime;
 double host_time;
@@ -121,7 +121,8 @@ void Host_Error(char *error, ...)
 {
 	va_list argptr;
 	char string[1024];
-	static qboolean inerror = false;
+	
+	static bool inerror = false;
 
 	if(inerror)
 		Sys_Error("Host_Error: recursively entered");
@@ -153,7 +154,7 @@ void Host_Error(char *error, ...)
 Host_FindMaxClients
 ================
 */
-void Host_FindMaxClients(void)
+void Host_FindMaxClients()
 {
 	int i;
 
@@ -204,7 +205,7 @@ void Host_FindMaxClients(void)
 Host_InitLocal
 ======================
 */
-void Host_InitLocal(void)
+void Host_InitLocal()
 {
 	Host_InitCommands();
 
@@ -240,7 +241,7 @@ Host_WriteConfiguration
 Writes key bindings and archived cvars to config.cfg
 ===============
 */
-void Host_WriteConfiguration(void)
+void Host_WriteConfiguration()
 {
 	FILE *f;
 
@@ -336,7 +337,7 @@ Called when the player is getting totally kicked off the host
 if (crash = true), don't bother sending signofs
 =====================
 */
-void SV_DropClient(qboolean crash)
+void SV_DropClient(bool crash)
 {
 	int saveSelf;
 	int i;
@@ -398,7 +399,7 @@ Host_ShutdownServer
 This only happens at the end of a game, not between levels
 ==================
 */
-void Host_ShutdownServer(qboolean crash)
+void Host_ShutdownServer(bool crash)
 {
 	int i;
 	int count;
@@ -468,15 +469,17 @@ This clears all the memory used by both the client and server, but does
 not reinitialize anything.
 ================
 */
-void Host_ClearMemory(void)
+void Host_ClearMemory()
 {
 	Con_DPrintf("Clearing memory\n");
 	D_FlushCaches();
 	Mod_ClearAll();
+	
 	if(host_hunklevel)
 		Hunk_FreeToLowMark(host_hunklevel);
 
 	cls.signon = 0;
+	
 	memset(&sv, 0, sizeof(sv));
 	memset(&cl, 0, sizeof(cl));
 }
@@ -490,11 +493,11 @@ Host_FilterTime
 Returns false if the time is too short to run a frame
 ===================
 */
-qboolean Host_FilterTime(float time)
+bool Host_FilterTime(float time)
 {
 	realtime += time;
 
-	if(!cls.timedemo && realtime - oldrealtime < 1.0 / 72.0)
+	if(!cls.timedemo && realtime - oldrealtime < 1.0f / 72.0f)
 		return false; // framerate is too high
 
 	host_frametime = realtime - oldrealtime;
@@ -504,10 +507,10 @@ qboolean Host_FilterTime(float time)
 		host_frametime = host_framerate.value;
 	else
 	{ // don't allow really long or short frames
-		if(host_frametime > 0.1)
-			host_frametime = 0.1;
-		if(host_frametime < 0.001)
-			host_frametime = 0.001;
+		if(host_frametime > 0.1f)
+			host_frametime = 0.1f;
+		if(host_frametime < 0.001f)
+			host_frametime = 0.001f;
 	}
 
 	return true;
@@ -520,7 +523,7 @@ Host_GetConsoleCommands
 Add them exactly as if they had been typed at the console
 ===================
 */
-void Host_GetConsoleCommands(void)
+void Host_GetConsoleCommands()
 {
 	char *cmd;
 
@@ -541,7 +544,7 @@ Host_ServerFrame
 */
 #ifdef FPS_20
 
-void _Host_ServerFrame(void)
+void _Host_ServerFrame()
 {
 	// run the world state
 	pr_global_struct->frametime = host_frametime;
@@ -555,7 +558,7 @@ void _Host_ServerFrame(void)
 		SV_Physics();
 }
 
-void Host_ServerFrame(void)
+void Host_ServerFrame()
 {
 	float save_host_frametime;
 	float temp_host_frametime;
@@ -587,7 +590,7 @@ void Host_ServerFrame(void)
 
 #else
 
-void Host_ServerFrame(void)
+void Host_ServerFrame()
 {
 	// run the world state
 	pr_global_struct->frametime = host_frametime;
@@ -650,9 +653,7 @@ void _Host_Frame(float time)
 
 	// fetch results from server
 	if(cls.state == ca_connected)
-	{
 		CL_ReadFromServer();
-	}
 
 	// update video
 	if(host_speeds.value)

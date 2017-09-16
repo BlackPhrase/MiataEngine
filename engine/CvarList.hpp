@@ -21,13 +21,15 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <list>
 #include "ICvarList.hpp"
 
+struct ICvarDispatcher;
+
 struct IConVar;
 using tCvarList = std::list<IConVar*>;
 
 class CCvarList final : public ICvarList
 {
 public:
-	CCvarList();
+	CCvarList(ICvarDispatcher *apCvarDispatcher);
 	~CCvarList();
 	
 	bool Register(IConVar *variable) override;
@@ -37,5 +39,7 @@ public:
 	IConVar *Find(const char *var_name /*bool partial = false*/) const override;
 	IConVar *FindPartial(const char *var_name, int length) const;
 private:
+	ICvarDispatcher *mpCvarDispatcher{nullptr};
+	
 	tCvarList mlstCvars;
 };

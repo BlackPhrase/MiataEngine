@@ -22,6 +22,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #pragma once
 
 #include "commontypes.hpp"
+#include "ICvarDispatcher.hpp"
 
 /*
 ==========================================================
@@ -39,8 +40,13 @@ enum class eConVarFlags : int
 	//Server = BIT(3) ///< notifies players when changed
 };
 
+//struct ICvarDispatcher;
+
 struct IConVar
 {
+	///
+	virtual void SetDispatcher(ICvarDispatcher *dispatcher) = 0;
+	
 	///
 	virtual void Release() = 0;
 	

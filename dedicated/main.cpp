@@ -24,10 +24,12 @@ int main(int argc, char **argv)
 	host_parms.argc = argc;
 	host_parms.argv = argv;
 	
+	host_parms.dedicated = true;
+	
 	pHost->Init(&host_parms);
 	
 	while(true)
-		pHost->Frame(0.1);
+		pHost->Frame();
 	
 	pHost->Shutdown();
 	

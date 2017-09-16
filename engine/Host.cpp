@@ -24,6 +24,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "EngineInterface.hpp"
 #include "CvarList.hpp"
 #include "CvarController.hpp"
+#include "CvarDispatcher.hpp"
 #include "CmdList.hpp"
 #include "CmdExecutor.hpp"
 #include "CmdBuffer.hpp"
@@ -34,6 +35,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "IInput.hpp"
 #include "ISound.hpp"
 #include "INetwork.hpp"
+#include "IVideo.hpp"
+
+void Sys_Quit()
+{
+	exit(-1);
+};
 
 static void DoABarrelRoll(const CCmdArgs &aArgs)
 {
@@ -71,10 +78,11 @@ bool CHost::Init(quakeparms_t *parms)
 	mpLogger = std::make_unique<CLogger>();
 	mpEngineInterface = std::make_unique<CEngineInterface>(mpLogger.get());
 	
-	mpCvarList = std::make_unique<CCvarList>();
+	mpCvarDispatcher = std::make_unique<CCvarDispatcher>();
+	mpCvarList = std::make_unique<CCvarList>(mpCvarDispatcher.get());
 	mpCmdList = std::make_unique<CCmdList>();
 	mpCvarController = std::make_unique<CCvarController>(mpCvarList.get(), mpCmdList.get());
-	mpCmdExecutor = std::make_unique<CCmdExecutor>(mpCvarList.get(), mpCmdList.get(), mpCvarController.get());
+	mpCmdExecutor = std::make_unique<CCmdExecutor>(mpCvarList.get(), mpCmdList.get());
 	mpCmdBuffer = std::make_unique<CCmdBuffer>(mpLogger.get(), mpCmdExecutor.get());
 	
 	mpCvarList->Create("developer", "1");
@@ -114,25 +122,6 @@ bool CHost::Init(quakeparms_t *parms)
 	Con_Init();
 	*/
 	
-	mpGame = mpModuleLoader->LoadModule<IGame>("game", "GetGame");
-	mpGame->Init();
-	
-	mpMenu = mpModuleLoader->LoadModule<IMenu>("menu", "GetMenu");
-	mpMenu->Init();
-	
-	mpClGame = mpModuleLoader->LoadModule<IClientGame>("clgame", "GetClientGame");
-	mpClGame->Init();
-	
-	mpInput = mpModuleLoader->LoadModule<IInput>("input", "GetInput");
-	mpInput->Init();
-	//Key_Init();
-	
-	// TODO: check for "-nosound"
-	mpSound = mpModuleLoader->LoadModule<ISound>("sound", "GetSound");
-	mpSound->Init();
-	
-	// TODO: video
-	
 	//PR_Init();
 	//Mod_Init();
 	
@@ -140,52 +129,62 @@ bool CHost::Init(quakeparms_t *parms)
 	mpNetwork->Init();
 	
 	//SV_Init();
+	
+	mpGame = mpModuleLoader->LoadModule<IGame>("game", "GetGame");
+	mpGame->Init();
 
 	mpLogger->Printf("Exe: " __TIME__ " " __DATE__ "\n");
-	
-	//mpLogger->Printf("%4.1f megabyte heap\n", parms->memsize / (1024 * 1024.0));
+	mpLogger->Printf("%4.1f megabyte heap\n", parms->memsize / (1024 * 1024.0));
 
-	/*
-	R_InitTextures(); // needed even for dedicated servers
+	//R_InitTextures(); // needed even for dedicated servers
 
-	if(cls.state != ca_dedicated)
+	//if(cls.state != ca_dedicated)
+	if(!host_parms.dedicated)
 	{
-		host_basepal = (byte *)COM_LoadHunkFile("gfx/palette.lmp");
-		if(!host_basepal)
-			Sys_Error("Couldn't load gfx/palette.lmp");
-		host_colormap = (byte *)COM_LoadHunkFile("gfx/colormap.lmp");
-		if(!host_colormap)
-			Sys_Error("Couldn't load gfx/colormap.lmp");
+		//host_basepal = (byte *)COM_LoadHunkFile("gfx/palette.lmp");
+		//if(!host_basepal)
+			//Sys_Error("Couldn't load gfx/palette.lmp");
+		//host_colormap = (byte *)COM_LoadHunkFile("gfx/colormap.lmp");
+		//if(!host_colormap)
+			//Sys_Error("Couldn't load gfx/colormap.lmp");
 
+		mpInput = mpModuleLoader->LoadModule<IInput>("input", "GetInput");
+		
 #ifndef _WIN32 // on non win32, mouse comes before video for security reasons
-		IN_Init();
+		mpInput->Init();
 #endif
-		VID_Init(host_basepal);
+		
+		mpVideo = mpModuleLoader->LoadModule<IVideo>("video", "GetVideo");
+		mpVideo->Init(/*host_basepal*/);
 
-		Draw_Init();
-		SCR_Init();
-		R_Init();
-#ifndef _WIN32
+		//Draw_Init();
+		//SCR_Init();
+		//R_Init();
+		
 		// on Win32, sound initialization has to come before video initialization, so we
 		// can put up a popup if the sound hardware is in use
-		S_Init();
-#else
-
-#ifdef GLQUAKE
-		// FIXME: doesn't use the new one-window approach yet
-		S_Init();
-#endif
-
-#endif // _WIN32
-		CDAudio_Init();
-		Sbar_Init();
-		CL_Init();
+		//if(!mpCmdLine->CheckParm("-nosound"))
+		{
+			mpSound = mpModuleLoader->LoadModule<ISound>("sound", "GetSound");
+			mpSound->Init();
+		};
+		
+		//mpCDAudio->Init();
+		//Sbar_Init();
+		//CL_Init();
 		
 #ifdef _WIN32 // on non win32, mouse comes before video for security reasons
-		IN_Init();
+		mpInput->Init();
 #endif
+		
+		//Key_Init();
+		
+		mpMenu = mpModuleLoader->LoadModule<IMenu>("menu", "GetMenu");
+		mpMenu->Init();
+		
+		mpClGame = mpModuleLoader->LoadModule<IClientGame>("clgame", "GetClientGame");
+		mpClGame->Init();
 	};
-	*/
 
 	mpCmdBuffer->InsertText("exec quake.rc\n");
 
@@ -214,78 +213,81 @@ void CHost::Shutdown()
 	if(!host_initialized)
 		return;
 	
-	static bool isdown{false};
+	static bool bDown{false};
 	
-	if(isdown)
+	if(bDown)
 	{
 		printf("recursive shutdown\n");
 		return;
 	};
 	
-	isdown = true;
+	bDown = true;
 	
 	mpGame->Shutdown();
-	mpClGame->Shutdown();
-	mpMenu->Shutdown();
+	
+	// TODO: check for dedicated
+	//if(cls.state != ca_dedicated)
+	if(!host_parms.dedicated)
+	{
+		/*
+		// keep Con_Printf from trying to update the screen
+		scr_disabled_for_loading = true;
 
-	/*
-	// keep Con_Printf from trying to update the screen
-	scr_disabled_for_loading = true;
+		Host_WriteConfig();
 
-	Host_WriteConfiguration();
-
-	mpCDAudio->Shutdown();
-	*/
+		mpCDAudio->Shutdown();
+		*/
+		
+		mpClGame->Shutdown();
+		mpMenu->Shutdown();
+		
+		mpSound->Shutdown();
+		mpInput->Shutdown();
+		
+		mpVideo->Shutdown();
+	};
 	
 	mpNetwork->Shutdown();
-	mpSound->Shutdown();
-	mpInput->Shutdown();
 	
-	//if(cls.state != ca_dedicated)
-		//VID_Shutdown();
-	
-	//Sys_Quit();
+	Sys_Quit();
 };
 
-void CHost::Frame(double time) // was float
+void CHost::Frame()
 {
 	// Stop breaking the system!
 	if(!host_initialized)
 		return;
+
+	double time1 = 0.0; //Sys_FloatTime();
+	Update(0.1);
+	double time2 = 0.0; //Sys_FloatTime();
 	
-	double time1{0.0}, time2{0.0};
-	static double timetotal{0.0};
-	static int timecount{0};
-	int i{0}, c{0}, m{0};
+	Render();
 
-	//if(!serverprofile.value)
+	//if(serverprofile.value)
 	{
-		//_Frame(time);
-		//return;
+		static double timetotal{0.0};
+		static int timecount{0};
+		
+		timetotal += time2 - time1;
+		timecount++;
+
+		if(timecount < 1000)
+			return;
+
+		int m = timetotal * 1000 / timecount;
+		timecount = 0;
+		timetotal = 0;
+		int c{0};
+		
+		//for(int i = 0; i < svs.maxclients; i++)
+		{
+			//if(svs.clients[i].active)
+				//c++;
+		};
+
+		mpLogger->Printf("serverprofile: %2i clients %2i msec\n", c, m);
 	};
-
-	//time1 = Sys_FloatTime();
-	_Frame(time);
-	//time2 = Sys_FloatTime();
-
-	timetotal += time2 - time1;
-	timecount++;
-
-	if(timecount < 1000)
-		return;
-
-	m = timetotal * 1000 / timecount;
-	timecount = 0;
-	timetotal = 0;
-	c = 0;
-	
-	//for(i = 0; i < svs.maxclients; i++)
-	{
-		//if(svs.clients[i].active)
-			c++;
-	};
-
-	mpLogger->Printf("serverprofile: %2i clients %2i msec\n", c, m);
 	
 	static int tempframe{0};
 	++tempframe;
@@ -301,7 +303,7 @@ Host_Frame
 Runs all active servers
 ==================
 */
-void CHost::_Frame(double frametime)
+void CHost::Update(double frametime)
 {
 	static double time1{0.0};
 	static double time2{0.0};
@@ -330,8 +332,17 @@ void CHost::_Frame(double frametime)
 	mpNetwork->Frame();
 	mpGame->Frame();
 	
-	mpMenu->Frame();
-	mpSound->Frame();
-	mpInput->Frame();
-	mpClGame->Frame();
+	if(!host_parms.dedicated)
+	{
+		mpMenu->Frame();
+		mpSound->Frame();
+		mpInput->Frame();
+		mpClGame->Frame();
+		
+		mpVideo->CheckChanges();
+	};
+};
+
+void CHost::Render()
+{
 };
