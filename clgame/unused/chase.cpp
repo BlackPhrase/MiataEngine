@@ -17,6 +17,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
+
 // chase.c -- chase camera code
 
 #include "quakedef.hpp"
@@ -32,7 +33,7 @@ vec3_t chase_angles;
 vec3_t chase_dest;
 vec3_t chase_dest_angles;
 
-void Chase_Init(void)
+void Chase_Init()
 {
 	Cvar_RegisterVariable(&chase_back);
 	Cvar_RegisterVariable(&chase_up);
@@ -40,10 +41,10 @@ void Chase_Init(void)
 	Cvar_RegisterVariable(&chase_active);
 }
 
-void Chase_Reset(void)
+void Chase_Reset()
 {
 	// for respawning and teleporting
-	//	start position 12 units behind head
+	// start position 12 units behind head
 }
 
 void TraceLine(vec3_t start, vec3_t end, vec3_t impact)
@@ -56,7 +57,7 @@ void TraceLine(vec3_t start, vec3_t end, vec3_t impact)
 	VectorCopy(trace.endpos, impact);
 }
 
-void Chase_Update(void)
+void Chase_Update()
 {
 	int i;
 	float dist;
@@ -69,6 +70,7 @@ void Chase_Update(void)
 	// calc exact destination
 	for(i = 0; i < 3; i++)
 		chase_dest[i] = r_refdef.vieworg[i] - forward[i] * chase_back.value - right[i] * chase_right.value;
+	
 	chase_dest[2] = r_refdef.vieworg[2] + chase_up.value;
 
 	// find the spot the player is looking at
@@ -78,8 +80,10 @@ void Chase_Update(void)
 	// calculate pitch to look at the same spot from camera
 	VectorSubtract(stop, r_refdef.vieworg, stop);
 	dist = DotProduct(stop, forward);
+	
 	if(dist < 1)
 		dist = 1;
+	
 	r_refdef.viewangles[PITCH] = -atan(stop[2] / dist) / M_PI * 180;
 
 	// move towards destination

@@ -17,58 +17,65 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// console.c
+
+/// @file
 
 #ifdef NeXT
-#include <libc.h>
+	#include <libc.h>
 #endif
+
 #ifndef _MSC_VER
-#include <unistd.h>
+	#include <unistd.h>
 #endif
+
 #include <fcntl.h>
+
 #include "quakedef.hpp"
 
-int con_linewidth;
+int con_linewidth{0};
 
-float con_cursorspeed = 4;
+float con_cursorspeed{4.0f};
 
 #define CON_TEXTSIZE 16384
 
-qboolean con_forcedup; // because no entities to refresh
+bool con_forcedup{false}; ///< because no entities to refresh
 
-int con_totallines; // total lines in console scrollback
-int con_backscroll; // lines up from bottom to display
-int con_current;    // where next message will be printed
-int con_x;          // offset in current line for next print
-char *con_text = 0;
+int con_totallines{0}; ///< total lines in console scrollback
+int con_backscroll{0}; ///< lines up from bottom to display
+int con_current{0};    ///< where next message will be printed
+int con_x{0};          ///< offset in current line for next print
 
-cvar_t con_notifytime = { "con_notifytime", "3" }; //seconds
+char *con_text{nullptr};
 
-#define NUM_CON_TIMES 4
-float con_times[NUM_CON_TIMES]; // realtime time the line was generated
-                                // for transparent notify lines
+cvar_t con_notifytime = {"con_notifytime", "3"}; ///< seconds
 
-int con_vislines;
+constexpr auto NUM_CON_TIMES{4};
 
-qboolean con_debuglog;
+float con_times[NUM_CON_TIMES]{}; ///< realtime time the line was generated
+                                  /// for transparent notify lines
+
+int con_vislines{0};
+
+bool con_debuglog{false};
 
 #define MAXCMDLINE 256
+
 extern char key_lines[32][MAXCMDLINE];
 extern int edit_line;
 extern int key_linepos;
 
-qboolean con_initialized;
+bool con_initialized{false};
 
-int con_notifylines; // scan lines to clear for notify lines
+int con_notifylines{0}; ///< scan lines to clear for notify lines
 
-extern void M_Menu_Main_f(void);
+extern void M_Menu_Main_f();
 
 /*
 ================
 Con_ToggleConsole_f
 ================
 */
-void Con_ToggleConsole_f(void)
+void Con_ToggleConsole_f()
 {
 	if(key_dest == key_console)
 	{
@@ -95,7 +102,7 @@ void Con_ToggleConsole_f(void)
 Con_Clear_f
 ================
 */
-void Con_Clear_f(void)
+void Con_Clear_f()
 {
 	if(con_text)
 		Q_memset(con_text, ' ', CON_TEXTSIZE);
@@ -106,7 +113,7 @@ void Con_Clear_f(void)
 Con_ClearNotify
 ================
 */
-void Con_ClearNotify(void)
+void Con_ClearNotify()
 {
 	int i;
 
@@ -119,9 +126,9 @@ void Con_ClearNotify(void)
 Con_MessageMode_f
 ================
 */
-extern qboolean team_message;
+extern bool team_message;
 
-void Con_MessageMode_f(void)
+void Con_MessageMode_f()
 {
 	key_dest = key_message;
 	team_message = false;
@@ -132,7 +139,7 @@ void Con_MessageMode_f(void)
 Con_MessageMode2_f
 ================
 */
-void Con_MessageMode2_f(void)
+void Con_MessageMode2_f()
 {
 	key_dest = key_message;
 	team_message = true;
@@ -145,7 +152,7 @@ Con_CheckResize
 If the line width has changed, reformat the buffer.
 ================
 */
-void Con_CheckResize(void)
+void Con_CheckResize()
 {
 	int i, j, width, oldwidth, oldtotallines, numlines, numchars;
 	char tbuf[CON_TEXTSIZE];
@@ -205,7 +212,7 @@ void Con_CheckResize(void)
 Con_Init
 ================
 */
-void Con_Init(void)
+void Con_Init()
 {
 #define MAXGAMEDIRLEN 1000
 	char temp[MAXGAMEDIRLEN + 1];
@@ -246,7 +253,7 @@ void Con_Init(void)
 Con_Linefeed
 ===============
 */
-void Con_Linefeed(void)
+void Con_Linefeed()
 {
 	con_x = 0;
 	con_current++;
@@ -262,7 +269,7 @@ All console printing must go through this in order to be logged to disk
 If no console is visible, the notify window will pop up.
 ================
 */
-void Con_Print(char *txt)
+void Con_Print(const char *txt)
 {
 	int y;
 	int c, l;
@@ -367,18 +374,11 @@ void Con_Printf(char *fmt, ...)
 {
 	va_list argptr;
 	char msg[MAXPRINTMSG];
-	static qboolean inupdate;
+	static bool inupdate;
 
 	va_start(argptr, fmt);
 	vsprintf(msg, fmt, argptr);
 	va_end(argptr);
-
-	// also echo to debugging console
-	Sys_Printf("%s", msg); // also echo to debugging console
-
-	// log all messages to file
-	if(con_debuglog)
-		Con_DebugLog(va("%s/qconsole.log", com_gamedir), "%s", msg);
 
 	if(!con_initialized)
 		return;
@@ -393,7 +393,7 @@ void Con_Printf(char *fmt, ...)
 	if(cls.signon != SIGNONS && !scr_disabled_for_loading)
 	{
 		// protect against infinite loop if something in SCR_UpdateScreen calls
-		// Con_Printd
+		// Con_Printf
 		if(!inupdate)
 		{
 			inupdate = true;
@@ -410,13 +410,12 @@ Con_DPrintf
 A Con_Printf that only shows up if the "developer" cvar is set
 ================
 */
-void Con_DPrintf(char *fmt, ...)
+void Con_DPrintf(const char *fmt, ...)
 {
 	va_list argptr;
 	char msg[MAXPRINTMSG];
 
-	if(!developer.value)
-		return; // don't confuse non-developers with techie stuff...
+	
 
 	va_start(argptr, fmt);
 	vsprintf(msg, fmt, argptr);
@@ -432,7 +431,7 @@ Con_SafePrintf
 Okay to call even when the screen can't be updated
 ==================
 */
-void Con_SafePrintf(char *fmt, ...)
+void Con_SafePrintf(const char *fmt, ...)
 {
 	va_list argptr;
 	char msg[1024];
@@ -463,7 +462,7 @@ Con_DrawInput
 The input line scrolls horizontally if typing goes beyond the right edge
 ================
 */
-void Con_DrawInput(void)
+void Con_DrawInput()
 {
 	int y;
 	int i;
@@ -502,7 +501,7 @@ Con_DrawNotify
 Draws the last few lines of output transparently over the game top
 ================
 */
-void Con_DrawNotify(void)
+void Con_DrawNotify()
 {
 	int x, v;
 	char *text;
@@ -561,7 +560,7 @@ Draws the console with the solid background
 The typing input line at the bottom should only be drawn if typing is allowed
 ================
 */
-void Con_DrawConsole(int lines, qboolean drawinput)
+void Con_DrawConsole(int lines, bool drawinput)
 {
 	int i, x, y;
 	int rows;
@@ -601,7 +600,7 @@ void Con_DrawConsole(int lines, qboolean drawinput)
 Con_NotifyBox
 ==================
 */
-void Con_NotifyBox(char *text)
+void Con_NotifyBox(const char *text)
 {
 	double t1, t2;
 

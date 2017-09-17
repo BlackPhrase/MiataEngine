@@ -188,12 +188,6 @@ typedef struct
 {
 	int apiversion;
 
-	// the init function will only be called when a game starts,
-	// not each time a level is loaded.  Persistant data for clients
-	// and the server can be allocated in init
-	void (*Init)();
-	void (*Shutdown)();
-
 	// each new level entered will cause a call to SpawnEntities
 	void (*SpawnEntities)(char *mapname, char *entstring, char *spawnpoint);
 
@@ -215,8 +209,6 @@ typedef struct
 	void (*ClientDisconnect)(edict_t *ent);
 	void (*ClientCommand)(edict_t *ent);
 	void (*ClientThink)(edict_t *ent, usercmd_t *cmd);
-
-	void (*RunFrame)();
 
 	// ServerCommand will be called when an "sv <command>" command is issued on the
 	// server console.

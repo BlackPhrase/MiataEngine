@@ -34,8 +34,8 @@ all big things are allocated on the hunk.
 ==============================================================================
 */
 
-#define ZONEID 0x1d4a11
-#define MINFRAGMENT 64
+constexpr auto ZONEID = 0x1d4a11;
+constexpr auto MINFRAGMENT = 64;
 
 typedef struct memblock_s
 {

@@ -23,10 +23,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include <string>
 #include <vector>
+#include "ICmdArgs.hpp"
 
 using tStringVec = std::vector<std::string>;
 
-class CCmdArgs final
+class CCmdArgs final : public ICmdArgs
 {
 public:
 	CCmdArgs(int argc, char **argv);
@@ -42,15 +43,15 @@ public:
 	/// Breaks the string up into arg tokens
 	//void TokenizeString(const char *text);
 	
-	const char *GetByIndex(int id) const;
+	const char *GetByIndex(int id) const override;
 	
 	/// Returns the position (1 to argc-1) in the command's argument list
 	/// where the given parameter apears, or 0 if not present
 	//int CheckParm(const char *parm);
 	
-	int GetCount() const {return mvArgs.size();}
+	int GetCount() const override {return mvArgs.size();}
 	
-	const char *ToString() const;
+	const char *ToString() const override;
 private:
 	tStringVec mvArgs;
 	//static char *cmd_args{nullptr};

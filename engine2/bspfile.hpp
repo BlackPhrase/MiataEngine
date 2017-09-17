@@ -32,8 +32,8 @@ constexpr auto MAX_MAP_HULLS = 4;
 #define MAX_MAP_ENTSTRING 65536
 
 #define MAX_MAP_PLANES 32767
-#define MAX_MAP_NODES 32767     // because negative shorts are contents
-#define MAX_MAP_CLIPNODES 32767 //
+#define MAX_MAP_NODES 32767     ///< because negative shorts are contents
+#define MAX_MAP_CLIPNODES 32767
 #define MAX_MAP_LEAFS 8192
 #define MAX_MAP_VERTS 65535
 #define MAX_MAP_FACES 65535
@@ -42,6 +42,7 @@ constexpr auto MAX_MAP_HULLS = 4;
 #define MAX_MAP_EDGES 256000
 #define MAX_MAP_SURFEDGES 512000
 #define MAX_MAP_TEXTURES 512
+
 #define MAX_MAP_MIPTEX 0x200000
 #define MAX_MAP_LIGHTING 0x100000
 #define MAX_MAP_VISIBILITY 0x100000
@@ -58,10 +59,10 @@ constexpr auto MAX_VALUE = 1024;
 constexpr auto BSPVERSION = 29;
 constexpr auto TOOLVERSION = 2;
 
-typedef struct
+struct lump_t
 {
 	int fileofs, filelen;
-} lump_t;
+};
 
 enum
 {
@@ -86,26 +87,26 @@ enum
 
 typedef struct
 {
-	vec3_t mins, maxs;
-	vec3_t origin;
-	int headnode[MAX_MAP_HULLS];
-	int visleafs; ///< not including the solid leaf 0
-	int firstface, numfaces;
+	vec3_t mins{}, maxs{};
+	vec3_t origin{};
+	int headnode[MAX_MAP_HULLS]{};
+	int visleafs{0}; ///< not including the solid leaf 0
+	int firstface{0}, numfaces{0};
 } dmodel_t;
 
 typedef struct
 {
-	int version;
-	lump_t lumps[HEADER_LUMPS];
+	int version{0};
+	lump_t lumps[HEADER_LUMPS]{};
 } dheader_t;
 
-typedef struct
+struct dmiptexlump_t
 {
-	int nummiptex;
-	int dataofs[4]; // [nummiptex]
-} dmiptexlump_t;
+	int nummiptex{0};
+	int dataofs[4]{}; ///< [nummiptex]
+};
 
-#define MIPLEVELS 4
+constexpr auto MIPLEVELS = 4;
 
 typedef struct miptex_s
 {
@@ -114,10 +115,10 @@ typedef struct miptex_s
 	unsigned offsets[MIPLEVELS]; // four mip maps stored
 } miptex_t;
 
-typedef struct
+struct dvertex_t
 {
 	vec3_t point;
-} dvertex_t;
+};
 
 // 0-2 are axial planes
 #define PLANE_X 0
@@ -129,12 +130,12 @@ typedef struct
 #define PLANE_ANYY 4
 #define PLANE_ANYZ 5
 
-typedef struct
+struct dplane_t
 {
-	vec3_t normal;
-	float dist;
-	int type; // PLANE_X - PLANE_ANYZ ?remove? trivial to regenerate
-} dplane_t;
+	vec3_t normal{};
+	float dist{0.0f};
+	int type{0}; // PLANE_X - PLANE_ANYZ ?remove? trivial to regenerate
+};
 
 #define CONTENTS_EMPTY -1
 #define CONTENTS_SOLID -2
@@ -175,13 +176,14 @@ typedef struct texinfo_s
 	int miptex;
 	int flags;
 } texinfo_t;
+
 #define TEX_SPECIAL 1 // sky or slime, no lightmap or 256 subdivision
 
 // note that edge 0 is never used, because negative edge nums are used for
 // counterclockwise use of the edge in a face
 typedef struct
 {
-	unsigned short v[2]; // vertex numbers
+	unsigned short v[2]; ///< vertex numbers
 } dedge_t;
 
 #define MAXLIGHTMAPS 4
@@ -196,7 +198,7 @@ typedef struct
 
 	// lighting info
 	byte styles[MAXLIGHTMAPS];
-	int lightofs; // start of [numstyles*surfsize] samples
+	int lightofs; ///< start of [numstyles * surfsize] samples
 } dface_t;
 
 #define AMBIENT_WATER 0
@@ -204,23 +206,23 @@ typedef struct
 #define AMBIENT_SLIME 2
 #define AMBIENT_LAVA 3
 
-#define NUM_AMBIENTS 4 // automatic ambient sounds
+#define NUM_AMBIENTS 4 ///< automatic ambient sounds
 
-// leaf 0 is the generic CONTENTS_SOLID leaf, used for all solid areas
-// all other leafs need visibility info
-typedef struct
+/// leaf 0 is the generic CONTENTS_SOLID leaf, used for all solid areas
+/// all other leafs need visibility info
+struct dleaf_t
 {
 	int contents;
-	int visofs; // -1 = no visibility info
+	int visofs; ///< -1 = no visibility info
 
-	short mins[3]; // for frustum culling
+	short mins[3]; ///< for frustum culling
 	short maxs[3];
 
 	unsigned short firstmarksurface;
 	unsigned short nummarksurfaces;
 
 	byte ambient_level[NUM_AMBIENTS];
-} dleaf_t;
+};
 
 //============================================================================
 

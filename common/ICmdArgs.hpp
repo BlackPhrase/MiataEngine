@@ -27,7 +27,7 @@ struct ICmdArgs
 	/// if arg > argc, so string operations are always safe
 	virtual const char *GetByIndex(int id) const = 0;
 	
-	///
+	/// @return argument count
 	virtual int GetCount() const = 0;
 	
 	///

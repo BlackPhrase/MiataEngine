@@ -23,9 +23,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "quakedef.hpp"
 #include "CvarList.hpp"
 #include "IConVar.hpp"
+#include "Logger.hpp"
 
-CCvarList::CCvarList(ICvarDispatcher *apCvarDispatcher)
-	: mpCvarDispatcher(apCvarDispatcher){}
+CCvarList::CCvarList(CLogger *apLogger, ICvarDispatcher *apCvarDispatcher)
+	: mpLogger(apLogger), mpCvarDispatcher(apCvarDispatcher){}
 
 CCvarList::~CCvarList()
 {
@@ -47,8 +48,7 @@ bool CCvarList::Register(IConVar *variable)
 	// first check to see if it has already been defined
 	if(Find(variable->GetName()))
 	{
-		//Con_Printf("Can't register variable %s, already defined\n", variable->GetName());
-		//printf("Prevent double registration of cvar %s\n", variable->GetString());
+		mpLogger->Printf("Can't register variable %s, already defined\n", variable->GetName());
 		return false;
 	};
 	

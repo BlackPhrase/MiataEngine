@@ -17,20 +17,20 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-// mathlib.h
+/// @file
 
 #pragma once
 
-typedef float vec_t;
-typedef vec_t vec3_t[3];
-typedef vec_t vec5_t[5];
+using vec_t = float;
+using vec3_t = vec_t[3];
+using vec5_t = vec_t[5];
 
-typedef int fixed4_t;
-typedef int fixed8_t;
-typedef int fixed16_t;
+using fixed4_t = int;
+using fixed8_t = int;
+using fixed16_t = int;
 
 #ifndef M_PI
-#define M_PI 3.14159265358979323846 // matches value in gcc v2 math.h
+	constexpr auto M_PI{3.14159265358979323846}; ///< matches value in gcc v2 math.h
 #endif
 
 struct mplane_s;
@@ -41,6 +41,7 @@ extern int nanmask;
 #define IS_NAN(x) (((*(int *)&x) & nanmask) == nanmask)
 
 #define DotProduct(x, y) (x[0] * y[0] + x[1] * y[1] + x[2] * y[2])
+
 #define VectorSubtract(a, b, c) \
 	{                           \
 		c[0] = a[0] - b[0];     \
@@ -73,13 +74,13 @@ void CrossProduct(vec3_t v1, vec3_t v2, vec3_t cross);
 float VectorNormalize(vec3_t v); // returns vector length
 void VectorInverse(vec3_t v);
 void VectorScale(vec3_t in, vec_t scale, vec3_t out);
+
 int Q_log2(int val);
 
 void R_ConcatRotations(float in1[3][3], float in2[3][3], float out[3][3]);
 void R_ConcatTransforms(float in1[3][4], float in2[3][4], float out[3][4]);
 
-void FloorDivMod(double numer, double denom, int *quotient,
-                 int *rem);
+void FloorDivMod(double numer, double denom, int *quotient, int *rem);
 fixed16_t Invert24To16(fixed16_t val);
 fixed16_t Mul16_30(fixed16_t multiplier, fixed16_t multiplicand);
 int GreatestCommonDivisor(int i1, int i2);

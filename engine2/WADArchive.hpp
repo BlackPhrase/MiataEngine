@@ -22,17 +22,38 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
-class CConsole final //: public IConsole
+#include "commontypes.hpp"
+
+struct lumpinfo_t
+{
+	int32_t filepos{0};
+	int32_t disksize{0};
+	int32_t size{0}; ///< uncompressed
+	
+	char type{0};
+	char compression{0};
+	char pad1{0}, pad2{0};
+	char name[16]{}; ///< must be null terminated
+};
+
+struct TWADData
+{
+	byte *wad_base{nullptr};
+	lumpinfo_t *wad_lumps{nullptr};
+	
+	int wad_numlumps{0};
+};
+
+extern TWADData gWADDAta;
+
+class CWADManager final
 {
 public:
-	CConsole();
-	~CConsole();
+	CWADManager();
+	~CWADManager();
 	
-	//void Init();
+	void LoadWadFile(const char *filename);
 	
-	void Print(const char *msg);
-	//void Printf(const char *fmt, ...);
-	//void DPrintf(const char *fmt, ...);
+	lumpinfo_t *GetLumpinfo(TWADData *pData, const char *name);
 private:
-	bool initialized{false};
 };

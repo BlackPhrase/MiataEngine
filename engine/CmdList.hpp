@@ -21,17 +21,20 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include <list>
 #include "cmd.hpp"
+#include "ICmdList.hpp"
+
+class CLogger;
 
 typedef struct cmd_function_s
 {
-	cmd_function_s(const char *aname, xcommand_t afunction, const char *adesc = "")
+	cmd_function_s(const char *aname, pfnCmdCallback afunction, const char *adesc = "")
 		: name(aname), function(afunction), desc(adesc){}
 	~cmd_function_s() = default;
 	
 	const char *GetName() const {return name;}
 	const char *GetDesc() const {return desc;}
 	
-	void Exec(const CCmdArgs &aArgs)
+	void Exec(const ICmdArgs &aArgs)
 	{
 		if(function)
 			function(aArgs);
@@ -42,21 +45,21 @@ typedef struct cmd_function_s
 	const char *name{""};
 	const char *desc{""};
 	
-	xcommand_t function{nullptr};
+	pfnCmdCallback function{nullptr};
 } cmd_function_t;
 
 using tCmdList = std::list<cmd_function_t*>;
 
-class CCmdList final
+class CCmdList final : public ICmdList
 {
 public:
-	CCmdList();
+	CCmdList(CLogger *apLogger);
 	~CCmdList();
 	
 	/// Called by the init functions of other parts of the program to
 	/// register commands and functions to call for them.
 	/// The cmd_name is referenced later, so it should not be in temp memory
-	bool Add(const char *cmd_name, xcommand_t function, const char *desc = "");
+	bool Add(const char *cmd_name, pfnCmdCallback function, const char *desc = "") override;
 	
 	///
 	bool Remove(const char *cmd_name);
@@ -65,7 +68,9 @@ public:
 	cmd_function_t *Find(const char *cmd_name) const;
 	
 	/// Used by the cvar code to check for cvar / command name overlap
-	bool Exists(const char *cmd_name) const;
+	bool Exists(const char *cmd_name) const override;
 private:
+	CLogger *mpLogger{nullptr};
+	
 	tCmdList mlstCmds; ///< possible commands to execute
 };

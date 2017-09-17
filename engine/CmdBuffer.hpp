@@ -18,10 +18,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 /// @file
-/// @brief command buffer
+/// @brief command buffer component
 
 #pragma once
 
+#include "ICmdBuffer.hpp"
 #include "SizeBuffer.hpp"
 
 //===========================================================================
@@ -41,7 +42,7 @@ The game starts with a Cbuf_AddText ("exec quake.rc\n"); Cbuf_Execute ();
 class CLogger;
 class CCmdExecutor;
 
-class CCmdBuffer final
+class CCmdBuffer final : public ICmdBuffer
 {
 public:
 	CCmdBuffer(CLogger *apLogger, CCmdExecutor *apExecutor);
@@ -51,19 +52,19 @@ public:
 	void Init();
 	
 	/// As new commands are generated from the console or keybindings,
-	/// the text is added to the end of the command buffer.
-	void AddText(const char *text);
+	/// the text is added to the end of the command buffer
+	void AddText(const char *text) override;
 	
 	/// When a command wants to issue other commands immediately, the text is
 	/// inserted at the beginning of the buffer, before any remaining unexecuted
-	/// commands.
-	void InsertText(const char *text);
+	/// commands
+	void InsertText(const char *text) override;
 	
 	/// Pulls off \n terminated lines of text from the command buffer and sends
 	/// them to the command executor.  Stops when the buffer is empty.
 	/// Normally called once per frame, but may be explicitly invoked.
 	/// Do not call inside a command function!
-	void Execute();
+	void Execute() override;
 private:
 	CSizeBuffer cmd_text;
 	

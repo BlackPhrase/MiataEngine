@@ -20,8 +20,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "quakedef.hpp"
 #include "CmdList.hpp"
 #include "CmdArgs.hpp"
+#include "Logger.hpp"
 
-CCmdList::CCmdList() = default;
+CCmdList::CCmdList(CLogger *apLogger) : mpLogger(apLogger){}
 
 CCmdList::~CCmdList()
 {
@@ -36,7 +37,7 @@ CCmdList::~CCmdList()
 Cmd_AddCommand
 ============
 */
-bool CCmdList::Add(const char *cmd_name, xcommand_t function, const char *desc)
+bool CCmdList::Add(const char *cmd_name, pfnCmdCallback function, const char *desc)
 {
 	// because hunk allocation would get stomped
 	//if(host_initialized)
@@ -45,14 +46,14 @@ bool CCmdList::Add(const char *cmd_name, xcommand_t function, const char *desc)
 	// fail if the command is a variable name
 	//if(Cvar_VariableString(cmd_name)[0])
 	{
-		//Con_Printf("Cmd_AddCommand: %s already defined as a var\n", cmd_name);
+		//mpLogger->Printf("Cmd_AddCommand: %s is already defined as a var\n", cmd_name);
 		//return false;
 	};
 
 	// fail if the command already exists
 	if(Exists(cmd_name))
 	{
-		//Con_Printf("Cmd_AddCommand: %s already defined\n", cmd_name);
+		mpLogger->Printf("Cmd_AddCommand: %s is already defined\n", cmd_name);
 		return false;
 	};
 

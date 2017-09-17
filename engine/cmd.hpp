@@ -17,7 +17,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-// cmd.h -- command execution
+/// @file
+/// @brief command execution
 
 #pragma once
 
@@ -34,9 +35,7 @@ not apropriate.
 
 */
 
-class CCmdArgs;
-
-using xcommand_t = void (*)(const CCmdArgs &aArgs);
+struct ICmdArgs;
 
 enum cmd_source_t
 {
@@ -53,7 +52,7 @@ char *Cmd_CompleteCommand(const char *partial);
 // attempts to match a partial command for automatic command line completion
 // returns NULL if nothing fits
 
-void Cmd_ForwardToServer(const CCmdArgs &aArgs);
+void Cmd_ForwardToServer(const ICmdArgs &aArgs);
 // adds the current command line as a clc_stringcmd to the client message.
 // things like godmode, noclip, etc, are commands directed to the server,
 // so when they are typed in at the console, they will need to be forwarded.

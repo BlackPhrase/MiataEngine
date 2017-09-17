@@ -1,34 +1,12 @@
-/*
-Copyright (C) 1996-1997 Id Software, Inc.
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
-
-See the GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-*/
-
-// server.h
-
-#pragma once
 
 typedef struct
 {
-	int maxclients;
-	int maxclientslimit;
-	struct client_s *clients;    // [maxclients]
+	
+	
+	
 	int serverflags;             // episode completion information
-	qboolean changelevel_issued; // cleared when at SV_SpawnServer
+	bool changelevel_issued; // cleared when at SV_SpawnServer
 } server_static_t;
 
 //=============================================================================
@@ -38,10 +16,10 @@ typedef enum { ss_loading,
 
 typedef struct
 {
-	qboolean active; // false if only a net client
+	bool active; // false if only a net client
 
-	qboolean paused;
-	qboolean loadgame; // handle connections specially
+	bool paused;
+	bool loadgame; // handle connections specially
 
 	double time;
 
@@ -65,13 +43,13 @@ typedef struct
 	                      // be used to reference the world ent
 	server_state_t state; // some actions are only valid during load
 
-	sizebuf_t datagram;
+	CSizeBuffer datagram;
 	byte datagram_buf[MAX_DATAGRAM];
 
-	sizebuf_t reliable_datagram; // copied to all clients at end of frame
+	CSizeBuffer reliable_datagram; // copied to all clients at end of frame
 	byte reliable_datagram_buf[MAX_DATAGRAM];
 
-	sizebuf_t signon;
+	CSizeBuffer signon;
 	byte signon_buf[8192];
 } server_t;
 
@@ -80,11 +58,11 @@ typedef struct
 
 typedef struct client_s
 {
-	qboolean active;     // false = client is free
-	qboolean spawned;    // false = don't send datagrams
-	qboolean dropasap;   // has been told to go to another level
-	qboolean privileged; // can execute any host command
-	qboolean sendsignon; // only valid before spawned
+	bool active;     // false = client is free
+	bool spawned;    // false = don't send datagrams
+	bool dropasap;   // has been told to go to another level
+	bool privileged; // can execute any host command
+	bool sendsignon; // only valid before spawned
 
 	double last_message; // reliable messages must be sent
 	                     // periodically
@@ -94,7 +72,7 @@ typedef struct client_s
 	usercmd_t cmd;  // movement
 	vec3_t wishdir; // intended motion calced from cmd
 
-	sizebuf_t message; // can be added to at any time,
+	CSizeBuffer message; // can be added to at any time,
 	                   // copied and clear once per frame
 	byte msgbuf[MAX_MSGLEN];
 	edict_t *edict; // EDICT_NUM(clientnum+1)
@@ -217,43 +195,41 @@ extern edict_t *sv_player;
 
 //===========================================================
 
-void SV_Init(void);
+void SV_Init();
 
 void SV_StartParticle(vec3_t org, vec3_t dir, int color, int count);
-void SV_StartSound(edict_t *entity, int channel, char *sample, int volume,
+void SV_StartSound(edict_t *entity, int channel, const char *sample, int volume,
                    float attenuation);
 
-void SV_DropClient(qboolean crash);
 
-void SV_SendClientMessages(void);
-void SV_ClearDatagram(void);
 
-int SV_ModelIndex(char *name);
+void SV_SendClientMessages();
+void SV_ClearDatagram();
 
-void SV_SetIdealPitch(void);
+int SV_ModelIndex(const char *name);
 
-void SV_AddUpdates(void);
+void SV_SetIdealPitch();
 
-void SV_ClientThink(void);
+void SV_AddUpdates();
+
+void SV_ClientThink();
 void SV_AddClientToServer(struct qsocket_s *ret);
 
-void SV_ClientPrintf(char *fmt, ...);
-void SV_BroadcastPrintf(char *fmt, ...);
+void SV_Physics();
 
-void SV_Physics(void);
-
-qboolean SV_CheckBottom(edict_t *ent);
-qboolean SV_movestep(edict_t *ent, vec3_t move, qboolean relink);
+bool SV_CheckBottom(edict_t *ent);
+bool SV_movestep(edict_t *ent, vec3_t move, bool relink);
 
 void SV_WriteClientdataToMessage(edict_t *ent, sizebuf_t *msg);
 
-void SV_MoveToGoal(void);
+void SV_MoveToGoal();
 
-void SV_CheckForNewClients(void);
-void SV_RunClients(void);
+void SV_CheckForNewClients();
+void SV_RunClients();
 void SV_SaveSpawnparms();
+
 #ifdef QUAKE2
-void SV_SpawnServer(char *server, char *startspot);
+void SV_SpawnServer(const char *server, const char *startspot);
 #else
-void SV_SpawnServer(char *server);
+void SV_SpawnServer(const char *server);
 #endif

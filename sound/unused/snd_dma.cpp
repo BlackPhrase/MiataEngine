@@ -25,12 +25,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "winquake.hpp"
 #endif
 
-void S_Play(void);
-void S_PlayVol(void);
-void S_SoundList(void);
+void S_Play();
+void S_PlayVol();
+void S_SoundList();
 void S_Update_();
 void S_StopAllSounds(qboolean clear);
-void S_StopAllSoundsC(void);
+void S_StopAllSoundsC();
 
 // =======================================================================
 // Internal sound data & structures
@@ -41,7 +41,6 @@ int total_channels;
 
 int snd_blocked = 0;
 static qboolean snd_ambient = 1;
-qboolean snd_initialized = false;
 
 // pointer should go away
 volatile dma_t *shm = 0;
@@ -93,17 +92,17 @@ cvar_t _snd_mixahead = { "_snd_mixahead", "0.1", true };
 qboolean fakedma = false;
 int fakedma_updates = 15;
 
-void S_AmbientOff(void)
+void S_AmbientOff()
 {
 	snd_ambient = false;
 }
 
-void S_AmbientOn(void)
+void S_AmbientOn()
 {
 	snd_ambient = true;
 }
 
-void S_SoundInfo_f(void)
+void S_SoundInfo_f()
 {
 	if(!sound_started || !shm)
 	{
@@ -127,7 +126,7 @@ S_Startup
 ================
 */
 
-void S_Startup(void)
+void S_Startup()
 {
 	int rc;
 
@@ -151,18 +150,10 @@ void S_Startup(void)
 	sound_started = 1;
 }
 
-/*
-================
-S_Init
-================
-*/
-void S_Init(void)
+
+void S_Init()
 {
-	Con_Printf("\nSound Initialization\n");
-
-	if(COM_CheckParm("-nosound"))
-		return;
-
+	
 	if(COM_CheckParm("-simsound"))
 		fakedma = true;
 
@@ -172,25 +163,11 @@ void S_Init(void)
 	Cmd_AddCommand("soundlist", S_SoundList);
 	Cmd_AddCommand("soundinfo", S_SoundInfo_f);
 
-	Cvar_RegisterVariable(&nosound);
-	Cvar_RegisterVariable(&volume);
-	Cvar_RegisterVariable(&precache);
-	Cvar_RegisterVariable(&loadas8bit);
-	Cvar_RegisterVariable(&bgmvolume);
-	Cvar_RegisterVariable(&bgmbuffer);
-	Cvar_RegisterVariable(&ambient_level);
-	Cvar_RegisterVariable(&ambient_fade);
-	Cvar_RegisterVariable(&snd_noextraupdate);
-	Cvar_RegisterVariable(&snd_show);
-	Cvar_RegisterVariable(&_snd_mixahead);
+	
 
-	if(host_parms.memsize < 0x800000)
-	{
-		Cvar_Set("loadas8bit", "1");
-		Con_Printf("loading all sounds as 8bit\n");
-	}
+	
 
-	snd_initialized = true;
+	
 
 	S_Startup();
 
@@ -229,11 +206,8 @@ void S_Init(void)
 	S_StopAllSounds(true);
 }
 
-// =======================================================================
-// Shutdown sound engine
-// =======================================================================
 
-void S_Shutdown(void)
+void S_Shutdown()
 {
 	if(!sound_started)
 		return;
@@ -245,9 +219,7 @@ void S_Shutdown(void)
 	sound_started = 0;
 
 	if(!fakedma)
-	{
 		SNDDMA_Shutdown();
-	}
 }
 
 // =======================================================================
@@ -531,12 +503,12 @@ void S_StopAllSounds(qboolean clear)
 		S_ClearBuffer();
 }
 
-void S_StopAllSoundsC(void)
+void S_StopAllSoundsC()
 {
 	S_StopAllSounds(true);
 }
 
-void S_ClearBuffer(void)
+void S_ClearBuffer()
 {
 	int clear;
 
@@ -638,7 +610,7 @@ void S_StaticSound(sfx_t *sfx, vec3_t origin, float vol, float attenuation)
 S_UpdateAmbientSounds
 ===================
 */
-void S_UpdateAmbientSounds(void)
+void S_UpdateAmbientSounds()
 {
 	mleaf_t *l;
 	float vol;
@@ -781,7 +753,7 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 	S_Update_();
 }
 
-void GetSoundtime(void)
+void GetSoundtime()
 {
 	int samplepos;
 	static int buffers;
@@ -814,7 +786,7 @@ void GetSoundtime(void)
 #endif
 }
 
-void S_ExtraUpdate(void)
+void S_ExtraUpdate()
 {
 #ifdef _WIN32
 	IN_Accumulate();
@@ -825,7 +797,7 @@ void S_ExtraUpdate(void)
 	S_Update_();
 }
 
-void S_Update_(void)
+void S_Update_()
 {
 	unsigned endtime;
 	int samps;
@@ -881,7 +853,7 @@ console functions
 ===============================================================================
 */
 
-void S_Play(void)
+void S_Play()
 {
 	static int hash = 345;
 	int i;
@@ -904,7 +876,7 @@ void S_Play(void)
 	}
 }
 
-void S_PlayVol(void)
+void S_PlayVol()
 {
 	static int hash = 543;
 	int i;
@@ -929,7 +901,7 @@ void S_PlayVol(void)
 	}
 }
 
-void S_SoundList(void)
+void S_SoundList()
 {
 	int i;
 	sfx_t *sfx;
@@ -971,14 +943,14 @@ void S_LocalSound(char *sound)
 	S_StartSound(cl.viewentity, -1, sfx, vec3_origin, 1, 1);
 }
 
-void S_ClearPrecache(void)
+void S_ClearPrecache()
 {
 }
 
-void S_BeginPrecaching(void)
+void S_BeginPrecaching()
 {
 }
 
-void S_EndPrecaching(void)
+void S_EndPrecaching()
 {
 }

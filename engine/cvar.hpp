@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-// cvar.h
+/// @file
 
 #pragma once
 
@@ -56,13 +56,13 @@ public:
 	
 	const char *GetString() const override {return string.c_str();}
 	int GetInt() const override {return (int)GetFloat();}
-	float GetFloat() const override {return 0.0f;}
+	float GetFloat() const override {return Q_atof(string.c_str());}
 	bool GetBool() const override {return false;}
 private:
 	std::string string{""};
 	
 	ICvarDispatcher *mpDispatcher{nullptr};
-	cvar_t *next{nullptr};
+	//cvar_t *next{nullptr}; // ???
 	
 	const char *m_name{""};
 	const char *m_desc{""};

@@ -18,21 +18,24 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// vid.h -- video driver defs
+/// @file
+/// @brief video driver defs
 
 #pragma once
 
-#define VID_CBITS 6
-#define VID_GRADES (1 << VID_CBITS)
+constexpr auto VID_CBITS = 6;
+constexpr auto VID_GRADES = (1 << VID_CBITS);
 
-// a pixel can be one, two, or four bytes
+/// a pixel can be one, two, or four bytes
 typedef byte pixel_t;
 
-typedef struct vrect_s
+struct vrect_t
 {
-	int x, y, width, height;
-	struct vrect_s *pnext;
-} vrect_t;
+	int x, y;
+	int width, height;
+	
+	vrect_t *pnext;
+};
 
 typedef struct
 {
@@ -41,44 +44,41 @@ typedef struct
 	unsigned short *colormap16; // 256 * VID_GRADES size
 	int fullbright;             // index of first fullbright color
 	unsigned rowbytes;          // may be > width if displayed in a window
+	
 	unsigned width;
 	unsigned height;
+	
 	float aspect; // width / height -- < 0 is taller than wide
 	int numpages;
 	int recalc_refdef; // if true, recalc vid-based stuff
+	
 	pixel_t *conbuffer;
 	int conrowbytes;
+	
 	unsigned conwidth;
 	unsigned conheight;
+	
 	int maxwarpwidth;
 	int maxwarpheight;
-	pixel_t *direct; // direct drawing to framebuffer, if not
-	                 //  NULL
+	
+	pixel_t *direct; // direct drawing to framebuffer, if not NULL
 } viddef_t;
 
-extern viddef_t vid; // global video state
+extern viddef_t vid; ///< global video state
 
 // Video module initialization etc
 
-void VID_Init();
-// Called at startup to set up translation tables, takes 256 8 bit RGB values
-// the palette data will go away after the call, so it must be copied off if
-// the video driver will need it again
+/// flushes the given rectangles from the view buffer to the screen
+//void VID_Update(vrect_t *rects);
 
-void VID_Shutdown();
-// Called at shutdown
+/// sets the mode; only used by the Quake engine for resetting to mode 0 (the
+/// base mode) on memory allocation failures
+//int VID_SetMode(int modenum, byte *palette);
 
-//void	VID_Update (vrect_t *rects);
-// flushes the given rectangles from the view buffer to the screen
-
-void VID_CheckChanges();
-
-//int VID_SetMode (int modenum, unsigned char *palette);
-// sets the mode; only used by the Quake engine for resetting to mode 0 (the
-// base mode) on memory allocation failures
-
-//void VID_HandlePause (bool pause);
-// called only on Win32, when pause happens, so the mouse can be released
+#ifdef _WIN32
+	/// called only on Win32, when pause happens, so the mouse can be released
+	//void VID_HandlePause(bool pause);
+#endif
 
 void VID_MenuInit();
 void VID_MenuDraw();

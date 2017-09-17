@@ -17,7 +17,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 /// @file
-/// @brief module interface
+/// @brief game module interface
 
 #pragma once
 
@@ -25,7 +25,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 struct IGame
 {
-	///
+	/// The init function will only be called when a game starts,
+	/// not each time a level is loaded. Persistant data for clients
+	/// and the server can be allocated in init
 	virtual bool Init() = 0;
 	
 	///

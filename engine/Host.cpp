@@ -17,6 +17,9 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+/// @file
+/// @brief coordinates spawning and killing of local servers
+
 #include <cstdio>
 #include "Host.hpp"
 #include "ModuleLoader.hpp"
@@ -37,15 +40,31 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "INetwork.hpp"
 #include "IVideo.hpp"
 
+/*
+
+A server can always be started, even if the system started out as a client
+to a remote system.
+
+A client can NOT be started if the system started as a dedicated server.
+
+Memory is cleared / released when a server or client begins, not when they end.
+
+*/
+
 void Sys_Quit()
 {
 	exit(-1);
 };
 
-static void DoABarrelRoll(const CCmdArgs &aArgs)
+static void DoABarrelRoll(const ICmdArgs &aArgs)
 {
-	printf("Barrel roll!\n");
-	system("pause");
+	int count{1};
+	
+	if(aArgs.GetCount() == 2)
+		count = atoi(aArgs.GetByIndex(1));
+	
+	for(int i = 0; i < count; i++)
+		printf("Barrel roll!\n");
 };
 
 CHost::CHost() = default;
@@ -75,15 +94,16 @@ bool CHost::Init(quakeparms_t *parms)
 		//Sys_Error("Only %4.1f megs of memory available, can't execute game", parms->memsize / (float)0x100000);
 
 	mpLogger = std::make_unique<CLogger>();
-	mpEngineInterface = std::make_unique<CEngineInterface>(mpLogger.get());
-	mpModuleLoader = std::make_unique<CModuleLoader>(mpEngineInterface.get());
 	
 	mpCvarDispatcher = std::make_unique<CCvarDispatcher>();
-	mpCvarList = std::make_unique<CCvarList>(mpCvarDispatcher.get());
-	mpCmdList = std::make_unique<CCmdList>();
+	mpCvarList = std::make_unique<CCvarList>(mpLogger.get(), mpCvarDispatcher.get());
+	mpCmdList = std::make_unique<CCmdList>(mpLogger.get());
 	mpCvarController = std::make_unique<CCvarController>(mpCvarList.get(), mpCmdList.get());
 	mpCmdExecutor = std::make_unique<CCmdExecutor>(mpLogger.get(), mpCvarList.get(), mpCmdList.get());
 	mpCmdBuffer = std::make_unique<CCmdBuffer>(mpLogger.get(), mpCmdExecutor.get());
+	
+	mpEngineInterface = std::make_unique<CEngineInterface>(mpLogger.get(), mpCmdBuffer.get(), mpCvarList.get(), mpCvarController.get(), mpCmdList.get());
+	mpModuleLoader = std::make_unique<CModuleLoader>(mpEngineInterface.get());
 	
 	mpCvarList->Create("developer", "1");
 	
@@ -100,7 +120,7 @@ bool CHost::Init(quakeparms_t *parms)
 	mpCmdExecutor->ExecString("developer", src_client);
 	mpCmdExecutor->ExecString("developer 2", src_client);
 	mpCmdExecutor->ExecString("developer", src_client);
-	mpCmdExecutor->ExecString("barrelroll", src_client);
+	mpCmdExecutor->ExecString("barrelroll 3", src_client);
 	mpCmdExecutor->ExecString("quit", src_client);
 	
 	//Memory_Init(parms->membase, parms->memsize);
@@ -336,9 +356,9 @@ void CHost::Update(double frametime)
 	
 	if(!host_parms.dedicated)
 	{
-		mpMenu->Frame();
-		mpSound->Frame();
 		mpInput->Frame();
+		mpSound->Frame();
+		mpMenu->Frame();
 		mpClGame->Frame();
 	};
 };

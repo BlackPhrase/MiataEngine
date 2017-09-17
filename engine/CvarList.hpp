@@ -22,6 +22,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include "ICvarList.hpp"
 
 struct ICvarDispatcher;
+class CLogger;
 
 struct IConVar;
 using tCvarList = std::list<IConVar*>;
@@ -29,7 +30,7 @@ using tCvarList = std::list<IConVar*>;
 class CCvarList final : public ICvarList
 {
 public:
-	CCvarList(ICvarDispatcher *apCvarDispatcher);
+	CCvarList(CLogger *apLogger, ICvarDispatcher *apCvarDispatcher);
 	~CCvarList();
 	
 	bool Register(IConVar *variable) override;
@@ -40,6 +41,7 @@ public:
 	IConVar *FindPartial(const char *var_name, int length) const;
 private:
 	ICvarDispatcher *mpCvarDispatcher{nullptr};
+	CLogger *mpLogger{nullptr};
 	
 	tCvarList mlstCvars;
 };

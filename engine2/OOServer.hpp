@@ -22,17 +22,23 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
-class CConsole final //: public IConsole
+class CServer final
 {
 public:
-	CConsole();
-	~CConsole();
+	CServer();
+	~CServer();
 	
-	//void Init();
+	void DropClient(client_t *pclient, bool crash, const char *reason, ...);
+	void ClientPrintf(client_t *pclient, const char *fmt, ...);
 	
-	void Print(const char *msg);
-	//void Printf(const char *fmt, ...);
-	//void DPrintf(const char *fmt, ...);
+	client_t *GetClientByIndex(int id) const;
+	
+	void BroadcastPrintf(const char *fmt, ...);
+	
+	int GetMaxClients() const;
 private:
-	bool initialized{false};
+	struct client_s *clients{nullptr}; ///< [maxclients]
+	
+	int maxclients{0};
+	//int maxclientslimit{0};
 };

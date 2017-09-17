@@ -65,34 +65,32 @@ int Q_memcmp(const void *m1, const void *m2, int count)
 		count--;
 		if(((byte *)m1)[count] != ((byte *)m2)[count])
 			return -1;
-	}
+	};
+	
 	return 0;
 }
 
 void Q_strcpy(char *dest, const char *src)
 {
 	while(*src)
-	{
 		*dest++ = *src++;
-	}
+
 	*dest++ = 0;
 }
 
 void Q_strncpy(char *dest, const char *src, int count)
 {
 	while(*src && count--)
-	{
 		*dest++ = *src++;
-	}
+	
 	if(count)
 		*dest++ = 0;
 }
 
 int Q_strlen(const char *str)
 {
-	int count;
-
-	count = 0;
+	int count{0};
+	
 	while(str[count])
 		count++;
 
@@ -102,10 +100,13 @@ int Q_strlen(const char *str)
 char *Q_strrchr(char *s, char c)
 {
 	int len = Q_strlen(s);
+	
 	s += len;
+	
 	while(len--)
 		if(*--s == c)
 			return s;
+	
 	return 0;
 }
 
@@ -121,11 +122,13 @@ int Q_strcmp(const char *s1, const char *s2)
 	{
 		if(*s1 != *s2)
 			return -1; // strings not equal
+		
 		if(!*s1)
 			return 0; // strings are equal
+		
 		s1++;
 		s2++;
-	}
+	};
 
 	return -1;
 }
@@ -136,13 +139,16 @@ int Q_strncmp(const char *s1, const char *s2, int count)
 	{
 		if(!count--)
 			return 0;
+		
 		if(*s1 != *s2)
 			return -1; // strings not equal
+		
 		if(!*s1)
 			return 0; // strings are equal
+		
 		s1++;
 		s2++;
-	}
+	};
 
 	return -1;
 }
@@ -167,7 +173,8 @@ int Q_strncasecmp(const char *s1, const char *s2, int n)
 				c2 -= ('a' - 'A');
 			if(c1 != c2)
 				return -1; // strings not equal
-		}
+		};
+		
 		if(!c1)
 			return 0; // strings are equal
 		              //              s1++;
@@ -215,16 +222,14 @@ int Q_atoi(const char *str)
 				val = (val << 4) + c - 'A' + 10;
 			else
 				return val * sign;
-		}
-	}
+		};
+	};
 
 	//
 	// check for character
 	//
 	if(str[0] == '\'')
-	{
 		return sign * str[1];
-	}
 
 	//
 	// assume decimal
@@ -232,10 +237,12 @@ int Q_atoi(const char *str)
 	while(1)
 	{
 		c = *str++;
+		
 		if(c < '0' || c > '9')
 			return val * sign;
+		
 		val = val * 10 + c - '0';
-	}
+	};
 
 	return 0;
 }
@@ -274,8 +281,8 @@ float Q_atof(const char *str)
 				val = (val * 16) + c - 'A' + 10;
 			else
 				return val * sign;
-		}
-	}
+		};
+	};
 
 	//
 	// check for character
@@ -293,24 +300,28 @@ float Q_atof(const char *str)
 	while(1)
 	{
 		c = *str++;
+		
 		if(c == '.')
 		{
 			decimal = total;
 			continue;
-		}
+		};
+		
 		if(c < '0' || c > '9')
 			break;
+		
 		val = val * 10 + c - '0';
 		total++;
-	}
+	};
 
 	if(decimal == -1)
 		return val * sign;
+	
 	while(total > decimal)
 	{
 		val /= 10;
 		total--;
-	}
+	};
 
 	return val * sign;
 }
