@@ -19,3 +19,10 @@ void CMenu::Frame()
 {
 	
 };
+
+/*
+void CMenu::Draw()
+{
+	mvStates[meCurrentState]->Draw();
+};
+*/

@@ -87,78 +87,13 @@ void CL_ClearState(void)
 	cl.free_efrags[i].entnext = NULL;
 }
 
-/*
-=====================
-CL_Disconnect
 
-Sends a disconnect message to the server
-This is also called on Host_Error, so it shouldn't cause any errors
-=====================
-*/
-void CL_Disconnect(void)
-{
-	// stop sounds (especially looping!)
-	S_StopAllSounds(true);
-
-	// bring the console down and fade the colors back to normal
-	//	SCR_BringDownConsole ();
-
-	// if running a local server, shut it down
-	if(cls.demoplayback)
-		CL_StopPlayback();
-	else if(cls.state == ca_connected)
-	{
-		if(cls.demorecording)
-			CL_Stop_f();
-
-		Con_DPrintf("Sending clc_disconnect\n");
-		SZ_Clear(&cls.message);
-		MSG_WriteByte(&cls.message, clc_disconnect);
-		NET_SendUnreliableMessage(cls.netcon, &cls.message);
-		SZ_Clear(&cls.message);
-		NET_Close(cls.netcon);
-
-		cls.state = ca_disconnected;
-		if(sv.active)
-			Host_ShutdownServer(false);
-	}
-
-	cls.demoplayback = cls.timedemo = false;
-	cls.signon = 0;
-}
 
 void CL_Disconnect_f(void)
 {
 	CL_Disconnect();
 	if(sv.active)
 		Host_ShutdownServer(false);
-}
-
-/*
-=====================
-CL_EstablishConnection
-
-Host should be either "local" or a net address to be passed on
-=====================
-*/
-void CL_EstablishConnection(char *host)
-{
-	if(cls.state == ca_dedicated)
-		return;
-
-	if(cls.demoplayback)
-		return;
-
-	CL_Disconnect();
-
-	cls.netcon = NET_Connect(host);
-	if(!cls.netcon)
-		Host_Error("CL_Connect: connect failed\n");
-	Con_DPrintf("CL_EstablishConnection: connected to %s\n", host);
-
-	cls.demonum = -1; // not in the demo loop now
-	cls.state = ca_connected;
-	cls.signon = 0; // need all the signon messages before playing
 }
 
 /*
@@ -610,44 +545,6 @@ void CL_RelinkEntities(void)
 			cl_numvisedicts++;
 		}
 	}
-}
-
-/*
-===============
-CL_ReadFromServer
-
-Read all incoming data from the server
-===============
-*/
-int CL_ReadFromServer(void)
-{
-	int ret;
-
-	cl.oldtime = cl.time;
-	cl.time += host_frametime;
-
-	do
-	{
-		ret = CL_GetMessage();
-		if(ret == -1)
-			Host_Error("CL_ReadFromServer: lost server connection");
-		if(!ret)
-			break;
-
-		cl.last_received_message = realtime;
-		CL_ParseServerMessage();
-	} while(ret && cls.state == ca_connected);
-
-	if(cl_shownet.value)
-		Con_Printf("\n");
-
-	CL_RelinkEntities();
-	CL_UpdateTEnts();
-
-	//
-	// bring the links up to date
-	//
-	return 0;
 }
 
 /*

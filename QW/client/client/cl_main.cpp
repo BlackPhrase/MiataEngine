@@ -124,7 +124,7 @@ int			fps_count;
 
 jmp_buf 	host_abort;
 
-void Master_Connect_f (void);
+void Master_Connect_f ();
 
 float	server_version = 0;	// version of server we connected to
 
@@ -147,7 +147,7 @@ char soundlist_name[] =
 CL_Quit_f
 ==================
 */
-void CL_Quit_f (void)
+void CL_Quit_f ()
 {
 	if (1 /* key_dest != key_console */ /* && cls.state != ca_dedicated */)
 	{
@@ -163,114 +163,10 @@ void CL_Quit_f (void)
 CL_Version_f
 ======================
 */
-void CL_Version_f (void)
+void CL_Version_f ()
 {
 	Con_Printf ("Version %4.2f\n", VERSION);
 	Con_Printf ("Exe: "__TIME__" "__DATE__"\n");
-}
-
-
-/*
-=======================
-CL_SendConnectPacket
-
-called by CL_Connect_f and CL_CheckResend
-======================
-*/
-void CL_SendConnectPacket (void)
-{
-	netadr_t	adr;
-	char	data[2048];
-	double t1, t2;
-// JACK: Fixed bug where DNS lookups would cause two connects real fast
-//       Now, adds lookup time to the connect time.
-//		 Should I add it to realtime instead?!?!
-
-	if (cls.state != ca_disconnected)
-		return;
-
-	t1 = Sys_DoubleTime ();
-
-	if (!NET_StringToAdr (cls.servername, &adr))
-	{
-		Con_Printf ("Bad server address\n");
-		connect_time = -1;
-		return;
-	}
-
-	if (!NET_IsClientLegal(&adr))
-	{
-		Con_Printf ("Illegal server address\n");
-		connect_time = -1;
-		return;
-	}
-
-	if (adr.port == 0)
-		adr.port = BigShort (27500);
-	t2 = Sys_DoubleTime ();
-
-	connect_time = realtime+t2-t1;	// for retransmit requests
-
-	cls.qport = Cvar_VariableValue("qport");
-
-	Info_SetValueForStarKey (cls.userinfo, "*ip", NET_AdrToString(adr), MAX_INFO_STRING);
-
-//	Con_Printf ("Connecting to %s...\n", cls.servername);
-	sprintf (data, "%c%c%c%cconnect %i %i %i \"%s\"\n",
-		255, 255, 255, 255,	PROTOCOL_VERSION, cls.qport, cls.challenge, cls.userinfo);
-	NET_SendPacket (strlen(data), data, adr);
-}
-
-/*
-=================
-CL_CheckForResend
-
-Resend a connect message if the last one has timed out
-
-=================
-*/
-void CL_CheckForResend (void)
-{
-	netadr_t	adr;
-	char	data[2048];
-	double t1, t2;
-
-	if (connect_time == -1)
-		return;
-	if (cls.state != ca_disconnected)
-		return;
-	if (connect_time && realtime - connect_time < 5.0)
-		return;
-
-	t1 = Sys_DoubleTime ();
-	if (!NET_StringToAdr (cls.servername, &adr))
-	{
-		Con_Printf ("Bad server address\n");
-		connect_time = -1;
-		return;
-	}
-	if (!NET_IsClientLegal(&adr))
-	{
-		Con_Printf ("Illegal server address\n");
-		connect_time = -1;
-		return;
-	}
-
-	if (adr.port == 0)
-		adr.port = BigShort (27500);
-	t2 = Sys_DoubleTime ();
-
-	connect_time = realtime+t2-t1;	// for retransmit requests
-
-	Con_Printf ("Connecting to %s...\n", cls.servername);
-	sprintf (data, "%c%c%c%cgetchallenge\n", 255, 255, 255, 255);
-	NET_SendPacket (strlen(data), data, adr);
-}
-
-void CL_BeginServerConnect(void)
-{
-	connect_time = 0;
-	CL_CheckForResend();
 }
 
 /*
@@ -279,7 +175,7 @@ CL_Connect_f
 
 ================
 */
-void CL_Connect_f (void)
+void CL_Connect_f ()
 {
 	char	*server;
 
@@ -306,7 +202,7 @@ CL_Rcon_f
   an unconnected command.
 =====================
 */
-void CL_Rcon_f (void)
+void CL_Rcon_f ()
 {
 	char	message[1024];
 	int		i;
@@ -362,7 +258,7 @@ CL_ClearState
 
 =====================
 */
-void CL_ClearState (void)
+void CL_ClearState ()
 {
 	int			i;
 
@@ -395,30 +291,12 @@ void CL_ClearState (void)
 	cl.free_efrags[i].entnext = NULL;
 }
 
-/*
-=====================
-CL_Disconnect
-
-Sends a disconnect message to the server
-This is also called on Host_Error, so it shouldn't cause any errors
-=====================
-*/
-void CL_Disconnect (void)
+void CL_Disconnect ()
 {
 	byte	final[10];
 
 	connect_time = -1;
 
-#ifdef _WIN32
-	SetWindowText (mainwindow, "QuakeWorld: disconnected");
-#endif
-
-// stop sounds (especially looping!)
-	S_StopAllSounds (true);
-	
-// if running a local server, shut it down
-	if (cls.demoplayback)
-		CL_StopPlayback ();
 	else if (cls.state != ca_disconnected)
 	{
 		if (cls.demorecording)
@@ -445,7 +323,7 @@ void CL_Disconnect (void)
 
 }
 
-void CL_Disconnect_f (void)
+void CL_Disconnect_f ()
 {
 	CL_Disconnect ();
 }
@@ -459,7 +337,7 @@ user <name or userid>
 Dump userdata / masterdata for a user
 ====================
 */
-void CL_User_f (void)
+void CL_User_f ()
 {
 	int		uid;
 	int		i;
@@ -493,7 +371,7 @@ CL_Users_f
 Dump userids for all current players
 ====================
 */
-void CL_Users_f (void)
+void CL_Users_f ()
 {
 	int		i;
 	int		c;
@@ -513,7 +391,7 @@ void CL_Users_f (void)
 	Con_Printf ("%i total users\n", c);
 }
 
-void CL_Color_f (void)
+void CL_Color_f ()
 {
 	// just for quake compatability...
 	int		top, bottom;
@@ -556,7 +434,7 @@ CL_FullServerinfo_f
 Sent by server when serverinfo changes
 ==================
 */
-void CL_FullServerinfo_f (void)
+void CL_FullServerinfo_f ()
 {
 	char *p;
 	float v;
@@ -587,7 +465,7 @@ Allow clients to change userinfo
 ==================
 Casey was here :)
 */
-void CL_FullInfo_f (void)
+void CL_FullInfo_f ()
 {
 	char	key[512];
 	char	value[512];
@@ -639,7 +517,7 @@ CL_SetInfo_f
 Allow clients to change userinfo
 ==================
 */
-void CL_SetInfo_f (void)
+void CL_SetInfo_f ()
 {
 	if (Cmd_Argc() == 1)
 	{
@@ -668,7 +546,7 @@ packet <destination> <contents>
 Contents allows \n escape character
 ====================
 */
-void CL_Packet_f (void)
+void CL_Packet_f ()
 {
 	char	send[2048];
 	int		i, l;
@@ -715,7 +593,7 @@ CL_NextDemo
 Called to play the next demo in the demo loop
 =====================
 */
-void CL_NextDemo (void)
+void CL_NextDemo ()
 {
 	char	str[1024];
 
@@ -747,7 +625,7 @@ Just sent as a hint to the client that they should
 drop to full console
 =================
 */
-void CL_Changing_f (void)
+void CL_Changing_f ()
 {
 	if (cls.download)  // don't change when downloading
 		return;
@@ -766,27 +644,9 @@ CL_Reconnect_f
 The server is changing levels
 =================
 */
-void CL_Reconnect_f (void)
+void CL_Reconnect_f ()
 {
-	if (cls.download)  // don't change when downloading
-		return;
-
-	S_StopAllSounds (true);
-
-	if (cls.state == ca_connected) {
-		Con_Printf ("reconnecting...\n");
-		MSG_WriteChar (&cls.netchan.message, clc_stringcmd);
-		MSG_WriteString (&cls.netchan.message, "new");
-		return;
-	}
-
-	if (!*cls.servername) {
-		Con_Printf("No server to reconnect to...\n");
-		return;
-	}
-
-	CL_Disconnect();
-	CL_BeginServerConnect();
+	
 }
 
 /*
@@ -796,7 +656,7 @@ CL_ConnectionlessPacket
 Responses to broadcasts, etc
 =================
 */
-void CL_ConnectionlessPacket (void)
+void CL_ConnectionlessPacket ()
 {
 	char	*s;
 	int		c;
@@ -932,7 +792,7 @@ void CL_ConnectionlessPacket (void)
 CL_ReadPackets
 =================
 */
-void CL_ReadPackets (void)
+void CL_ReadPackets ()
 {
 //	while (NET_GetPacket ())
 	while (CL_GetMessage())
@@ -990,7 +850,7 @@ void CL_ReadPackets (void)
 CL_Download_f
 =====================
 */
-void CL_Download_f (void)
+void CL_Download_f ()
 {
 	char *p, *q;
 
@@ -1034,7 +894,7 @@ void CL_Download_f (void)
 CL_Minimize_f
 =================
 */
-void CL_Windows_f (void) {
+void CL_Windows_f () {
 //	if (modestate == MS_WINDOWED)
 //		ShowWindow(mainwindow, SW_MINIMIZE);
 //	else
@@ -1047,7 +907,7 @@ void CL_Windows_f (void) {
 CL_Init
 =================
 */
-void CL_Init (void)
+void CL_Init ()
 {
 	extern	cvar_t		baseskin;
 	extern	cvar_t		noskins;
@@ -1241,7 +1101,7 @@ Host_WriteConfiguration
 Writes key bindings and archived cvars to config.cfg
 ===============
 */
-void Host_WriteConfiguration (void)
+void Host_WriteConfiguration ()
 {
 	FILE	*f;
 
@@ -1301,10 +1161,6 @@ Runs all active servers
 int		nopacketcount;
 void Host_Frame (float time)
 {
-	static double		time1 = 0;
-	static double		time2 = 0;
-	static double		time3 = 0;
-	int			pass1, pass2, pass3;
 	float fps;
 	if (setjmp (host_abort) )
 		return;			// something bad happened, or the server disconnected
@@ -1326,25 +1182,9 @@ void Host_Frame (float time)
 	oldrealtime = realtime;
 	if (host_frametime > 0.2)
 		host_frametime = 0.2;
-		
-	// get new key events
-	Sys_SendKeyEvents ();
+	
 
-	// allow mice or other external controllers to add commands
-	IN_Commands ();
-
-	// process console commands
-	Cbuf_Execute ();
-
-	// fetch results from server
-	CL_ReadPackets ();
-
-	// send intentions now
-	// resend a connection request if necessary
-	if (cls.state == ca_disconnected) {
-		CL_CheckForResend ();
-	} else
-		CL_SendCmd ();
+	//CL_SendCmd
 
 	// Set up prediction for other players
 	CL_SetUpPlayerPrediction(false);
@@ -1398,7 +1238,7 @@ static void simple_crypt(char *buf, int len)
 		*buf++ ^= 0xff;
 }
 
-void Host_FixupModelNames(void)
+void Host_FixupModelNames()
 {
 	simple_crypt(emodel_name, sizeof(emodel_name) - 1);
 	simple_crypt(pmodel_name, sizeof(pmodel_name) - 1);
@@ -1431,9 +1271,7 @@ void Host_Init (quakeparms_t *parms)
 		Sys_Error ("Only %4.1f megs of memory reported, can't execute game", parms->memsize / (float)0x100000);
 
 	Memory_Init (parms->membase, parms->memsize);
-	Cbuf_Init ();
-	Cmd_Init ();
-	V_Init ();
+	
 
 	COM_Init ();
 
@@ -1453,12 +1291,6 @@ void Host_Init (quakeparms_t *parms)
 	
 	R_InitTextures ();
  
-	host_basepal = (byte *)COM_LoadHunkFile ("gfx/palette.lmp");
-	if (!host_basepal)
-		Sys_Error ("Couldn't load gfx/palette.lmp");
-	host_colormap = (byte *)COM_LoadHunkFile ("gfx/colormap.lmp");
-	if (!host_colormap)
-		Sys_Error ("Couldn't load gfx/colormap.lmp");
 #ifdef __linux__
 	IN_Init ();
 	CDAudio_Init ();
@@ -1493,43 +1325,7 @@ void Host_Init (quakeparms_t *parms)
 	Cbuf_AddText ("echo Type connect <internet address> or use GameSpy to connect to a game.\n");
 	Cbuf_AddText ("cl_warncmd 1\n");
 
-	Hunk_AllocName (0, "-HOST_HUNKLEVEL-");
-	host_hunklevel = Hunk_LowMark ();
-
-	host_initialized = true;
-
 	Con_Printf ("\nClient Version %4.2f (Build %04d)\n\n", VERSION, build_number());
 
 	Con_Printf ("ÄÅÅÅÅÅÅ QuakeWorld Initialized ÅÅÅÅÅÅÇ\n");	
 }
-
-
-/*
-===============
-Host_Shutdown
-
-FIXME: this is a callback from Sys_Quit and Sys_Error.  It would be better
-to run quit through here before the final handoff to the sys code.
-===============
-*/
-void Host_Shutdown(void)
-{
-	static qboolean isdown = false;
-	
-	if (isdown)
-	{
-		printf ("recursive shutdown\n");
-		return;
-	}
-	isdown = true;
-
-	Host_WriteConfiguration (); 
-		
-	CDAudio_Shutdown ();
-	NET_Shutdown ();
-	S_Shutdown();
-	IN_Shutdown ();
-	if (host_basepal)
-		VID_Shutdown();
-}
-

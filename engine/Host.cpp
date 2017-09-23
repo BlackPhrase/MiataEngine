@@ -134,16 +134,12 @@ bool CHost::Init(quakeparms_t *parms)
 	/*
 	Cmd_Init();
 	
-	V_Init();
-	Chase_Init();
-	
-	Host_InitVCR(parms);
+	//Host_InitVCR(parms);
 	
 	COM_Init(parms->basedir);
 	Host_InitLocal();
 	
 	W_LoadWadFile("gfx.wad");
-	Con_Init();
 	*/
 	
 	//PR_Init();
@@ -169,6 +165,11 @@ bool CHost::Init(quakeparms_t *parms)
 		//if(!host_colormap)
 			//Sys_Error("Couldn't load gfx/colormap.lmp");
 
+		//V_Init();
+		//Chase_Init();
+		
+		//Con_Init();
+		
 		mpInput = mpModuleLoader->LoadModule<IInput>("input", "GetInput");
 		
 #ifndef _WIN32 // on non win32, mouse comes before video for security reasons
@@ -265,7 +266,8 @@ void CHost::Shutdown()
 		mpSound->Shutdown();
 		mpInput->Shutdown();
 		
-		mpVideo->Shutdown();
+		//if(host_basepal)
+			mpVideo->Shutdown();
 	};
 	
 	mpNetwork->Shutdown();
@@ -342,12 +344,6 @@ void CHost::Update(double frametime)
 	//if(!Host_FilterTime(time))
 		//return; // don't run too fast, or packets will flood out
 
-	// get new key events
-	//Sys_SendKeyEvents();
-
-	// allow mice or other external controllers to add commands
-	//IN_Commands();
-
 	// process console commands
 	mpCmdBuffer->Execute();
 	
@@ -356,6 +352,28 @@ void CHost::Update(double frametime)
 	
 	if(!host_parms.dedicated)
 	{
+		// read the input right after the server frame to keep it responsive
+		
+		// get new key events
+		//Sys_SendKeyEvents();
+		
+		// allow mice or other external controllers to add commands
+		//IN_Commands();
+	
+		// exec the cmd buffer here once more?
+		// process console commands
+		//mpCmdBuffer->Execute();
+		
+		// fetch results from server
+		//CL_ReadPackets();
+		
+		// send intentions now
+		// resend a connection request if necessary
+		//if(cls.state == ca_disconnected)
+			//CL_CheckForResend();
+		//else
+			//CL_SendCmd();
+		
 		mpInput->Frame();
 		mpSound->Frame();
 		mpMenu->Frame();

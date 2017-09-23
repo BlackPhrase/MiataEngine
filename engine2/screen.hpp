@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// screen.h
+/// @file
 
 #pragma once
 
@@ -46,7 +46,7 @@ class Screen
 public:
 	void Init();
 
-	void UpdateScreen();
+	void Update();
 
 	void SizeUp();
 	void SizeDown();

@@ -22,10 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
-void IN_Init();
-
-void IN_Shutdown();
-
 void IN_Commands();
 // oportunity for devices to stick commands on the script buffer
 

@@ -52,8 +52,8 @@ int main(int argc, char **argv)
 	_getcwd(cwd, sizeof(cwd));
 	if(cwd[Q_strlen(cwd) - 1] == '\\')
 		cwd[Q_strlen(cwd) - 1] = 0;
-	parms.basedir = cwd; //"f:/quake";
-	                     //	parms.basedir = "f:\\quake";
+	parms.basedir = cwd;
+	//parms.basedir = "f:\\quake";
 
 	COM_InitArgv(argc, argv);
 
@@ -66,9 +66,6 @@ int main(int argc, char **argv)
 		argv = newargv;
 		COM_InitArgv(argc, argv);
 	}
-
-	parms.argc = argc;
-	parms.argv = argv;
 
 	oldtime = Sys_FloatTime();
 
@@ -85,7 +82,4 @@ int main(int argc, char **argv)
 		Host_Frame(time - oldtime);
 		oldtime = time;
 	}
-
-	/* return success of application */
-	return TRUE;
 }

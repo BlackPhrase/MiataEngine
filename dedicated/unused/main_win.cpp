@@ -7,7 +7,6 @@ char *newargv[256];
 
 int main(int argc, char **argv)
 {
-	quakeparms_t parms{};
 	double newtime, time, oldtime;
 	static char cwd[1024];
 	struct timeval timeout;
@@ -15,9 +14,6 @@ int main(int argc, char **argv)
 	int t;
 
 	COM_InitArgv(argc, argv);
-
-	parms.argc = com_argc;
-	parms.argv = com_argv;
 
 	parms.memsize = 16 * 1024 * 1024;
 
@@ -37,15 +33,9 @@ int main(int argc, char **argv)
 	parms.basedir = ".";
 	parms.cachedir = NULL;
 
-	printf("Host_Init\n");
-	Host_Init(&parms);
+	
 
-	// run one frame immediately for first heartbeat
-	Host_Frame(0.1);
-
-	//
-	// main loop
-	//
+	
 	oldtime = Sys_DoubleTime() - 0.1;
 	while(1)
 	{

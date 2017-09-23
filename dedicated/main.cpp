@@ -26,12 +26,20 @@ int main(int argc, char **argv)
 	
 	host_parms.dedicated = true;
 	
+	//printf("Host_Init\n");
 	pHost->Init(&host_parms);
 	
+	// run one frame immediately for first heartbeat
+	//pHost->Frame();
+	
+	//
+	// main loop
+	//
 	while(true)
 		pHost->Frame();
 	
 	pHost->Shutdown();
 	
+	// return success of application
 	return EXIT_SUCCESS;
 };
