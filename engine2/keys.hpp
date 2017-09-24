@@ -117,21 +117,32 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define K_MWHEELUP 239
 #define K_MWHEELDOWN 240
 
-typedef enum { key_game,
-	           key_console,
-	           key_message,
-	           key_menu } keydest_t;
+enum keydest_t
+{
+	key_game,
+	key_console,
+	key_message,
+	key_menu
+};
 
 extern keydest_t key_dest;
 extern char *keybindings[256];
 extern int key_repeats[256];
-extern int key_count; // incremented every key event
+extern int key_count; ///< incremented every key event
 extern int key_lastpress;
 
 void Key_Event(int key, bool down);
+
 void Key_Init();
+
 void Key_WriteBindings(FILE *f);
-void Key_SetBinding(int keynum, char *binding);
+
+void Key_SetBinding(int keynum, const char *binding);
+//const char *Key_GetBinding(int keynum);
+
+//bool Key_IsBound(int keynum);
+
 void Key_ClearStates();
 
-char *Key_KeynumToString(int keynum);
+const char *Key_KeynumToString(int keynum);
+//int Key_StringToKeynum(const char *str);

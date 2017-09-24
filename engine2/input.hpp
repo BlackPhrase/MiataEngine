@@ -18,17 +18,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// input.h -- external (non-keyboard) input devices
+/// @file
+/// @brief external (non-keyboard) input devices
 
 #pragma once
 
+/// oportunity for devices to stick commands on the script buffer
 void IN_Commands();
-// oportunity for devices to stick commands on the script buffer
 
+/// add additional movement on top of the keyboard move cmd
 void IN_Move(usercmd_t *cmd);
-// add additional movement on top of the keyboard move cmd
 
+/// restores all button and position states to defaults
 void IN_ClearStates();
-// restores all button and position states to defaults
 
 void IN_Accumulate();

@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// client.h
+/// @file
 
 #pragma once
 
@@ -32,7 +32,6 @@ typedef struct
 	float upmove;
 
 	byte lightlevel;
-
 } usercmd_t;
 
 // player_state_t is the information needed by a player entity
@@ -64,12 +63,6 @@ typedef struct
 
 typedef struct
 {
-	int length;
-	char map[MAX_STYLESTRING];
-} lightstyle_t;
-
-typedef struct
-{
 	char name[MAX_SCOREBOARDNAME];
 	float entertime;
 	int frags;
@@ -96,29 +89,6 @@ typedef struct
 //
 
 #define SIGNONS 4 // signon messages to receive before connected
-
-#define MAX_DLIGHTS 32
-typedef struct
-{
-	vec3_t origin;
-	float radius;
-	float die;      // stop lighting after this time
-	float decay;    // drop this each second
-	float minlight; // don't add when contributing less
-	int key;
-#ifdef QUAKE2
-	bool dark; // subtracts light instead of adding
-#endif
-} dlight_t;
-
-#define MAX_BEAMS 24
-typedef struct
-{
-	int entity;
-	struct model_s *model;
-	float endtime;
-	vec3_t start, end;
-} beam_t;
 
 #define MAX_EFRAGS 640
 

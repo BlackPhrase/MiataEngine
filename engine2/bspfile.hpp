@@ -26,10 +26,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 constexpr auto MAX_MAP_HULLS = 4;
 
-#define MAX_MAP_MODELS 256
-#define MAX_MAP_BRUSHES 4096
-#define MAX_MAP_ENTITIES 1024
-#define MAX_MAP_ENTSTRING 65536
+constexpr auto MAX_MAP_MODELS = 256;
+constexpr auto MAX_MAP_BRUSHES = 4096;
+constexpr auto MAX_MAP_ENTITIES = 1024;
+constexpr auto MAX_MAP_ENTSTRING = 65536;
 
 #define MAX_MAP_PLANES 32767
 #define MAX_MAP_NODES 32767     ///< because negative shorts are contents
@@ -112,7 +112,7 @@ typedef struct miptex_s
 {
 	char name[16];
 	unsigned width, height;
-	unsigned offsets[MIPLEVELS]; // four mip maps stored
+	unsigned offsets[MIPLEVELS]; ///< four mip maps stored
 } miptex_t;
 
 struct dvertex_t
@@ -120,12 +120,12 @@ struct dvertex_t
 	vec3_t point;
 };
 
-// 0-2 are axial planes
+/// 0-2 are axial planes
 #define PLANE_X 0
 #define PLANE_Y 1
 #define PLANE_Z 2
 
-// 3-5 are non-axial planes snapped to the nearest
+/// 3-5 are non-axial planes snapped to the nearest
 #define PLANE_ANYX 3
 #define PLANE_ANYY 4
 #define PLANE_ANYZ 5
@@ -134,7 +134,7 @@ struct dplane_t
 {
 	vec3_t normal{};
 	float dist{0.0f};
-	int type{0}; // PLANE_X - PLANE_ANYZ ?remove? trivial to regenerate
+	int type{0}; ///< PLANE_X - PLANE_ANYZ ?remove? trivial to regenerate
 };
 
 #define CONTENTS_EMPTY -1
@@ -143,8 +143,8 @@ struct dplane_t
 #define CONTENTS_SLIME -4
 #define CONTENTS_LAVA -5
 #define CONTENTS_SKY -6
-#define CONTENTS_ORIGIN -7 // removed at csg time
-#define CONTENTS_CLIP -8   // changed to contents_solid
+#define CONTENTS_ORIGIN -7 ///< removed at csg time
+#define CONTENTS_CLIP -8   ///< changed to contents_solid
 
 #define CONTENTS_CURRENT_0 -9
 #define CONTENTS_CURRENT_90 -10
@@ -157,42 +157,44 @@ struct dplane_t
 typedef struct
 {
 	int planenum;
-	short children[2]; // negative numbers are -(leafs+1), not nodes
-	short mins[3];     // for sphere culling
+	short children[2]; ///< negative numbers are -(leafs+1), not nodes
+	short mins[3];     ///< for sphere culling
 	short maxs[3];
 	unsigned short firstface;
-	unsigned short numfaces; // counting both sides
+	unsigned short numfaces; ///< counting both sides
 } dnode_t;
 
 typedef struct
 {
 	int planenum;
-	short children[2]; // negative numbers are contents
+	short children[2]; ///< negative numbers are contents
 } dclipnode_t;
 
 typedef struct texinfo_s
 {
-	float vecs[2][4]; // [s/t][xyz offset]
+	float vecs[2][4]; ///< [s/t][xyz offset]
 	int miptex;
 	int flags;
 } texinfo_t;
 
-#define TEX_SPECIAL 1 // sky or slime, no lightmap or 256 subdivision
+#define TEX_SPECIAL 1 ///< sky or slime, no lightmap or 256 subdivision
 
-// note that edge 0 is never used, because negative edge nums are used for
-// counterclockwise use of the edge in a face
+/// note that edge 0 is never used, because negative edge nums are used for
+/// counterclockwise use of the edge in a face
 typedef struct
 {
 	unsigned short v[2]; ///< vertex numbers
 } dedge_t;
 
 #define MAXLIGHTMAPS 4
+
 typedef struct
 {
 	short planenum;
 	short side;
 
-	int firstedge; // we must support > 64k edges
+	int firstedge; ///< we must support > 64k edges
+	
 	short numedges;
 	short texinfo;
 
@@ -201,12 +203,15 @@ typedef struct
 	int lightofs; ///< start of [numstyles * surfsize] samples
 } dface_t;
 
-#define AMBIENT_WATER 0
-#define AMBIENT_SKY 1
-#define AMBIENT_SLIME 2
-#define AMBIENT_LAVA 3
+enum
+{
+	AMBIENT_WATER = 0,
+	AMBIENT_SKY,
+	AMBIENT_SLIME,
+	AMBIENT_LAVA,
 
-#define NUM_AMBIENTS 4 ///< automatic ambient sounds
+	NUM_AMBIENTS ///< automatic ambient sounds
+};
 
 /// leaf 0 is the generic CONTENTS_SOLID leaf, used for all solid areas
 /// all other leafs need visibility info
@@ -309,8 +314,9 @@ void ParseEntities();
 void UnparseEntities();
 
 void SetKeyValue(entity_t *ent, const char *key, const char *value);
-char *ValueForKey(entity_t *ent, const char *key);
-// will return "" if not present
+
+/// will return "" if not present
+const char *ValueForKey(entity_t *ent, const char *key);
 
 vec_t FloatForKey(entity_t *ent, const char *key);
 void GetVectorForKey(entity_t *ent, const char *key, vec3_t vec);
