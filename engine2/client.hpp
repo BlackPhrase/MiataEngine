@@ -26,12 +26,12 @@ typedef struct
 {
 	vec3_t viewangles;
 
-	// intended velocities
-	float forwardmove;
-	float sidemove;
-	float upmove;
+	/// intended velocities
+	float forwardmove{0.0f};
+	float sidemove{0.0f};
+	float upmove{0.0f};
 
-	byte lightlevel;
+	byte lightlevel{0};
 } usercmd_t;
 
 // player_state_t is the information needed by a player entity
@@ -265,27 +265,13 @@ extern cvar_t *m_yaw;
 extern cvar_t *m_forward;
 extern cvar_t *m_side;
 
-#define MAX_TEMP_ENTITIES 64    // lightning bolts, etc
-#define MAX_STATIC_ENTITIES 128 // torches, etc
-
 extern client_state_t cl;
-
-// FIXME, allocate dynamically
-//extern efrag_t *cl_efrags;           //[MAX_EFRAGS];
-extern entity_t *cl_entities;        //[MAX_EDICTS];
-extern entity_t *cl_static_entities; //[MAX_STATIC_ENTITIES];
-extern lightstyle_t *cl_lightstyle;  //[MAX_LIGHTSTYLES];
-extern dlight_t *cl_dlights;         //[MAX_DLIGHTS];
-extern entity_t *cl_temp_entities;   //[MAX_TEMP_ENTITIES];
-extern beam_t *cl_beams;             //[MAX_BEAMS];
 
 //=============================================================================
 
 //
 // cl_main
 //
-dlight_t *CL_AllocDlight(int key);
-void CL_DecayLights();
 
 void CL_Init();
 
@@ -295,11 +281,6 @@ void CL_NextDemo();
 bool CL_DemoBehind();
 
 void CL_BeginServerConnect();
-
-#define MAX_VISEDICTS 256
-
-extern int cl_numvisedicts;
-extern entity_t *cl_visedicts[MAX_VISEDICTS];
 
 //
 // cl_input
@@ -319,7 +300,6 @@ void CL_SendCmd();
 void CL_SendMove(usercmd_t *cmd);
 
 void CL_ParseTEnt();
-void CL_UpdateTEnts();
 
 void CL_ClearState();
 
@@ -348,32 +328,7 @@ void CL_TimeDemo_f();
 void CL_ParseServerMessage();
 void CL_NewTranslation(int slot);
 
-//
-// cl_tent
-//
-void CL_InitTEnts();
-void CL_ClearTEnts();
-
 void CL_SignonReply();
-
-//
-// cl_ents.c
-//
-void CL_SetSolidPlayers(int playernum);
-void CL_SetUpPlayerPrediction(bool dopred);
-void CL_EmitEntities();
-void CL_ClearProjectiles();
-void CL_ParseProjectiles();
-void CL_ParsePacketEntities(bool delta);
-void CL_SetSolidEntities();
-void CL_ParsePlayerinfo();
-
-//
-// cl_pred.c
-//
-void CL_InitPrediction();
-void CL_PredictMove();
-void CL_PredictUsercmd(player_state_t *from, player_state_t *to, usercmd_t *u, bool spectator);
 
 //
 // cl_cam.c

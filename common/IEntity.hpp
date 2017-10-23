@@ -17,30 +17,24 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 /// @file
-/// @brief physics body interface
+/// @brief entity interface
 
 #pragma once
 
-struct IPhysicsBody
+struct IEntity
 {
 	///
-	virtual void SetVelocity(vec3_t avVelocity) = 0;
+	virtual void SetName(const char *asName) = 0;
 	
 	///
-	virtual vec3_t GetVelocity() const = 0;
+	virtual const char *GetName() const = 0;
 	
 	///
-	virtual void SetMass(float afMass) = 0;
-	
-	///
-	virtual float GetMass() const = 0;
+	virtual int GetID() const = 0;
 	
 	///
 	virtual void SetPos(vec3_t avPos) = 0;
 	
 	///
 	virtual vec3_t GetPos() const = 0;
-	
-	///
-	virtual void ApplyForce(vec3_t avForce) = 0;
 };
