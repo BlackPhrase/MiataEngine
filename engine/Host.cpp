@@ -113,7 +113,7 @@ bool CHost::Init(quakeparms_t *parms)
 	mpCmdExecutor->ExecString("test blah");
 	mpCmdExecutor->ExecString("test;blah");
 	mpCmdExecutor->ExecString("test blah;");
-	mpCmdExecutor->ExecString(";test blah "); // TODO: strip
+	mpCmdExecutor->ExecString(";test blah "); // TODO: trim
 	mpCmdExecutor->ExecString("test ");
 	mpCmdExecutor->ExecString("test");
 	*/
@@ -150,7 +150,7 @@ bool CHost::Init(quakeparms_t *parms)
 	
 	//SV_Init();
 	
-	mpGame = mpModuleLoader->LoadModule<IGame>("game", "GetGame");
+	mpGame = mpModuleLoader->LoadModule<IGame>("game", "GetGame"); // TODO: shouldn't load until server spawn
 	mpGame->Init();
 
 	//R_InitTextures(); // needed even for dedicated servers
@@ -247,7 +247,6 @@ void CHost::Shutdown()
 	
 	mpGame->Shutdown();
 	
-	// TODO: check for dedicated
 	//if(cls.state != ca_dedicated)
 	if(!host_parms.dedicated)
 	{
