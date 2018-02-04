@@ -18,6 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 /// @file
+/// @brief server component
 
 #pragma once
 
@@ -29,8 +30,8 @@ public:
 	
 	void Update();
 	
-	void DropClient(client_t *pclient, bool crash, const char *reason, ...);
-	void ClientPrintf(client_t *pclient, const char *fmt, ...);
+	void DropClient(client_t *apClient, bool abCrash, const char *asReason, ...);
+	void ClientPrintf(client_t *apClient, const char *fmt, ...);
 	
 	client_t *GetClientByIndex(int id) const;
 	

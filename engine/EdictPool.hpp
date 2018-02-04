@@ -10,4 +10,5 @@ public:
 	
 	CEdict *Alloc() const;
 	void Free(CEdict *ed);
+private:
 };
