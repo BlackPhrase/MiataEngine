@@ -37,4 +37,31 @@ struct IEntity
 	
 	///
 	virtual vec3_t GetPos() const = 0;
+	
+	///
+	//virtual void SetParent(IEntity *apParent) = 0;
+	
+	///
+	//virtual IEntity *GetParent() const = 0;
+	
+	///
+	//virtual void AddChild(IEntity *apEntity) = 0;
+	
+	///
+	//virtual void RemoveChild(IEntity *apEntity) = 0;
+	
+	///
+	//virtual IEntity *GetChild(int anID) = 0;
+	
+	///
+	//virtual void AddComponent(IEntityComponent *apComponent) = 0;
+	
+	///
+	//virtual void RemoveComponent(IEntityComponent *apComponent) = 0;
+	
+	///
+	//virtual IEntityComponent *GetComponentByIndex(int anID) const = 0;
+	
+	///
+	//virtual IEntityComponent *GetComponentByName(const char *asName) const = 0;
 };

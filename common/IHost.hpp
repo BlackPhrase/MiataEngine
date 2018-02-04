@@ -17,7 +17,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 /// @file
-/// @brief host module interface
+/// @brief host interface
 
 #pragma once
 
@@ -28,9 +28,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 //=============================================================================
 
-// the host system specifies the base of the directory tree, the
-// command line parms passed to the program, and the amount of memory
-// available for the program to use
+/// the host system specifies the base of the directory tree, the
+/// command line parms passed to the program, and the amount of memory
+/// available for the program to use
 
 struct quakeparms_t
 {

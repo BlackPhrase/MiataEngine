@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2017-2018 BlackPhrase
+Copyright (C) 2018 BlackPhrase
 
 This program is free software: you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,33 +17,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 /// @file
-/// @brief physics body interface
+/// @brief entity component interface
 
 #pragma once
 
-struct IPhysicsBody
+struct IEntityComponent
 {
 	///
 	virtual void Update(float afTimeStep) = 0;
-	
-	///
-	virtual void SetVelocity(vec3_t avVelocity) = 0;
-	
-	///
-	virtual vec3_t GetVelocity() const = 0;
-	
-	///
-	virtual void SetMass(float afMass) = 0;
-	
-	///
-	virtual float GetMass() const = 0;
-	
-	///
-	virtual void SetPos(vec3_t avPos) = 0;
-	
-	///
-	virtual vec3_t GetPos() const = 0;
-	
-	///
-	virtual void ApplyForce(vec3_t avForce) = 0;
 };

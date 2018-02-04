@@ -21,6 +21,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+struct IPhysicsWorld;
+
 struct IPhysics
 {
 	///
@@ -31,6 +33,12 @@ struct IPhysics
 	
 	///
 	virtual void Frame() = 0;
+	
+	///
+	virtual IPhysicsWorld *CreateWorld() = 0;
+	
+	///
+	virtual void DestroyWorld(IPhysicsWorld *apWorld) = 0;
 };
 
 using pfnGetPhysics = IPhysics *(*)();
