@@ -107,8 +107,6 @@ glvert_t glv;
 
 cvar_t gl_ztrick = { "gl_ztrick", "1" };
 
-HWND WINAPI InitializeWindow(HINSTANCE hInstance, int nCmdShow);
-
 viddef_t vid; // global video state
 
 unsigned short d_8to16table[256];
@@ -119,26 +117,19 @@ float gldepthmin, gldepthmax;
 
 modestate_t modestate = MS_UNINIT;
 
-void VID_MenuDraw(void);
+void VID_MenuDraw();
 void VID_MenuKey(int key);
 
-LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 void AppActivate(BOOL fActive, BOOL minimize);
 char *VID_GetModeDescription(int mode);
-void ClearAllStates(void);
-void VID_UpdateWindowStatus(void);
-void GL_Init(void);
-
-PROC glArrayElementEXT;
-PROC glColorPointerEXT;
-PROC glTexCoordPointerEXT;
-PROC glVertexPointerEXT;
+void ClearAllStates();
+void VID_UpdateWindowStatus();
 
 typedef void(APIENTRY *lp3DFXFUNC)(int, int, int, int, int, const void *);
-lp3DFXFUNC glColorTableEXT;
+
 qboolean is8bit = false;
 qboolean isPermedia = false;
-qboolean gl_mtexable = false;
+
 
 //====================================
 
@@ -160,7 +151,7 @@ RECT window_rect;
 
 // direct draw software compatability stuff
 
-void VID_HandlePause(qboolean pause)
+void VID_HandlePause(bool pause)
 {
 }
 
@@ -168,15 +159,15 @@ void VID_ForceLockState(int lk)
 {
 }
 
-void VID_LockBuffer(void)
+void VID_LockBuffer()
 {
 }
 
-void VID_UnlockBuffer(void)
+void VID_UnlockBuffer()
 {
 }
 
-int VID_ForceUnlockedAndReturnState(void)
+int VID_ForceUnlockedAndReturnState()
 {
 	return 0;
 }
@@ -475,7 +466,7 @@ int VID_SetMode(int modenum, unsigned char *palette)
 VID_UpdateWindowStatus
 ================
 */
-void VID_UpdateWindowStatus(void)
+void VID_UpdateWindowStatus()
 {
 	window_rect.left = window_x;
 	window_rect.top = window_y;
@@ -489,75 +480,6 @@ void VID_UpdateWindowStatus(void)
 
 //====================================
 
-BINDTEXFUNCPTR bindTexFunc;
-
-#define TEXTURE_EXT_STRING "GL_EXT_texture_object"
-
-void CheckTextureExtensions(void)
-{
-	char *tmp;
-	qboolean texture_ext;
-	HINSTANCE hInstGL;
-
-	texture_ext = FALSE;
-	/* check for texture extension */
-	tmp = (unsigned char *)glGetString(GL_EXTENSIONS);
-	while(*tmp)
-	{
-		if(strncmp((const char *)tmp, TEXTURE_EXT_STRING, strlen(TEXTURE_EXT_STRING)) == 0)
-			texture_ext = TRUE;
-		tmp++;
-	}
-
-	if(!texture_ext || COM_CheckParm("-gl11"))
-	{
-		hInstGL = LoadLibrary("opengl32.dll");
-
-		if(hInstGL == NULL)
-			Sys_Error("Couldn't load opengl32.dll\n");
-
-		bindTexFunc = (void *)GetProcAddress(hInstGL, "glBindTexture");
-
-		if(!bindTexFunc)
-			Sys_Error("No texture objects!");
-		return;
-	}
-
-	/* load library and get procedure adresses for texture extension API */
-	if((bindTexFunc = (BINDTEXFUNCPTR)
-	    wglGetProcAddress((LPCSTR) "glBindTextureEXT")) == NULL)
-	{
-		Sys_Error("GetProcAddress for BindTextureEXT failed");
-		return;
-	}
-}
-
-void CheckArrayExtensions(void)
-{
-	char *tmp;
-
-	/* check for texture extension */
-	tmp = (unsigned char *)glGetString(GL_EXTENSIONS);
-	while(*tmp)
-	{
-		if(strncmp((const char *)tmp, "GL_EXT_vertex_array", strlen("GL_EXT_vertex_array")) == 0)
-		{
-			if(
-			((glArrayElementEXT = wglGetProcAddress("glArrayElementEXT")) == NULL) ||
-			((glColorPointerEXT = wglGetProcAddress("glColorPointerEXT")) == NULL) ||
-			((glTexCoordPointerEXT = wglGetProcAddress("glTexCoordPointerEXT")) == NULL) ||
-			((glVertexPointerEXT = wglGetProcAddress("glVertexPointerEXT")) == NULL))
-			{
-				Sys_Error("GetProcAddress for vertex extension failed");
-				return;
-			}
-			return;
-		}
-		tmp++;
-	}
-
-	Sys_Error("Vertex array extension not present");
-}
 
 //int		texture_mode = GL_NEAREST;
 //int		texture_mode = GL_NEAREST_MIPMAP_NEAREST;
@@ -567,83 +489,6 @@ int texture_mode = GL_LINEAR;
 //int		texture_mode = GL_LINEAR_MIPMAP_LINEAR;
 
 int texture_extension_number = 1;
-
-#ifdef _WIN32
-void CheckMultiTextureExtensions(void)
-{
-	if(strstr(gl_extensions, "GL_SGIS_multitexture ") && !COM_CheckParm("-nomtex"))
-	{
-		Con_Printf("Multitexture extensions found.\n");
-		qglMTexCoord2fSGIS = (void *)wglGetProcAddress("glMTexCoord2fSGIS");
-		qglSelectTextureSGIS = (void *)wglGetProcAddress("glSelectTextureSGIS");
-		gl_mtexable = true;
-	}
-}
-#else
-void CheckMultiTextureExtensions(void)
-{
-	gl_mtexable = true;
-}
-#endif
-
-/*
-===============
-GL_Init
-===============
-*/
-void GL_Init(void)
-{
-	gl_vendor = glGetString(GL_VENDOR);
-	Con_Printf("GL_VENDOR: %s\n", gl_vendor);
-	gl_renderer = glGetString(GL_RENDERER);
-	Con_Printf("GL_RENDERER: %s\n", gl_renderer);
-
-	gl_version = glGetString(GL_VERSION);
-	Con_Printf("GL_VERSION: %s\n", gl_version);
-	gl_extensions = glGetString(GL_EXTENSIONS);
-	Con_Printf("GL_EXTENSIONS: %s\n", gl_extensions);
-
-	//	Con_Printf ("%s %s\n", gl_renderer, gl_version);
-
-	if(strnicmp(gl_renderer, "PowerVR", 7) == 0)
-		fullsbardraw = true;
-
-	if(strnicmp(gl_renderer, "Permedia", 8) == 0)
-		isPermedia = true;
-
-	CheckTextureExtensions();
-	CheckMultiTextureExtensions();
-
-	glClearColor(1, 0, 0, 0);
-	glCullFace(GL_FRONT);
-	glEnable(GL_TEXTURE_2D);
-
-	glEnable(GL_ALPHA_TEST);
-	glAlphaFunc(GL_GREATER, 0.666);
-
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	glShadeModel(GL_FLAT);
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	//	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-
-#if 0
-	CheckArrayExtensions ();
-
-	glEnable (GL_VERTEX_ARRAY_EXT);
-	glEnable (GL_TEXTURE_COORD_ARRAY_EXT);
-	glVertexPointerEXT (3, GL_FLOAT, 0, 0, &glv.x);
-	glTexCoordPointerEXT (2, GL_FLOAT, 0, 0, &glv.s);
-	glColorPointerEXT (3, GL_FLOAT, 0, 0, &glv.r);
-#endif
-}
 
 /*
 =================
@@ -665,7 +510,7 @@ void GL_BeginRendering(int *x, int *y, int *width, int *height)
 	//	glViewport (*x, *y, *width, *height);
 }
 
-void GL_EndRendering(void)
+void GL_EndRendering()
 {
 	if(!scr_skipupdate || block_drawing)
 		SwapBuffers(maindc);
@@ -775,38 +620,9 @@ void VID_ShiftPalette(unsigned char *palette)
 	//	gammaworks = SetDeviceGammaRamp (maindc, ramps);
 }
 
-void VID_SetDefaultMode(void)
+void VID_SetDefaultMode()
 {
 	IN_DeactivateMouse();
-}
-
-void VID_Shutdown(void)
-{
-	HGLRC hRC;
-	HDC hDC;
-
-	if(vid_initialized)
-	{
-		vid_canalttab = false;
-		hRC = wglGetCurrentContext();
-		hDC = wglGetCurrentDC();
-
-		wglMakeCurrent(NULL, NULL);
-
-		if(hRC)
-			wglDeleteContext(hRC);
-
-		if(hDC && dibwindow)
-			ReleaseDC(dibwindow, hDC);
-
-		if(modestate == MS_FULLDIB)
-			ChangeDisplaySettings(NULL, 0);
-
-		if(maindc && dibwindow)
-			ReleaseDC(dibwindow, maindc);
-
-		AppActivate(false, false);
-	}
 }
 
 //==========================================================================
@@ -896,23 +712,6 @@ byte shiftscantokey[128] =
 };
 
 /*
-=======
-MapKey
-
-Map from windows to quake keynums
-=======
-*/
-int MapKey(int key)
-{
-	key = (key >> 16) & 255;
-	if(key > 127)
-		return 0;
-	if(scantokey[key] == 0)
-		Con_DPrintf("key 0x%02x has no translation\n", key);
-	return scantokey[key];
-}
-
-/*
 ===================================================================
 
 MAIN WINDOW
@@ -925,7 +724,7 @@ MAIN WINDOW
 ClearAllStates
 ================
 */
-void ClearAllStates(void)
+void ClearAllStates()
 {
 	int i;
 
@@ -1011,141 +810,12 @@ void AppActivate(BOOL fActive, BOOL minimize)
 	}
 }
 
-/* main window procedure */
-LONG WINAPI MainWndProc(
-HWND hWnd,
-UINT uMsg,
-WPARAM wParam,
-LPARAM lParam)
-{
-	LONG lRet = 1;
-	int fwKeys, xPos, yPos, fActive, fMinimized, temp;
-	extern unsigned int uiWheelMessage;
-
-	if(uMsg == uiWheelMessage)
-		uMsg = WM_MOUSEWHEEL;
-
-	switch(uMsg)
-	{
-	case WM_KILLFOCUS:
-		if(modestate == MS_FULLDIB)
-			ShowWindow(mainwindow, SW_SHOWMINNOACTIVE);
-		break;
-
-	case WM_CREATE:
-		break;
-
-	case WM_MOVE:
-		window_x = (int)LOWORD(lParam);
-		window_y = (int)HIWORD(lParam);
-		VID_UpdateWindowStatus();
-		break;
-
-	case WM_KEYDOWN:
-	case WM_SYSKEYDOWN:
-		Key_Event(MapKey(lParam), true);
-		break;
-
-	case WM_KEYUP:
-	case WM_SYSKEYUP:
-		Key_Event(MapKey(lParam), false);
-		break;
-
-	case WM_SYSCHAR:
-		// keep Alt-Space from happening
-		break;
-
-	// this is complicated because Win32 seems to pack multiple mouse events into
-	// one update sometimes, so we always check all states and look for events
-	case WM_LBUTTONDOWN:
-	case WM_LBUTTONUP:
-	case WM_RBUTTONDOWN:
-	case WM_RBUTTONUP:
-	case WM_MBUTTONDOWN:
-	case WM_MBUTTONUP:
-	case WM_MOUSEMOVE:
-		temp = 0;
-
-		if(wParam & MK_LBUTTON)
-			temp |= 1;
-
-		if(wParam & MK_RBUTTON)
-			temp |= 2;
-
-		if(wParam & MK_MBUTTON)
-			temp |= 4;
-
-		IN_MouseEvent(temp);
-
-		break;
-
-	// JACK: This is the mouse wheel with the Intellimouse
-	// Its delta is either positive or neg, and we generate the proper
-	// Event.
-	case WM_MOUSEWHEEL:
-		if((short)HIWORD(wParam) > 0)
-		{
-			Key_Event(K_MWHEELUP, true);
-			Key_Event(K_MWHEELUP, false);
-		}
-		else
-		{
-			Key_Event(K_MWHEELDOWN, true);
-			Key_Event(K_MWHEELDOWN, false);
-		}
-		break;
-
-	case WM_SIZE:
-		break;
-
-	case WM_CLOSE:
-		if(MessageBox(mainwindow, "Are you sure you want to quit?", "Confirm Exit",
-		              MB_YESNO | MB_SETFOREGROUND | MB_ICONQUESTION) == IDYES)
-		{
-			Sys_Quit();
-		}
-
-		break;
-
-	case WM_ACTIVATE:
-		fActive = LOWORD(wParam);
-		fMinimized = (BOOL)HIWORD(wParam);
-		AppActivate(!(fActive == WA_INACTIVE), fMinimized);
-
-		// fix the leftover Alt from any Alt-Tab or the like that switched us away
-		ClearAllStates();
-
-		break;
-
-	case WM_DESTROY:
-	{
-		if(dibwindow)
-			DestroyWindow(dibwindow);
-
-		PostQuitMessage(0);
-	}
-	break;
-
-	case MM_MCINOTIFY:
-		lRet = CDAudio_MessageHandler(hWnd, uMsg, wParam, lParam);
-		break;
-
-	default:
-		/* pass all unhandled messages to DefWindowProc */
-		lRet = DefWindowProc(hWnd, uMsg, wParam, lParam);
-		break;
-	}
-
-	/* return 1 if handled message, 0 if not */
-	return lRet;
-}
-
 /*
 =================
 VID_NumModes
 =================
 */
-int VID_NumModes(void)
+int VID_NumModes()
 {
 	return nummodes;
 }
@@ -1233,7 +903,7 @@ char *VID_GetExtModeDescription(int mode)
 VID_DescribeCurrentMode_f
 =================
 */
-void VID_DescribeCurrentMode_f(void)
+void VID_DescribeCurrentMode_f()
 {
 	Con_Printf("%s\n", VID_GetExtModeDescription(vid_modenum));
 }
@@ -1243,7 +913,7 @@ void VID_DescribeCurrentMode_f(void)
 VID_NumModes_f
 =================
 */
-void VID_NumModes_f(void)
+void VID_NumModes_f()
 {
 	if(nummodes == 1)
 		Con_Printf("%d video mode is available\n", nummodes);
@@ -1256,7 +926,7 @@ void VID_NumModes_f(void)
 VID_DescribeMode_f
 =================
 */
-void VID_DescribeMode_f(void)
+void VID_DescribeMode_f()
 {
 	int t, modenum;
 
@@ -1275,7 +945,7 @@ void VID_DescribeMode_f(void)
 VID_DescribeModes_f
 =================
 */
-void VID_DescribeModes_f(void)
+void VID_DescribeModes_f()
 {
 	int i, lnummodes, t;
 	char *pinfo;
@@ -1559,276 +1229,11 @@ static void Check_Gamma(unsigned char *pal)
 	memcpy(pal, palette, sizeof(palette));
 }
 
-/*
-===================
-VID_Init
-===================
-*/
-void VID_Init(unsigned char *palette)
-{
-	int i, existingmode;
-	int basenummodes, width, height, bpp, findbpp, done;
-	byte *ptmp;
-	char gldir[MAX_OSPATH];
-	HDC hdc;
-	DEVMODE devmode;
-
-	memset(&devmode, 0, sizeof(devmode));
-
-	Cvar_RegisterVariable(&vid_mode);
-	Cvar_RegisterVariable(&vid_wait);
-	Cvar_RegisterVariable(&vid_nopageflip);
-	Cvar_RegisterVariable(&_vid_wait_override);
-	Cvar_RegisterVariable(&_vid_default_mode);
-	Cvar_RegisterVariable(&_vid_default_mode_win);
-	Cvar_RegisterVariable(&vid_config_x);
-	Cvar_RegisterVariable(&vid_config_y);
-	Cvar_RegisterVariable(&vid_stretch_by_2);
-	Cvar_RegisterVariable(&_windowed_mouse);
-	Cvar_RegisterVariable(&gl_ztrick);
-
-	Cmd_AddCommand("vid_nummodes", VID_NumModes_f);
-	Cmd_AddCommand("vid_describecurrentmode", VID_DescribeCurrentMode_f);
-	Cmd_AddCommand("vid_describemode", VID_DescribeMode_f);
-	Cmd_AddCommand("vid_describemodes", VID_DescribeModes_f);
-
-	hIcon = LoadIcon(global_hInstance, MAKEINTRESOURCE(IDI_ICON2));
-
-	InitCommonControls();
-
-	VID_InitDIB(global_hInstance);
-	basenummodes = nummodes = 1;
-
-	VID_InitFullDIB(global_hInstance);
-
-	if(COM_CheckParm("-window"))
-	{
-		hdc = GetDC(NULL);
-
-		if(GetDeviceCaps(hdc, RASTERCAPS) & RC_PALETTE)
-		{
-			Sys_Error("Can't run in non-RGB mode");
-		}
-
-		ReleaseDC(NULL, hdc);
-
-		windowed = true;
-
-		vid_default = MODE_WINDOWED;
-	}
-	else
-	{
-		if(nummodes == 1)
-			Sys_Error("No RGB fullscreen modes available");
-
-		windowed = false;
-
-		if(COM_CheckParm("-mode"))
-		{
-			vid_default = Q_atoi(com_argv[COM_CheckParm("-mode") + 1]);
-		}
-		else
-		{
-			if(COM_CheckParm("-current"))
-			{
-				modelist[MODE_FULLSCREEN_DEFAULT].width =
-				GetSystemMetrics(SM_CXSCREEN);
-				modelist[MODE_FULLSCREEN_DEFAULT].height =
-				GetSystemMetrics(SM_CYSCREEN);
-				vid_default = MODE_FULLSCREEN_DEFAULT;
-				leavecurrentmode = 1;
-			}
-			else
-			{
-				if(COM_CheckParm("-width"))
-				{
-					width = Q_atoi(com_argv[COM_CheckParm("-width") + 1]);
-				}
-				else
-				{
-					width = 640;
-				}
-
-				if(COM_CheckParm("-bpp"))
-				{
-					bpp = Q_atoi(com_argv[COM_CheckParm("-bpp") + 1]);
-					findbpp = 0;
-				}
-				else
-				{
-					bpp = 15;
-					findbpp = 1;
-				}
-
-				if(COM_CheckParm("-height"))
-					height = Q_atoi(com_argv[COM_CheckParm("-height") + 1]);
-
-				// if they want to force it, add the specified mode to the list
-				if(COM_CheckParm("-force") && (nummodes < MAX_MODE_LIST))
-				{
-					modelist[nummodes].type = MS_FULLDIB;
-					modelist[nummodes].width = width;
-					modelist[nummodes].height = height;
-					modelist[nummodes].modenum = 0;
-					modelist[nummodes].halfscreen = 0;
-					modelist[nummodes].dib = 1;
-					modelist[nummodes].fullscreen = 1;
-					modelist[nummodes].bpp = bpp;
-					sprintf(modelist[nummodes].modedesc, "%dx%dx%d",
-					        devmode.dmPelsWidth, devmode.dmPelsHeight,
-					        devmode.dmBitsPerPel);
-
-					for(i = nummodes, existingmode = 0; i < nummodes; i++)
-					{
-						if((modelist[nummodes].width == modelist[i].width) &&
-						   (modelist[nummodes].height == modelist[i].height) &&
-						   (modelist[nummodes].bpp == modelist[i].bpp))
-						{
-							existingmode = 1;
-							break;
-						}
-					}
-
-					if(!existingmode)
-					{
-						nummodes++;
-					}
-				}
-
-				done = 0;
-
-				do
-				{
-					if(COM_CheckParm("-height"))
-					{
-						height = Q_atoi(com_argv[COM_CheckParm("-height") + 1]);
-
-						for(i = 1, vid_default = 0; i < nummodes; i++)
-						{
-							if((modelist[i].width == width) &&
-							   (modelist[i].height == height) &&
-							   (modelist[i].bpp == bpp))
-							{
-								vid_default = i;
-								done = 1;
-								break;
-							}
-						}
-					}
-					else
-					{
-						for(i = 1, vid_default = 0; i < nummodes; i++)
-						{
-							if((modelist[i].width == width) && (modelist[i].bpp == bpp))
-							{
-								vid_default = i;
-								done = 1;
-								break;
-							}
-						}
-					}
-
-					if(!done)
-					{
-						if(findbpp)
-						{
-							switch(bpp)
-							{
-							case 15:
-								bpp = 16;
-								break;
-							case 16:
-								bpp = 32;
-								break;
-							case 32:
-								bpp = 24;
-								break;
-							case 24:
-								done = 1;
-								break;
-							}
-						}
-						else
-						{
-							done = 1;
-						}
-					}
-				} while(!done);
-
-				if(!vid_default)
-				{
-					Sys_Error("Specified video mode not available");
-				}
-			}
-		}
-	}
-
-	vid_initialized = true;
-
-	if((i = COM_CheckParm("-conwidth")) != 0)
-		vid.conwidth = Q_atoi(com_argv[i + 1]);
-	else
-		vid.conwidth = 640;
-
-	vid.conwidth &= 0xfff8; // make it a multiple of eight
-
-	if(vid.conwidth < 320)
-		vid.conwidth = 320;
-
-	// pick a conheight that matches with correct aspect
-	vid.conheight = vid.conwidth * 3 / 4;
-
-	if((i = COM_CheckParm("-conheight")) != 0)
-		vid.conheight = Q_atoi(com_argv[i + 1]);
-	if(vid.conheight < 200)
-		vid.conheight = 200;
-
-	vid.maxwarpwidth = WARP_WIDTH;
-	vid.maxwarpheight = WARP_HEIGHT;
-	vid.colormap = host_colormap;
-	vid.fullbright = 256 - LittleLong(*((int *)vid.colormap + 2048));
-
-	DestroyWindow(hwnd_dialog);
-
-	Check_Gamma(palette);
-	VID_SetPalette(palette);
-
-	VID_SetMode(vid_default, palette);
-
-	maindc = GetDC(mainwindow);
-	bSetupPixelFormat(maindc);
-
-	baseRC = wglCreateContext(maindc);
-	if(!baseRC)
-		Sys_Error("Could not initialize GL (wglCreateContext failed).\n\nMake sure you in are 65535 color mode, and try running -window.");
-	if(!wglMakeCurrent(maindc, baseRC))
-		Sys_Error("wglMakeCurrent failed");
-
-	GL_Init();
-
-	sprintf(gldir, "%s/glquake", com_gamedir);
-	Sys_mkdir(gldir);
-
-	vid_realmode = vid_modenum;
-
-	// Check for 3DFX Extensions and initialize them.
-	VID_Init8bitPalette();
-
-	vid_menudrawfn = VID_MenuDraw;
-	vid_menukeyfn = VID_MenuKey;
-
-	strcpy(badmode.modedesc, "Bad mode");
-	vid_canalttab = true;
-
-	if(COM_CheckParm("-fullsbar"))
-		fullsbardraw = true;
-}
-
 //========================================================
 // Video menu stuff
 //========================================================
 
-extern void M_Menu_Options_f(void);
+extern void M_Menu_Options_f();
 extern void M_Print(int cx, int cy, char *str);
 extern void M_PrintWhite(int cx, int cy, char *str);
 extern void M_DrawCharacter(int cx, int line, int num);
@@ -1855,7 +1260,7 @@ static modedesc_t modedescs[MAX_MODEDESCS];
 VID_MenuDraw
 ================
 */
-void VID_MenuDraw(void)
+void VID_MenuDraw()
 {
 	qpic_t *p;
 	char *ptr;
