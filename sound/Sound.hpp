@@ -12,7 +12,6 @@
 //====================================================================
 
 // !!! if this is changed, it much be changed in asm_i386.h too !!!
-/*
 struct channel_t
 {
 	///
@@ -41,7 +40,6 @@ struct channel_t
 	
 	int master_vol{0};  // 0-255 master volume
 };
-*/
 
 class CSound final : public ISound
 {
@@ -54,10 +52,12 @@ public:
 	
 	void Frame() override;
 private:
+	void Startup();
+	
 	// 0 to MAX_DYNAMIC_CHANNELS-1	= normal entity sounds
 	// MAX_DYNAMIC_CHANNELS to MAX_DYNAMIC_CHANNELS + NUM_AMBIENTS -1 = water, etc
 	// MAX_DYNAMIC_CHANNELS + NUM_AMBIENTS to total_channels = static sounds
-	//channel_t channels[MAX_CHANNELS]{};
+	channel_t channels[MAX_CHANNELS]{};
 	
 	IEngineInterface *mpEngine{nullptr};
 	
