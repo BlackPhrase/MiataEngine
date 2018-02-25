@@ -12,6 +12,8 @@ public:
 	void Shutdown() override;
 	
 	void Frame() override;
+	
+	void Config(bool multiplayer) override;
 private:
 	IEngineInterface *mpEngine{nullptr};
 };

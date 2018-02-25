@@ -1,4 +1,6 @@
+/// @file
 
+#include "quakedef.hpp"
 #include "Server.hpp"
 
 CServer::CServer() = default;
@@ -12,11 +14,11 @@ Called when the player is getting totally kicked off the host
 if (crash = true), don't bother sending signofs
 =====================
 */
-void CServer::DropClient(client *pclient, bool crash)
+void CServer::DropClient(client_t *pclient, bool abCrash, const char *asReason, ...)
 {
 	client_t *client;
 
-	if(!crash)
+	if(!abCrash)
 	{
 		// send any final messages (don't check for errors)
 		if(NET_CanSendMessage(pclient->netconnection))

@@ -8,6 +8,8 @@ struct IPhysicsBody;
 using tEntityVec = std::vector<IEntity*>;
 using tEntityComponentVec = std::vector<IEntityComponent*>;
 
+using edict_t = struct edict_s;
+
 class CEdict final : public IEntity
 {
 public:
@@ -23,8 +25,8 @@ public:
 	
 	int GetID() const override;
 	
-	void SetPos(vec3_t avPos) override;
-	vec3_t GetPos() const override {return mvPos;}
+	void SetPos(const vec3_t &avPos) override;
+	const vec3_t &GetPos() const override {return mvPos;}
 	
 	void SetPhysBody(IPhysicsBody *apBody);
 	IPhysicsBody *GetPhysBody() const {return mpPhysBody;}
@@ -45,7 +47,7 @@ private:
 	tEntityVec mvChilds;
 	tEntityComponentVec mvComponents;
 	
-	vec3_t mvPos{vec3_t::origin};
+	vec3_t mvPos{};
 	
 	edict_t *ent{nullptr};
 	IEntity *mpParent{nullptr};

@@ -22,11 +22,56 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+#include "usercmd.hpp"
+#include "SizeBuffer.hpp"
+
+#define NUM_PING_TIMES 16
+#define NUM_SPAWN_PARMS 16
+
+//=============================================================================
+
+typedef struct client_s
+{
+	bool active;     // false = client is free
+	bool spawned;    // false = don't send datagrams
+	bool dropasap;   // has been told to go to another level
+	bool privileged; // can execute any host command
+	bool sendsignon; // only valid before spawned
+
+	double last_message; // reliable messages must be sent
+	                     // periodically
+
+	struct qsocket_s *netconnection; // communications handle
+
+	usercmd_t cmd;  // movement
+	vec3_t wishdir; // intended motion calced from cmd
+
+	CSizeBuffer message; // can be added to at any time,
+	                   // copied and clear once per frame
+	byte msgbuf[MAX_MSGLEN];
+	edict_t *edict; // EDICT_NUM(clientnum+1)
+	char name[32];  // for printing to other people
+	int colors;
+
+	float ping_times[NUM_PING_TIMES];
+	int num_pings; // ping_times[num_pings%NUM_PING_TIMES]
+
+	// spawn parms are carried from level to level
+	float spawn_parms[NUM_SPAWN_PARMS];
+
+	// client known data for deltas
+	int old_frags;
+} client_t;
+
+//=============================================================================
+
 class CServer final
 {
 public:
 	CServer();
 	~CServer();
+	
+	void Init();
 	
 	void Update();
 	
@@ -48,3 +93,5 @@ private:
 	int maxclients{0};
 	//int maxclientslimit{0};
 };
+
+extern CServer sv; // local server

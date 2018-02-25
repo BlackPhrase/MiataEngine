@@ -25,7 +25,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 #include <memory>
 #include "shared_lib.hpp"
-#include "EngineInterface.hpp"
+#include "IEngineInterface.hpp"
 
 using tSharedLibVec = std::vector<shiftutil::shared_lib*>;
 

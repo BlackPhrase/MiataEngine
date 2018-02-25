@@ -21,6 +21,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+#include "mathlib.hpp"
+
+struct IEntityComponent;
+
 struct IEntity
 {
 	///
@@ -33,10 +37,10 @@ struct IEntity
 	virtual int GetID() const = 0;
 	
 	///
-	virtual void SetPos(vec3_t avPos) = 0;
+	virtual void SetPos(const vec3_t &avPos) = 0;
 	
 	///
-	virtual vec3_t GetPos() const = 0;
+	virtual const vec3_t &GetPos() const = 0;
 	
 	///
 	//virtual void SetParent(IEntity *apParent) = 0;

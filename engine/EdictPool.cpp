@@ -14,6 +14,7 @@ angles and bad trails.
 */
 CEdict *CEdictPool::Alloc()
 {
+	/*
 	int i;
 	edict_t *e;
 
@@ -37,6 +38,8 @@ CEdict *CEdictPool::Alloc()
 	ED_ClearEdict(e);
 
 	return e;
+	*/
+	return nullptr; // TODO
 };
 
 /*
@@ -49,6 +52,8 @@ FIXME: walk all entities and NULL out references to this entity
 */
 void CEdictPool::Free(CEdict *ed)
 {
+	// TODO
+	/*
 	SV_UnlinkEdict(ed); // unlink from world bsp
 
 	ed->free = true;
@@ -64,4 +69,5 @@ void CEdictPool::Free(CEdict *ed)
 	ed->v.solid = 0;
 
 	ed->freetime = sv.time;
+	*/
 };

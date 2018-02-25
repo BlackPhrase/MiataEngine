@@ -1,9 +1,10 @@
 #include "Edict.hpp"
 #include "IPhysicsBody.hpp"
+#include "IEntityComponent.hpp"
 
-void CEdict::SetPos(vec3_t avPos)
+void CEdict::SetPos(const vec3_t &avPos)
 {
-	mvPos = avPos;
+	VectorCopy(avPos, mvPos);
 	
 	if(mpPhysBody)
 		mpPhysBody->SetPos(mvPos);

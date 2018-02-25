@@ -8,7 +8,7 @@ public:
 	CEdictPool() = default;
 	~CEdictPool() = default;
 	
-	CEdict *Alloc() const;
+	CEdict *Alloc(); //const
 	void Free(CEdict *ed);
 private:
 };

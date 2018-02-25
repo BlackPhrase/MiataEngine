@@ -21,16 +21,18 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+#include "mathlib.hpp"
+
 struct IPhysicsBody
 {
 	///
 	virtual void Update(float afTimeStep) = 0;
 	
 	///
-	virtual void SetVelocity(vec3_t avVelocity) = 0;
+	virtual void SetVelocity(const vec3_t &avVelocity) = 0;
 	
 	///
-	virtual vec3_t GetVelocity() const = 0;
+	virtual const vec3_t &GetVelocity() const = 0;
 	
 	///
 	virtual void SetMass(float afMass) = 0;
@@ -39,11 +41,11 @@ struct IPhysicsBody
 	virtual float GetMass() const = 0;
 	
 	///
-	virtual void SetPos(vec3_t avPos) = 0;
+	virtual void SetPos(const vec3_t &avPos) = 0;
 	
 	///
-	virtual vec3_t GetPos() const = 0;
+	virtual const vec3_t &GetPos() const = 0;
 	
 	///
-	virtual void ApplyForce(vec3_t avForce) = 0;
+	virtual void ApplyForce(const vec3_t &avForce) = 0;
 };
