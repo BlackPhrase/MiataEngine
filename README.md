@@ -1,6 +1,6 @@
-# IdTech 2 Red Engine
+# Miata Engine
 
-[![Build Status](https://travis-ci.org/BlackPhrase/idTech2-Red.svg)](https://travis-ci.org/BlackPhrase/idTech2-Red)
+[![Build Status](https://travis-ci.org/BlackPhrase/MiataEngine.svg)](https://travis-ci.org/BlackPhrase/MiataEngine)
 
 A modernized version of a Quake/Quake2 engine
 
