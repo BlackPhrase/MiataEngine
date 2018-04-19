@@ -33,7 +33,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <sys/mman.h>
 #include <stdio.h>
 
-qboolean isDedicated;
+bool isDedicated;
 
 /*
 ===============================================================================
@@ -55,7 +55,7 @@ typedef struct
 
 MEMFILE sys_handles[MAX_HANDLES];
 
-int findhandle(void)
+int findhandle()
 {
 	int i;
 
@@ -240,13 +240,13 @@ void Sys_Printf(char *fmt, ...)
 	va_end(argptr);
 }
 
-void Sys_Quit(void)
+void Sys_Quit()
 {
 	Host_Shutdown();
 	exit(0);
 }
 
-double Sys_FloatTime(void)
+double Sys_FloatTime()
 {
 	struct timeval tp;
 	struct timezone tzp;
@@ -263,7 +263,7 @@ double Sys_FloatTime(void)
 	return (tp.tv_sec - secbase) + tp.tv_usec / 1000000.0;
 }
 
-char *Sys_ConsoleInput(void)
+char *Sys_ConsoleInput()
 {
 	static char text[256];
 	int len;
@@ -290,21 +290,21 @@ char *Sys_ConsoleInput(void)
 	return 0;
 }
 
-void Sys_Sleep(void)
+void Sys_Sleep()
 {
 }
 
 #if !id386
-void Sys_HighFPPrecision(void)
+void Sys_HighFPPrecision()
 {
 }
 
-void Sys_LowFPPrecision(void)
+void Sys_LowFPPrecision()
 {
 }
 #endif
 
-void Sys_Init(void)
+void Sys_Init()
 {
 #if id386
 	Sys_SetFPCW();

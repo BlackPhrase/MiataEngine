@@ -17,7 +17,9 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
-// sys_win.c -- Win32 system interface code
+
+/// @file
+/// @brief Win32 system interface code
 
 #include "quakedef.hpp"
 #include "winquake.hpp"
@@ -34,15 +36,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define NOT_FOCUS_SLEEP 20         // sleep time when not focus
 
 int starttime;
-qboolean ActiveApp, Minimized;
-qboolean WinNT;
+bool ActiveApp, Minimized;
+bool WinNT;
 
 static double pfreq;
 static double curtime = 0.0;
 static double lastcurtime = 0.0;
 static int lowshift;
-qboolean isDedicated;
-static qboolean sc_return_on_enter = false;
+bool isDedicated;
+static bool sc_return_on_enter = false;
 HANDLE hinput, houtput;
 
 static char *tracking_tag = "Clams & Mooses";
@@ -52,10 +54,10 @@ static HANDLE hFile;
 static HANDLE heventParent;
 static HANDLE heventChild;
 
-void MaskExceptions(void);
-void Sys_InitFloatTime(void);
-void Sys_PushFPCW_SetHigh(void);
-void Sys_PopFPCW(void);
+void MaskExceptions();
+void Sys_InitFloatTime();
+void Sys_PushFPCW_SetHigh();
+void Sys_PopFPCW();
 
 volatile int sys_checksum;
 
@@ -80,9 +82,9 @@ void Sys_PageIn(void *ptr, int size)
 		{
 			sys_checksum += *(int *)&x[m];
 			sys_checksum += *(int *)&x[m + 16 * 0x1000];
-		}
-	}
-}
+		};
+	};
+};
 
 /*
 ===============================================================================
@@ -95,7 +97,7 @@ FILE IO
 #define MAX_HANDLES 10
 FILE *sys_handles[MAX_HANDLES];
 
-int findhandle(void)
+int findhandle()
 {
 	int i;
 
@@ -104,7 +106,7 @@ int findhandle(void)
 			return i;
 	Sys_Error("out of handles");
 	return -1;
-}
+};
 
 /*
 ================
@@ -127,7 +129,7 @@ int filelength(FILE *f)
 	VID_ForceLockState(t);
 
 	return end;
-}
+};
 
 int Sys_FileOpenRead(char *path, int *hndl)
 {
@@ -156,7 +158,7 @@ int Sys_FileOpenRead(char *path, int *hndl)
 	VID_ForceLockState(t);
 
 	return retval;
-}
+};
 
 int Sys_FileOpenWrite(char *path)
 {
@@ -176,7 +178,7 @@ int Sys_FileOpenWrite(char *path)
 	VID_ForceLockState(t);
 
 	return i;
-}
+};
 
 void Sys_FileClose(int handle)
 {
@@ -186,7 +188,7 @@ void Sys_FileClose(int handle)
 	fclose(sys_handles[handle]);
 	sys_handles[handle] = NULL;
 	VID_ForceLockState(t);
-}
+};
 
 void Sys_FileSeek(int handle, int position)
 {
@@ -195,7 +197,7 @@ void Sys_FileSeek(int handle, int position)
 	t = VID_ForceUnlockedAndReturnState();
 	fseek(sys_handles[handle], position, SEEK_SET);
 	VID_ForceLockState(t);
-}
+};
 
 int Sys_FileRead(int handle, void *dest, int count)
 {
@@ -205,7 +207,7 @@ int Sys_FileRead(int handle, void *dest, int count)
 	x = fread(dest, 1, count, sys_handles[handle]);
 	VID_ForceLockState(t);
 	return x;
-}
+};
 
 int Sys_FileWrite(int handle, void *data, int count)
 {
@@ -215,7 +217,7 @@ int Sys_FileWrite(int handle, void *data, int count)
 	x = fwrite(data, 1, count, sys_handles[handle]);
 	VID_ForceLockState(t);
 	return x;
-}
+};
 
 int Sys_FileTime(char *path)
 {
@@ -234,16 +236,16 @@ int Sys_FileTime(char *path)
 	else
 	{
 		retval = -1;
-	}
+	};
 
 	VID_ForceLockState(t);
 	return retval;
-}
+};
 
 void Sys_mkdir(char *path)
 {
 	_mkdir(path);
-}
+};
 
 /*
 ===============================================================================
@@ -264,25 +266,25 @@ void Sys_MakeCodeWriteable(unsigned long startaddr, unsigned long length)
 
 	if(!VirtualProtect((LPVOID)startaddr, length, PAGE_READWRITE, &flOldProtect))
 		Sys_Error("Protection change failed\n");
-}
+};
 
 #ifndef _M_IX86
 
-void Sys_SetFPCW(void)
+void Sys_SetFPCW()
 {
-}
+};
 
-void Sys_PushFPCW_SetHigh(void)
+void Sys_PushFPCW_SetHigh()
 {
-}
+};
 
-void Sys_PopFPCW(void)
+void Sys_PopFPCW()
 {
-}
+};
 
-void MaskExceptions(void)
+void MaskExceptions()
 {
-}
+};
 
 #endif
 
@@ -291,7 +293,7 @@ void MaskExceptions(void)
 Sys_Init
 ================
 */
-void Sys_Init(void)
+void CSystem::Init()
 {
 	LARGE_INTEGER PerformanceFreq;
 	unsigned int lowpart, highpart;
@@ -315,7 +317,7 @@ void Sys_Init(void)
 		lowpart >>= 1;
 		lowpart |= (highpart & 1) << 31;
 		highpart >>= 1;
-	}
+	};
 
 	pfreq = 1.0 / (double)lowpart;
 
@@ -330,15 +332,15 @@ void Sys_Init(void)
 	   (vinfo.dwPlatformId == VER_PLATFORM_WIN32s))
 	{
 		Sys_Error("WinQuake requires at least Win95 or NT 4.0");
-	}
+	};
 
 	if(vinfo.dwPlatformId == VER_PLATFORM_WIN32_NT)
 		WinNT = true;
 	else
 		WinNT = false;
-}
+};
 
-void Sys_Error(char *error, ...)
+void CSystem::Error(const char *error, ...)
 {
 	va_list argptr;
 	char text[1024], text2[1024];
@@ -356,7 +358,7 @@ void Sys_Error(char *error, ...)
 	{
 		in_sys_error3 = 1;
 		VID_ForceUnlockedAndReturnState();
-	}
+	};
 
 	va_start(argptr, error);
 	vsprintf(text, error, argptr);
@@ -381,7 +383,7 @@ void Sys_Error(char *error, ...)
 		while(!Sys_ConsoleInput() &&
 		      ((Sys_FloatTime() - starttime) < CONSOLE_ERROR_TIMEOUT))
 		{
-		}
+		};
 	}
 	else
 	{
@@ -398,26 +400,26 @@ void Sys_Error(char *error, ...)
 		{
 			MessageBox(NULL, text, "Double Quake Error",
 			           MB_OK | MB_SETFOREGROUND | MB_ICONSTOP);
-		}
-	}
+		};
+	};
 
 	if(!in_sys_error1)
 	{
 		in_sys_error1 = 1;
 		Host_Shutdown();
-	}
+	};
 
 	// shut down QHOST hooks if necessary
 	if(!in_sys_error2)
 	{
 		in_sys_error2 = 1;
 		DeinitConProc();
-	}
+	};
 
 	exit(1);
-}
+};
 
-void Sys_Printf(char *fmt, ...)
+void CSystem::Printf(const char *fmt, ...)
 {
 	va_list argptr;
 	char text[1024];
@@ -430,10 +432,10 @@ void Sys_Printf(char *fmt, ...)
 		va_end(argptr);
 
 		WriteFile(houtput, text, strlen(text), &dummy, NULL);
-	}
-}
+	};
+};
 
-void Sys_Quit(void)
+void CSystem::Quit()
 {
 	VID_ForceUnlockedAndReturnState();
 
@@ -449,14 +451,14 @@ void Sys_Quit(void)
 	DeinitConProc();
 
 	exit(0);
-}
+};
 
 /*
 ================
 Sys_FloatTime
 ================
 */
-double Sys_FloatTime(void)
+double CSystem::GetFloatTime()
 {
 	static int sametimecount;
 	static unsigned int oldtime;
@@ -501,48 +503,40 @@ double Sys_FloatTime(void)
 				{
 					curtime += 1.0;
 					sametimecount = 0;
-				}
+				};
 			}
 			else
-			{
 				sametimecount = 0;
-			}
 
 			lastcurtime = curtime;
-		}
-	}
+		};
+	};
 
 	Sys_PopFPCW();
 
 	return curtime;
-}
+};
 
 /*
 ================
 Sys_InitFloatTime
 ================
 */
-void Sys_InitFloatTime(void)
+void CSystem::InitFloatTime()
 {
-	int j;
+	GetFloatTime();
 
-	Sys_FloatTime();
-
-	j = COM_CheckParm("-starttime");
+	int j = COM_CheckParm("-starttime");
 
 	if(j)
-	{
 		curtime = (double)(Q_atof(com_argv[j + 1]));
-	}
 	else
-	{
 		curtime = 0.0;
-	}
 
 	lastcurtime = curtime;
-}
+};
 
-char *Sys_ConsoleInput(void)
+char *Sys_ConsoleInput()
 {
 	static char text[256];
 	static int len;
@@ -591,7 +585,7 @@ char *Sys_ConsoleInput(void)
 						text[0] = '\r';
 						len = 0;
 						return text;
-					}
+					};
 
 					break;
 
@@ -600,7 +594,7 @@ char *Sys_ConsoleInput(void)
 					if(len)
 					{
 						len--;
-					}
+					};
 					break;
 
 				default:
@@ -609,23 +603,23 @@ char *Sys_ConsoleInput(void)
 						WriteFile(houtput, &ch, 1, &dummy, NULL);
 						text[len] = ch;
 						len = (len + 1) & 0xff;
-					}
+					};
 
 					break;
-				}
-			}
-		}
-	}
+				};
+			};
+		};
+	};
 
 	return NULL;
-}
+};
 
-void Sys_Sleep(void)
+void CSystem::Sleep(int msec)
 {
-	Sleep(1);
-}
+	Sleep(msec);
+};
 
-void Sys_SendKeyEvents(void)
+void Sys_SendKeyEvents()
 {
 	MSG msg;
 
@@ -639,5 +633,5 @@ void Sys_SendKeyEvents(void)
 
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
-	}
-}
+	};
+};
