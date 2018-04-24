@@ -47,7 +47,7 @@ public:
 	
 	/// Returns the position (1 to argc-1) in the command's argument list
 	/// where the given parameter apears, or 0 if not present
-	//int CheckParm(const char *parm);
+	int CheckParm(const char *parm);
 	
 	int GetCount() const override {return mvArgs.size();}
 	

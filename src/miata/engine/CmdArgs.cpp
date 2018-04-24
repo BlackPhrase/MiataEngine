@@ -1,4 +1,5 @@
 /*
+Copyright (C) 1996-1997 Id Software, Inc.
 Copyright (C) 2017-2018 BlackPhrase
 
 This program is free software: you can redistribute it and/or
@@ -75,6 +76,27 @@ const char *CCmdArgs::GetByIndex(int id) const
 };
 
 /*
+================
+Cmd_CheckParm
+
+Returns the position (1 to argc-1) in the command's argument list
+where the given parameter apears, or 0 if not present
+================
+*/
+
+int CCmdArgs::CheckParm(const char *parm)
+{
+	if(!parm)
+		Sys_Error("Cmd_CheckParm: NULL");
+
+	for(int i = 1; i < GetCount(); ++i)
+		if(!Q_strcasecmp(parm, GetByIndex(i)))
+			return i;
+
+	return 0;
+};
+
+/*
 ============
 Cmd_Args
 
@@ -83,7 +105,7 @@ Returns a single string containing argv(1) to argv(argc()-1)
 */
 const char *CCmdArgs::ToString() const
 {
-	std::string sOutStr{""}; // TODO: fix?
+	static std::string sOutStr{""}; // TODO: fix
 	
 	for(auto It : mvArgs)
 		if(!sOutStr.empty())
