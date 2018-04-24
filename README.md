@@ -1,6 +1,6 @@
-# Miata Engine
+# B6ZE (Miata Engine)
 
-[![Build Status](https://travis-ci.org/BlackPhrase/MiataEngine.svg)](https://travis-ci.org/BlackPhrase/MiataEngine)
+[![Build Status](https://travis-ci.org/BlackPhrase/B6ZE.svg)](https://travis-ci.org/BlackPhrase/B6ZE)
 
 A modernized version of a Quake/Quake2 engine
 
