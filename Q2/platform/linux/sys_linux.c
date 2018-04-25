@@ -344,11 +344,6 @@ void Sys_CopyProtect(void)
 		}
 	}
 	endmntent(mnt);
-
-	if (found_cd)
-		Com_Error (ERR_FATAL, "Could not find a Quake2 CD in your CD drive.");
-	Com_Error (ERR_FATAL, "Unable to find a mounted iso9660 file system.\n"
-		"You must mount the Quake2 CD in a cdrom drive in order to play.");
 }
 
 #if 0

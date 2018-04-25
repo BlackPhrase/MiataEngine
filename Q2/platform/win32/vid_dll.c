@@ -36,12 +36,7 @@ refexport_t	re;
 
 static UINT MSH_MOUSEWHEEL;
 
-// Console variables that we need to access from this module
-cvar_t		*vid_gamma;
-cvar_t		*vid_ref;			// Name of Render DLL loaded
-cvar_t		*vid_xpos;			// X coordinate of window position
-cvar_t		*vid_ypos;			// Y coordinate of window position
-cvar_t		*vid_fullscreen;
+
 
 // Global variables used internally by this module
 viddef_t	viddef;				// global video state; used by other modules
