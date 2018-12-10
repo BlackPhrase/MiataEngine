@@ -37,10 +37,10 @@ pmenuhnd_t *PMenu_Open(edict_t *ent, pmenu_t *entries, int cur, int num, void *a
 		PMenu_Close(ent);
 	}
 
-	hnd = malloc(sizeof(*hnd));
+	hnd = (pmenuhnd_t*)malloc(sizeof(*hnd));
 
 	hnd->arg = arg;
-	hnd->entries = malloc(sizeof(pmenu_t) * num);
+	hnd->entries = (pmenu_t*)malloc(sizeof(pmenu_t) * num);
 	memcpy(hnd->entries, entries, sizeof(pmenu_t) * num);
 	// duplicate the strings since they may be from static memory
 	for (i = 0; i < num; i++)

@@ -168,7 +168,7 @@ void SP_info_player_coop(edict_t *self)
 The deathmatch intermission point will be at one of these
 Use 'angles' instead of 'angle', so you can set pitch or roll as well as yaw.  'pitch yaw roll'
 */
-void SP_info_player_intermission(void)
+void SP_info_player_intermission(edict_t *self)
 {
 }
 
@@ -1600,7 +1600,7 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 
 //ZOID
 	if (client->ctf_grapple)
-		CTFGrapplePull(client->ctf_grapple);
+		CTFGrapplePull((edict_t*)client->ctf_grapple);
 //ZOID
 
 	gi.linkentity (ent);
