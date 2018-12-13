@@ -86,8 +86,6 @@ typedef struct client_s
 	double			last_message;		// reliable messages must be sent
 										// periodically
 
-	struct qsocket_s *netconnection;	// communications handle
-
 	usercmd_t		cmd;				// movement
 	vec3_t			wishdir;			// intended motion calced from cmd
 
@@ -106,6 +104,9 @@ typedef struct client_s
 
 // client known data for deltas	
 	int				old_frags;
+	
+//===== NETWORK ============
+	netchan_t		netchan;
 } client_t;
 
 
@@ -233,7 +234,6 @@ void SV_SetIdealPitch (void);
 void SV_AddUpdates (void);
 
 void SV_ClientThink (void);
-void SV_AddClientToServer (struct qsocket_s	*ret);
 
 void SV_ClientPrintf (char *fmt, ...);
 void SV_BroadcastPrintf (char *fmt, ...);

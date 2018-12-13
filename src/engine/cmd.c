@@ -668,16 +668,16 @@ void Cmd_ForwardToServer (void)
 	if (cls.demoplayback)
 		return;		// not really connected
 
-	MSG_WriteByte (&cls.message, clc_stringcmd);
+	MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
 	if (Q_strcasecmp(Cmd_Argv(0), "cmd") != 0)
 	{
-		SZ_Print (&cls.message, Cmd_Argv(0));
-		SZ_Print (&cls.message, " ");
+		SZ_Print (&cls.netchan.message, Cmd_Argv(0));
+		SZ_Print (&cls.netchan.message, " ");
 	}
 	if (Cmd_Argc() > 1)
-		SZ_Print (&cls.message, Cmd_Args());
+		SZ_Print (&cls.netchan.message, Cmd_Args());
 	else
-		SZ_Print (&cls.message, "\n");
+		SZ_Print (&cls.netchan.message, "\n");
 }
 
 

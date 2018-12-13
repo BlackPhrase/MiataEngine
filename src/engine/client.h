@@ -111,6 +111,9 @@ ca_connected		// valid netcon, talking to a server
 typedef struct
 {
 	cactive_t	state;
+	
+// network stuff
+	netchan_t	netchan;
 
 // personalization data sent to server	
 	char		mapstring[MAX_QPATH];
@@ -133,9 +136,6 @@ typedef struct
 
 
 // connection information
-	int			signon;			// 0 to SIGNONS
-	struct qsocket_s	*netcon;
-	sizebuf_t	message;		// writing buffer to send to server
 	
 } client_static_t;
 

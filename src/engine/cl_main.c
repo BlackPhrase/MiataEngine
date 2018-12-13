@@ -69,7 +69,7 @@ void CL_ClearState (void)
 // wipe the entire cl structure
 	memset (&cl, 0, sizeof(cl));
 
-	SZ_Clear (&cls.message);
+	SZ_Clear (&cls.netchan.message);
 
 // clear other arrays	
 	memset (cl_efrags, 0, sizeof(cl_efrags));
@@ -113,11 +113,14 @@ void CL_Disconnect (void)
 			CL_Stop_f ();
 
 		Con_DPrintf ("Sending clc_disconnect\n");
-		SZ_Clear (&cls.message);
-		MSG_WriteByte (&cls.message, clc_disconnect);
-		NET_SendUnreliableMessage (cls.netcon, &cls.message);
-		SZ_Clear (&cls.message);
-		NET_Close (cls.netcon);
+		SZ_Clear (&cls.netchan.message);
+		MSG_WriteByte (&cls.netchan.message, clc_disconnect);
+		
+		Netchan_Transmit (&cls.netchan, 6, cls.netchan.message.data);
+		Netchan_Transmit (&cls.netchan, 6, cls.netchan.message.data);
+		Netchan_Transmit (&cls.netchan, 6, cls.netchan.message.data);
+		
+		SZ_Clear (&cls.netchan.message);
 
 		cls.state = ca_disconnected;
 		if (sv.active)
@@ -155,8 +158,8 @@ void CL_EstablishConnection (char *host)
 
 	CL_Disconnect ();
 
-	cls.netcon = NET_Connect (host);
-	if (!cls.netcon)
+	cls.netchan = NET_Connect (host);
+	if (!cls.netchan)
 		Host_Error ("CL_Connect: connect failed\n");
 	Con_DPrintf ("CL_EstablishConnection: connected to %s\n", host);
 	
@@ -181,25 +184,25 @@ Con_DPrintf ("CL_SignonReply: %i\n", cls.signon);
 	switch (cls.signon)
 	{
 	case 1:
-		MSG_WriteByte (&cls.message, clc_stringcmd);
-		MSG_WriteString (&cls.message, "prespawn");
+		MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
+		MSG_WriteString (&cls.netchan.message, "prespawn");
 		break;
 		
 	case 2:		
-		MSG_WriteByte (&cls.message, clc_stringcmd);
-		MSG_WriteString (&cls.message, va("name \"%s\"\n", cl_name.string));
+		MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
+		MSG_WriteString (&cls.netchan.message, va("name \"%s\"\n", cl_name.string));
 	
-		MSG_WriteByte (&cls.message, clc_stringcmd);
-		MSG_WriteString (&cls.message, va("color %i %i\n", ((int)cl_color.value)>>4, ((int)cl_color.value)&15));
+		MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
+		MSG_WriteString (&cls.netchan.message, va("color %i %i\n", ((int)cl_color.value)>>4, ((int)cl_color.value)&15));
 	
-		MSG_WriteByte (&cls.message, clc_stringcmd);
+		MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
 		sprintf (str, "spawn %s", cls.spawnparms);
-		MSG_WriteString (&cls.message, str);
+		MSG_WriteString (&cls.netchan.message, str);
 		break;
 		
 	case 3:	
-		MSG_WriteByte (&cls.message, clc_stringcmd);
-		MSG_WriteString (&cls.message, "begin");
+		MSG_WriteByte (&cls.netchan.message, clc_stringcmd);
+		MSG_WriteString (&cls.netchan.message, "begin");
 		Cache_Report ();		// print remaining memory
 		break;
 		
@@ -689,24 +692,23 @@ void CL_SendCmd (void)
 
 	if (cls.demoplayback)
 	{
-		SZ_Clear (&cls.message);
+		SZ_Clear (&cls.netchan.message);
 		return;
 	}
 	
 // send the reliable message
-	if (!cls.message.cursize)
+	if (!cls.netchan.message.cursize)
 		return;		// no message at all
 	
-	if (!NET_CanSendMessage (cls.netcon))
+	if (!Netchan_CanPacket (&cls.netchan))
 	{
 		Con_DPrintf ("CL_WriteToServer: can't send\n");
 		return;
 	}
 
-	if (NET_SendMessage (cls.netcon, &cls.message) == -1)
-		Host_Error ("CL_WriteToServer: lost server connection");
+	Netchan_Transmit (&cls.netchan, cls.netchan.message.cursize, cls.netchan.message.data);
 
-	SZ_Clear (&cls.message);
+	SZ_Clear (&cls.netchan.message);
 }
 
 /*
@@ -716,7 +718,7 @@ CL_Init
 */
 void CL_Init (void)
 {	
-	SZ_Alloc (&cls.message, 1024);
+	SZ_Alloc (&cls.netchan.message, 1024);
 
 	CL_InitInput ();
 	CL_InitTEnts ();

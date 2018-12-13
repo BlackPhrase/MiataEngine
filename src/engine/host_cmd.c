@@ -86,7 +86,7 @@ void Host_Status_f (void)
 	{
 		if (!client->active)
 			continue;
-		seconds = (int)(net_time - client->netconnection->connecttime);
+		//seconds = (int)(net_time - client->netchan.connecttime); // TODO
 		minutes = seconds / 60;
 		if (minutes)
 		{
@@ -98,7 +98,7 @@ void Host_Status_f (void)
 		else
 			hours = 0;
 		print ("#%-2u %-16.16s  %3i  %2i:%02i:%02i\n", j+1, client->name, (int)client->edict->v.frags, hours, minutes, seconds);
-		print ("   %s\n", client->netconnection->address);
+		print ("   %s\n", client->netchan.remote_address);
 	}
 }
 
@@ -1321,7 +1321,7 @@ void Host_Spawn_f (void)
 		pr_global_struct->self = EDICT_TO_PROG(sv_player);
 		PR_ExecuteProgram (pr_global_struct->ClientConnect);
 
-		if ((Sys_FloatTime() - host_client->netconnection->connecttime) <= sv.time)
+		//if ((Sys_DoubleTime() - host_client->netchan.connecttime) <= sv.time) // TODO
 			Sys_Printf ("%s entered the game\n", host_client->name);
 
 		PR_ExecuteProgram (pr_global_struct->PutClientInServer);	

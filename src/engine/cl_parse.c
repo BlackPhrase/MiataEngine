@@ -191,9 +191,9 @@ void CL_KeepaliveMessage (void)
 // write out a nop
 	Con_Printf ("--> client to server keepalive\n");
 
-	MSG_WriteByte (&cls.message, clc_nop);
-	NET_SendMessage (cls.netcon, &cls.message);
-	SZ_Clear (&cls.message);
+	MSG_WriteByte (&cls.netchan.message, clc_nop);
+	NET_SendMessage (cls.netchan, &cls.netchan.message);
+	SZ_Clear (&cls.netchan.message);
 }
 
 /*

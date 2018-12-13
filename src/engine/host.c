@@ -283,8 +283,8 @@ void SV_ClientPrintf (char *fmt, ...)
 	vsprintf (string, fmt,argptr);
 	va_end (argptr);
 	
-	MSG_WriteByte (&host_client->message, svc_print);
-	MSG_WriteString (&host_client->message, string);
+	MSG_WriteByte (&host_client->netchan.message, svc_print);
+	MSG_WriteString (&host_client->netchan.message, string);
 }
 
 /*
@@ -328,8 +328,8 @@ void Host_ClientCommands (char *fmt, ...)
 	vsprintf (string, fmt,argptr);
 	va_end (argptr);
 	
-	MSG_WriteByte (&host_client->message, svc_stufftext);
-	MSG_WriteString (&host_client->message, string);
+	MSG_WriteByte (&host_client->netchan.message, svc_stufftext);
+	MSG_WriteString (&host_client->netchan.message, string);
 }
 
 /*
@@ -349,10 +349,10 @@ void SV_DropClient (qboolean crash)
 	if (!crash)
 	{
 		// send any final messages (don't check for errors)
-		if (NET_CanSendMessage (host_client->netconnection))
+		if (NET_CanSendMessage (host_client->netchan))
 		{
-			MSG_WriteByte (&host_client->message, svc_disconnect);
-			NET_SendMessage (host_client->netconnection, &host_client->message);
+			MSG_WriteByte (&host_client->netchan.message, svc_disconnect);
+			NET_SendMessage (host_client->netchan, &host_client->netchan.message);
 		}
 	
 		if (host_client->edict && host_client->spawned)
@@ -369,8 +369,7 @@ void SV_DropClient (qboolean crash)
 	}
 
 // break the net connection
-	NET_Close (host_client->netconnection);
-	host_client->netconnection = NULL;
+	NET_Close (host_client->netchan);
 
 // free the client (the body stays around)
 	host_client->active = false;
@@ -383,15 +382,15 @@ void SV_DropClient (qboolean crash)
 	{
 		if (!client->active)
 			continue;
-		MSG_WriteByte (&client->message, svc_updatename);
-		MSG_WriteByte (&client->message, host_client - svs.clients);
-		MSG_WriteString (&client->message, "");
-		MSG_WriteByte (&client->message, svc_updatefrags);
-		MSG_WriteByte (&client->message, host_client - svs.clients);
-		MSG_WriteShort (&client->message, 0);
-		MSG_WriteByte (&client->message, svc_updatecolors);
-		MSG_WriteByte (&client->message, host_client - svs.clients);
-		MSG_WriteByte (&client->message, 0);
+		MSG_WriteByte (&client->netchan.message, svc_updatename);
+		MSG_WriteByte (&client->netchan.message, host_client - svs.clients);
+		MSG_WriteString (&client->netchan.message, "");
+		MSG_WriteByte (&client->netchan.message, svc_updatefrags);
+		MSG_WriteByte (&client->netchan.message, host_client - svs.clients);
+		MSG_WriteShort (&client->netchan.message, 0);
+		MSG_WriteByte (&client->netchan.message, svc_updatecolors);
+		MSG_WriteByte (&client->netchan.message, host_client - svs.clients);
+		MSG_WriteByte (&client->netchan.message, 0);
 	}
 }
 
@@ -426,16 +425,16 @@ void Host_ShutdownServer(qboolean crash)
 		count = 0;
 		for (i=0, host_client = svs.clients ; i<svs.maxclients ; i++, host_client++)
 		{
-			if (host_client->active && host_client->message.cursize)
+			if (host_client->active && host_client->netchan.message.cursize)
 			{
-				if (NET_CanSendMessage (host_client->netconnection))
+				if (NET_CanSendMessage (host_client->netchan))
 				{
-					NET_SendMessage(host_client->netconnection, &host_client->message);
-					SZ_Clear (&host_client->message);
+					NET_SendMessage(host_client->netchan, &host_client->netchan.message);
+					SZ_Clear (&host_client->netchan.message);
 				}
 				else
 				{
-					NET_GetMessage(host_client->netconnection);
+					NET_GetMessage(host_client->netchan);
 					count++;
 				}
 			}
