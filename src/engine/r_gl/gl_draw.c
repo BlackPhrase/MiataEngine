@@ -69,7 +69,6 @@ typedef struct
 gltexture_t	gltextures[MAX_GLTEXTURES];
 int			numgltextures;
 
-
 void GL_Bind (int texnum)
 {
 	if (gl_nobind.value)
@@ -596,7 +595,6 @@ void Draw_AlphaPic (int x, int y, qpic_t *pic, float alpha)
 	glDisable (GL_BLEND);
 }
 
-
 /*
 =============
 Draw_Pic
@@ -933,7 +931,6 @@ void GL_Resample8BitTexture (unsigned char *in, int inwidth, int inheight, unsig
 		}
 	}
 }
-
 
 /*
 ================

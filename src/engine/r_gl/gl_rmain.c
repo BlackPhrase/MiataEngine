@@ -346,14 +346,9 @@ extern	vec3_t			lightspot;
 
 void GL_DrawAliasShadow (aliashdr_t *paliashdr, int posenum)
 {
-	float	s, t, l;
-	int		i, j;
-	int		index;
 	trivertx_t	*v, *verts;
-	int		list;
 	int		*order;
 	vec3_t	point;
-	float	*normal;
 	float	height, lheight;
 	int		count;
 
@@ -452,8 +447,6 @@ void R_DrawAliasModel (entity_t *e)
 	model_t		*clmodel;
 	vec3_t		mins, maxs;
 	aliashdr_t	*paliashdr;
-	trivertx_t	*verts, *v;
-	int			index;
 	float		s, t, an;
 	int			anim;
 
@@ -722,6 +715,8 @@ void R_PolyBlend (void)
 	if (!v_blend[3])
 		return;
 
+//Con_Printf("R_PolyBlend(): %4.2f %4.2f %4.2f %4.2f\n",v_blend[0], v_blend[1],	v_blend[2],	v_blend[3]);
+
 	GL_DisableMultitexture();
 
 	glDisable (GL_ALPHA_TEST);
@@ -901,6 +896,9 @@ void R_SetupGL (void)
 	glViewport (glx + x, gly + y2, w, h);
     screenaspect = (float)r_refdef.vrect.width/r_refdef.vrect.height;
 //	yfov = 2*atan((float)r_refdef.vrect.height/r_refdef.vrect.width)*180/M_PI;
+//	yfov = (2.0 * tan (scr_fov.value/360*M_PI)) / screenaspect;
+//	yfov = 2*atan((float)r_refdef.vrect.height/r_refdef.vrect.width)*(scr_fov.value*2)/M_PI;
+//    MYgluPerspective (yfov,  screenaspect,  4,  4096);
     MYgluPerspective (r_refdef.fov_y,  screenaspect,  4,  4096);
 
 	if (mirror)
@@ -1115,7 +1113,7 @@ void R_RenderView (void)
 	if (r_speeds.value)
 	{
 		glFinish ();
-		time1 = Sys_FloatTime ();
+		time1 = Sys_DoubleTime ();
 		c_brush_polys = 0;
 		c_alias_polys = 0;
 	}
@@ -1153,7 +1151,7 @@ void R_RenderView (void)
 	if (r_speeds.value)
 	{
 //		glFinish ();
-		time2 = Sys_FloatTime ();
+		time2 = Sys_DoubleTime ();
 		Con_Printf ("%3i ms  %4i wpoly %4i epoly\n", (int)((time2-time1)*1000), c_brush_polys, c_alias_polys); 
 	}
 }

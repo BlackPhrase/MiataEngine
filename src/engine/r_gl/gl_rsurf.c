@@ -594,7 +594,6 @@ void DrawGLWaterPoly (glpoly_t *p)
 {
 	int		i;
 	float	*v;
-	float	s, t, os, ot;
 	vec3_t	nv;
 
 	GL_DisableMultitexture();
@@ -618,7 +617,6 @@ void DrawGLWaterPolyLightmap (glpoly_t *p)
 {
 	int		i;
 	float	*v;
-	float	s, t, os, ot;
 	vec3_t	nv;
 
 	GL_DisableMultitexture();
@@ -702,6 +700,10 @@ void R_BlendLightmaps (void)
 		{
 			lightmap_modified[i] = false;
 			theRect = &lightmap_rectchange[i];
+//			theRect->l = 0;
+//			theRect->t = 0;
+//			theRect->w = BLOCK_WIDTH;
+//			theRect->h = BLOCK_HEIGHT;
 //			glTexImage2D (GL_TEXTURE_2D, 0, lightmap_bytes
 //			, BLOCK_WIDTH, BLOCK_HEIGHT, 0, 
 //			gl_lightmap_format, GL_UNSIGNED_BYTE, lightmaps+i*BLOCK_WIDTH*BLOCK_HEIGHT*lightmap_bytes);
@@ -831,7 +833,6 @@ Multitexture
 */
 void R_RenderDynamicLightmaps (msurface_t *fa)
 {
-	texture_t	*t;
 	byte		*base;
 	int			maps;
 	glRect_t    *theRect;
@@ -1192,7 +1193,6 @@ void R_RecursiveWorldNode (mnode_t *node)
 	msurface_t	*surf, **mark;
 	mleaf_t		*pleaf;
 	double		d, dot;
-	vec3_t		mins, maxs;
 
 	if (node->contents == CONTENTS_SOLID)
 		return;		// solid
@@ -1313,7 +1313,6 @@ R_DrawWorld
 void R_DrawWorld (void)
 {
 	entity_t	ent;
-	int			i;
 
 	memset (&ent, 0, sizeof(ent));
 	ent.model = cl.worldmodel;
@@ -1401,7 +1400,6 @@ int AllocBlock (int w, int h, int *x, int *y)
 {
 	int		i, j;
 	int		best, best2;
-	int		bestx;
 	int		texnum;
 
 	for (texnum=0 ; texnum<MAX_LIGHTMAPS ; texnum++)
@@ -1436,6 +1434,7 @@ int AllocBlock (int w, int h, int *x, int *y)
 	}
 
 	Sys_Error ("AllocBlock: full");
+	return 0;
 }
 
 

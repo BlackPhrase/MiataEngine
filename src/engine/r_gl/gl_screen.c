@@ -301,7 +301,7 @@ static void SCR_CalcRefdef (void)
 	if (cl.intermission)
 	{
 		full = true;
-		size = 100;
+		size = 100.0;
 		sb_lines = 0;
 	}
 	size /= 100.0;
@@ -369,7 +369,6 @@ SCR_Init
 */
 void SCR_Init (void)
 {
-
 	Cvar_RegisterVariable (&scr_fov);
 	Cvar_RegisterVariable (&scr_viewsize);
 	Cvar_RegisterVariable (&scr_conspeed);
@@ -450,6 +449,33 @@ void SCR_DrawNet (void)
 		return;
 
 	Draw_Pic (scr_vrect.x+64, scr_vrect.y, scr_net);
+}
+
+void SCR_DrawFPS (void)
+{
+	extern cvar_t show_fps;
+	static double lastframetime;
+	double t;
+	extern int fps_count;
+	static lastfps;
+	int x, y;
+	char st[80];
+
+	if (!show_fps.value)
+		return;
+
+	t = Sys_DoubleTime();
+	if ((t - lastframetime) >= 1.0) {
+		lastfps = fps_count;
+		fps_count = 0;
+		lastframetime = t;
+	}
+
+	sprintf(st, "%3d FPS", lastfps);
+	x = vid.width - strlen(st) * 8 - 8;
+	y = vid.height - sb_lines - 8;
+//	Draw_TileClear(x, y, strlen(st) * 8, 8);
+	Draw_String(x, y, st);
 }
 
 /*
@@ -880,6 +906,9 @@ void SCR_UpdateScreen (void)
 	//
 	SCR_TileClear ();
 
+	if (r_netgraph.value)
+		R_NetGraph ();
+
 	if (scr_drawdialog)
 	{
 		Sbar_Draw ();
@@ -908,6 +937,7 @@ void SCR_UpdateScreen (void)
 		
 		SCR_DrawRam ();
 		SCR_DrawNet ();
+		SCR_DrawFPS ();
 		SCR_DrawTurtle ();
 		SCR_DrawPause ();
 		SCR_CheckDrawCenterString ();
@@ -920,4 +950,3 @@ void SCR_UpdateScreen (void)
 
 	GL_EndRendering ();
 }
-
