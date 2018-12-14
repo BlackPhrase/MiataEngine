@@ -457,6 +457,7 @@ int CDAudio_Init(void)
 	{
 		Con_Printf("CDAudio_Init: No CD in player.\n");
 		cdValid = false;
+		enabled = false;
 	}
 
 	Cmd_AddCommand ("cd", CD_f);
