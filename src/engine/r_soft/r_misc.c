@@ -58,7 +58,6 @@ void Show (void)
 	VID_Update (&vr);
 }
 
-
 /*
 ====================
 R_TimeRefresh_f
@@ -75,7 +74,7 @@ void R_TimeRefresh_f (void)
 
 	startangle = r_refdef.viewangles[1];
 	
-	start = Sys_FloatTime ();
+	start = Sys_DoubleTime ();
 	for (i=0 ; i<128 ; i++)
 	{
 		r_refdef.viewangles[1] = i/128.0*360.0;
@@ -93,13 +92,12 @@ void R_TimeRefresh_f (void)
 		vr.pnext = NULL;
 		VID_Update (&vr);
 	}
-	stop = Sys_FloatTime ();
+	stop = Sys_DoubleTime ();
 	time = stop-start;
 	Con_Printf ("%f seconds (%f fps)\n", time, 128/time);
 	
 	r_refdef.viewangles[1] = startangle;
 }
-
 
 /*
 ================
@@ -155,11 +153,12 @@ void R_TimeGraph (void)
 	static byte	r_timings[MAX_TIMINGS];
 	int		x;
 	
-	r_time2 = Sys_FloatTime ();
+	r_time2 = Sys_DoubleTime ();
 
 	a = (r_time2-r_time1)/0.01;
 //a = fabs(mouse_y * 0.05);
 //a = (int)((r_refdef.vieworg[2] + 1024)/1)%(int)r_graphheight.value;
+//a = (int)((pmove.velocity[2] + 500)/10);
 //a = fabs(velocity[0])/20;
 //a = ((int)fabs(origin[0])/8)%20;
 //a = (cl.idealpitch + 30)/5;
@@ -185,6 +184,40 @@ void R_TimeGraph (void)
 	timex = (timex+1)%MAX_TIMINGS;
 }
 
+/*
+==============
+R_NetGraph
+==============
+*/
+void R_NetGraph (void)
+{
+	int		a, x, y, y2, w, i;
+	frame_t	*frame;
+	int lost;
+	char st[80];
+
+	if (vid.width - 16 <= NET_TIMINGS)
+		w = vid.width - 16;
+	else
+		w = NET_TIMINGS;
+
+	x =	-((vid.width - 320)>>1);
+	y = vid.height - sb_lines - 24 - (int)r_graphheight.value*2 - 2;
+
+	M_DrawTextBox (x, y, (w+7)/8, ((int)r_graphheight.value*2+7)/8 + 1);
+	y2 = y + 8;
+	y = vid.height - sb_lines - 8 - 2;
+
+	x = 8;
+	lost = CL_CalcNet();
+	for (a=NET_TIMINGS-w ; a<w ; a++)
+	{
+		i = (cls.netchan.outgoing_sequence-a) & NET_TIMINGSMASK;
+		R_LineGraph (x+w-1-a, y, packet_latency[i]);
+	}
+	sprintf(st, "%3i%% packet loss", lost);
+	Draw_String(8, y2, st);
+}
 
 /*
 =============
@@ -196,7 +229,7 @@ void R_PrintTimes (void)
 	float	r_time2;
 	float		ms;
 
-	r_time2 = Sys_FloatTime ();
+	r_time2 = Sys_DoubleTime ();
 
 	ms = 1000* (r_time2 - r_time1);
 	
@@ -215,7 +248,7 @@ void R_PrintDSpeeds (void)
 {
 	float	ms, dp_time, r_time2, rw_time, db_time, se_time, de_time, dv_time;
 
-	r_time2 = Sys_FloatTime ();
+	r_time2 = Sys_DoubleTime ();
 
 	dp_time = (dp_time2 - dp_time1) * 1000;
 	rw_time = (rw_time2 - rw_time1) * 1000;

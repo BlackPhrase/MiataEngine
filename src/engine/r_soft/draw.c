@@ -109,8 +109,6 @@ Draw_Init
 */
 void Draw_Init (void)
 {
-	int		i;
-
 	draw_chars = W_GetLumpName ("conchars");
 	draw_disc = W_GetLumpName ("disc");
 	draw_backtile = W_GetLumpName ("backtile");
@@ -240,6 +238,40 @@ void Draw_String (int x, int y, char *str)
 
 /*
 ================
+Draw_Alt_String
+================
+*/
+void Draw_Alt_String (int x, int y, char *str)
+{
+	while (*str)
+	{
+		Draw_Character (x, y, (*str) | 0x80);
+		str++;
+		x += 8;
+	}
+}
+
+void Draw_Pixel(int x, int y, byte color)
+{
+	byte			*dest;
+	unsigned short	*pusdest;
+
+	if (r_pixbytes == 1)
+	{
+		dest = vid.conbuffer + y*vid.conrowbytes + x;
+		*dest = color;
+	}
+	else
+	{
+	// FIXME: pre-expand to native format?
+		pusdest = (unsigned short *)
+				((byte *)vid.conbuffer + y*vid.conrowbytes + (x<<1));
+		*pusdest = d_8to16table[color];
+	}
+}
+
+/*
+================
 Draw_DebugChar
 
 Draws a single character directly to the upper right corner of the screen.
@@ -331,6 +363,55 @@ void Draw_Pic (int x, int y, qpic_t *pic)
 	}
 }
 
+/*
+=============
+Draw_SubPic
+=============
+*/
+void Draw_SubPic(int x, int y, qpic_t *pic, int srcx, int srcy, int width, int height)
+{
+	byte			*dest, *source;
+	unsigned short	*pusdest;
+	int				v, u;
+
+	if ((x < 0) ||
+		(x + width > vid.width) ||
+		(y < 0) ||
+		(y + height > vid.height))
+	{
+		Sys_Error ("Draw_Pic: bad coordinates");
+	}
+
+	source = pic->data + srcy * pic->width + srcx;
+
+	if (r_pixbytes == 1)
+	{
+		dest = vid.buffer + y * vid.rowbytes + x;
+
+		for (v=0 ; v<height ; v++)
+		{
+			Q_memcpy (dest, source, width);
+			dest += vid.rowbytes;
+			source += pic->width;
+		}
+	}
+	else
+	{
+	// FIXME: pretranslate at load time?
+		pusdest = (unsigned short *)vid.buffer + y * (vid.rowbytes >> 1) + x;
+
+		for (v=0 ; v<height ; v++)
+		{
+			for (u=srcx ; u<(srcx+width) ; u++)
+			{
+				pusdest[u] = d_8to16table[source[u]];
+			}
+
+			pusdest += vid.rowbytes >> 1;
+			source += pic->width;
+		}
+	}
+}
 
 /*
 =============
@@ -815,6 +896,13 @@ void Draw_Fill (int x, int y, int w, int h, int c)
 	unsigned short	*pusdest;
 	unsigned		uc;
 	int				u, v;
+
+	if (x < 0 || x + w > vid.width ||
+		y < 0 || y + h > vid.height) {
+		Con_Printf("Bad Draw_Fill(%d, %d, %d, %d, %c)\n",
+			x, y, w, h, c);
+		return;
+	}
 
 	if (r_pixbytes == 1)
 	{

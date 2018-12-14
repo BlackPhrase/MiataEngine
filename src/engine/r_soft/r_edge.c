@@ -729,13 +729,9 @@ void R_ScanEdges (void)
 			VID_LockBuffer ();
 		
 			if (r_drawculledpolys)
-			{
 				R_DrawCulledPolys ();
-			}
 			else
-			{
 				D_DrawSurfaces ();
-			}
 
 		// clear the surface span pointers
 			for (s = &surfaces[1] ; s<surface_p ; s++)
