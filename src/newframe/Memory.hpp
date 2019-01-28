@@ -3,5 +3,5 @@
 class CMemory
 {
 public:
-	Init(void *buf, int size);
+	void Init(void *buf, int size);
 };
