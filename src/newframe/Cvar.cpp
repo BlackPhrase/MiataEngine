@@ -2,36 +2,45 @@
 
 void CCvar::RegisterVariable(cvar_t *variable)
 {
+	Cvar_RegisterVariable(variable);
 };
 
 void CCvar::Set(const char *var_name, const char *value)
 {
+	Cvar_Set(var_name, value);
 };
 
 void CCvar::SetValue(const char *var_name, float value)
 {
+	Cvar_SetValue(var_name, value);
 };
 
 float CCvar::VariableValue(const char *var_name)
 {
+	return Cvar_VariableValue(var_name);
 };
 
 char *CCvar::VariableString(const char *var_name)
 {
+	return Cvar_VariableString(var_name);
 };
 
 char *CCvar::CompleteVariable(const char *partial)
 {
+	return Cvar_CompleteVariable(partial);
 };
 
 bool CCvar::HandleCommand()
 {
+	return Cvar_Command();
 };
 
 void CCvar::WriteVariables(FILE *f)
 {
+	Cvar_WriteVariables(f);
 };
 
 cvar_t *CCvar::FindVar(const char *var_name)
 {
+	return Cvar_FindVar(var_name);
 };
