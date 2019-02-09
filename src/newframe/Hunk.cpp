@@ -1,3 +1,4 @@
+#include "quakedef.h"
 #include "Hunk.hpp"
 
 void *CHunk::Alloc(int size)

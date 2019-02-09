@@ -1,3 +1,4 @@
+#include "quakedef.h"
 #include "Cache.hpp"
 
 void *CCache::Alloc(cache_user_t *c, int size, const char *name)

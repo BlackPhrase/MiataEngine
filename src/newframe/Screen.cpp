@@ -1,3 +1,4 @@
+#include "quakedef.h"
 #include "Screen.hpp"
 
 void CScreen::Init()

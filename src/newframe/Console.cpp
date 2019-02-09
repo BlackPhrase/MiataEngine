@@ -1,3 +1,4 @@
+#include "quakedef.h"
 #include "Console.hpp"
 
 void CConsole::Init()

@@ -1,3 +1,4 @@
+#include "quakedef.h"
 #include "Video.hpp"
 
 void CVideo::Init(unsigned char *palette)

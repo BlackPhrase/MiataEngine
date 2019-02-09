@@ -1,3 +1,4 @@
+#include "quakedef.h"
 #include "Progs.hpp"
 
 void CProgs::Init()

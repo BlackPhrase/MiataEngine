@@ -1,3 +1,4 @@
+#include "quakedef.h"
 #include "View.hpp"
 
 void CView::Init()

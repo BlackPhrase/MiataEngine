@@ -1,3 +1,4 @@
+#include "quakedef.h"
 #include "CmdBuffer.hpp"
 
 void CCmdBuffer::Init()

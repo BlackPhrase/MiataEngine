@@ -1,3 +1,4 @@
+#include "quakedef.h"
 #include "Sys.hpp"
 
 int CSys::FileOpenRead(const char *path, int *hndl)

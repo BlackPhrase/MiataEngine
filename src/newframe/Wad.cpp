@@ -1,3 +1,4 @@
+#include "quakedef.h"
 #include "Wad.hpp"
 
 void CWAD::LoadWadFile(const char *filename)

@@ -1,3 +1,4 @@
+#include "quakedef.h"
 #include "Cvar.hpp"
 
 void CCvar::RegisterVariable(cvar_t *variable)

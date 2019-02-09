@@ -1,3 +1,4 @@
+#include "quakedef.h"
 #include "Info.hpp"
 
 const char *CInfo::GetValueForKey(const char *s, const char *key)

@@ -1,3 +1,4 @@
+#include "quakedef.h"
 #include "SizeBuffer.hpp"
 
 void CSizeBuffer::Alloc(sizebuf_t *buf, int startsize)

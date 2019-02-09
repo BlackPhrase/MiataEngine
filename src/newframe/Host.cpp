@@ -1,3 +1,4 @@
+#include "quakedef.h"
 #include "Host.hpp"
 
 void CHost::Init(quakeparms_t *parms)

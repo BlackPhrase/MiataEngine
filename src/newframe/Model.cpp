@@ -1,3 +1,4 @@
+#include "quakedef.h"
 #include "Model.hpp"
 
 void CModel::Init()

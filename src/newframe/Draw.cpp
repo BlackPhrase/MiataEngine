@@ -1,3 +1,4 @@
+#include "quakedef.h"
 #include "Draw.hpp"
 
 void CDraw::Init()

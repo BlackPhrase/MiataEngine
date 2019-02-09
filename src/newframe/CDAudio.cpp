@@ -1,3 +1,4 @@
+#include "quakedef.h"
 #include "CDAudio.hpp"
 
 int CCDAudio::Init()

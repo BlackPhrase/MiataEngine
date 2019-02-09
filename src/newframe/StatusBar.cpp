@@ -1,3 +1,4 @@
+#include "quakedef.h"
 #include "StatusBar.hpp"
 
 void CStatusBar::Init()

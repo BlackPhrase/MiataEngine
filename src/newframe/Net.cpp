@@ -1,3 +1,4 @@
+#include "quakedef.h"
 #include "Net.hpp"
 
 void CNet::Init()
