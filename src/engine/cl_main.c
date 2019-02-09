@@ -757,3 +757,112 @@ void CL_Init (void)
 	Cmd_AddCommand ("timedemo", CL_TimeDemo_f);
 }
 
+/*
+==================
+Host_Frame
+
+Runs all active servers
+==================
+*/
+int		nopacketcount;
+void CL_Frame(float time)
+{
+	static double		time1 = 0;
+	static double		time2 = 0;
+	static double		time3 = 0;
+	int			pass1, pass2, pass3;
+	float fps;
+	if (setjmp (host_abort) )
+		return;			// something bad happened, or the server disconnected
+
+	// decide the simulation time
+	realtime += time;
+	if (oldrealtime > realtime)
+		oldrealtime = 0;
+
+	if (cl_maxfps.value)
+		fps = max(30.0, min(cl_maxfps.value, 72.0));
+	else
+		fps = max(30.0, min(rate.value/80.0, 72.0));
+
+	if (!cls.timedemo && realtime - oldrealtime < 1.0/fps)
+		return;			// framerate is too high
+
+	host_frametime = realtime - oldrealtime;
+	oldrealtime = realtime;
+	if (host_frametime > 0.2)
+		host_frametime = 0.2;
+		
+	// get new key events
+	Sys_SendKeyEvents ();
+
+	// allow mice or other external controllers to add commands
+	IN_Commands ();
+
+	// process console commands
+	Cbuf_Execute ();
+
+	// if running the server remotely, send intentions now after
+	// the incoming messages have been read
+	//if (!sv.active)
+		//CL_SendCmd ();
+	
+	//host_time += host_frametime;
+	
+	// fetch results from server
+	//if (cls.state == ca_connected)
+		CL_ReadPackets ();
+
+	// send intentions now
+	// resend a connection request if necessary
+	if (cls.state == ca_disconnected)
+		CL_CheckForResend ();
+	else
+		CL_SendCmd ();
+
+	// Set up prediction for other players
+	CL_SetUpPlayerPrediction(false);
+
+	// do client side motion prediction
+	CL_PredictMove ();
+
+	// Set up prediction for other players
+	CL_SetUpPlayerPrediction(true);
+
+	// build a refresh entity list
+	CL_EmitEntities ();
+
+	// update video
+	if (host_speeds.value)
+		time1 = Sys_DoubleTime ();
+
+	SCR_UpdateScreen ();
+
+	if (host_speeds.value)
+		time2 = Sys_DoubleTime ();
+		
+	// update audio
+	if (cls.signon == SIGNONS)
+	//if (cls.state == ca_active) // qw
+	{
+		S_Update (r_origin, vpn, vright, vup);
+		CL_DecayLights ();
+	}
+	else
+		S_Update (vec3_origin, vec3_origin, vec3_origin, vec3_origin);
+	
+	CDAudio_Update();
+
+	if (host_speeds.value)
+	{
+		pass1 = (time1 - time3)*1000;
+		time3 = Sys_DoubleTime ();
+		pass2 = (time2 - time1)*1000;
+		pass3 = (time3 - time2)*1000;
+		Con_Printf ("%3i tot %3i server %3i gfx %3i snd\n",
+					pass1+pass2+pass3, pass1, pass2, pass3);
+	}
+
+	host_framecount++; // TODO: move back to host?
+	fps_count++; // TODO: move back to host?
+}
