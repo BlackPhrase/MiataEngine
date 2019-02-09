@@ -28,6 +28,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 cvar_t	cl_name = {"_cl_name", "player", true};
 cvar_t	cl_color = {"_cl_color", "0", true};
 
+cvar_t	cl_timeout = {"cl_timeout", "60"};
+
 cvar_t	cl_shownet = {"cl_shownet","0"};	// can be 0, 1, or 2
 cvar_t	cl_nolerp = {"cl_nolerp","0"};
 
@@ -138,8 +140,95 @@ void CL_Disconnect_f (void)
 		Host_ShutdownServer (false);
 }
 
+/*
+=======================
+CL_SendConnectPacket
 
+called by CL_Connect_f and CL_CheckResend
+======================
+*/
+void CL_SendConnectPacket (void)
+{
+	netadr_t	adr;
+	char	data[2048];
+	double t1, t2;
+// JACK: Fixed bug where DNS lookups would cause two connects real fast
+//       Now, adds lookup time to the connect time.
+//		 Should I add it to realtime instead?!?!
 
+	if (cls.state != ca_disconnected)
+		return;
+
+	t1 = Sys_DoubleTime ();
+
+	if (!NET_StringToAdr (cls.servername, &adr))
+	{
+		Con_Printf ("Bad server address\n");
+		connect_time = -1;
+		return;
+	}
+
+	if (adr.port == 0)
+		adr.port = BigShort (27500);
+	t2 = Sys_DoubleTime ();
+
+	connect_time = realtime+t2-t1;	// for retransmit requests
+
+	cls.qport = Cvar_VariableValue("qport");
+
+	Info_SetValueForStarKey (cls.userinfo, "*ip", NET_AdrToString(adr), MAX_INFO_STRING);
+
+//	Con_Printf ("Connecting to %s...\n", cls.servername);
+	sprintf (data, "%c%c%c%cconnect %i %i %i \"%s\"\n",
+		255, 255, 255, 255,	PROTOCOL_VERSION, cls.qport, cls.challenge, cls.userinfo);
+	NET_SendPacket (NS_CLIENT, strlen(data), data, adr);
+}
+
+/*
+=================
+CL_CheckForResend
+
+Resend a connect message if the last one has timed out
+
+=================
+*/
+void CL_CheckForResend (void)
+{
+	netadr_t	adr;
+	char	data[2048];
+	double t1, t2;
+
+	if (connect_time == -1)
+		return;
+	if (cls.state != ca_disconnected)
+		return;
+	if (connect_time && realtime - connect_time < 5.0)
+		return;
+
+	t1 = Sys_DoubleTime ();
+	if (!NET_StringToAdr (cls.servername, &adr))
+	{
+		Con_Printf ("Bad server address\n");
+		connect_time = -1;
+		return;
+	}
+
+	if (adr.port == 0)
+		adr.port = BigShort (27500);
+	t2 = Sys_DoubleTime ();
+
+	connect_time = realtime+t2-t1;	// for retransmit requests
+
+	Con_Printf ("Connecting to %s...\n", cls.servername);
+	sprintf (data, "%c%c%c%cgetchallenge\n", 255, 255, 255, 255);
+	NET_SendPacket (NS_CLIENT, strlen(data), data, adr);
+}
+
+void CL_BeginServerConnect(void)
+{
+	connect_time = 0;
+	CL_CheckForResend();
+}
 
 /*
 =====================
@@ -148,6 +237,7 @@ CL_EstablishConnection
 Host should be either "local" or a net address to be passed on
 =====================
 */
+/*
 void CL_EstablishConnection (char *host)
 {
 	if (cls.state == ca_dedicated)
@@ -167,6 +257,7 @@ void CL_EstablishConnection (char *host)
 	cls.state = ca_connected;
 	cls.signon = 0;				// need all the signon messages before playing
 }
+*/
 
 /*
 =====================
@@ -626,6 +717,201 @@ void CL_RelinkEntities (void)
 
 }
 
+/*
+=================
+CL_ConnectionlessPacket
+
+Responses to broadcasts, etc
+=================
+*/
+void CL_ConnectionlessPacket (void)
+{
+	char	*s;
+	int		c;
+
+    MSG_BeginReading ();
+    MSG_ReadLong ();        // skip the -1
+
+	c = MSG_ReadByte ();
+	if (!cls.demoplayback)
+		Con_Printf ("%s: ", NET_AdrToString (net_from));
+//	Con_DPrintf ("%s", net_message.data + 5);
+	if (c == S2C_CONNECTION)
+	{
+		Con_Printf ("connection\n");
+		if (cls.state >= ca_connected)
+		{
+			if (!cls.demoplayback)
+				Con_Printf ("Dup connect received.  Ignored.\n");
+			return;
+		}
+		Netchan_Setup (NS_CLIENT, &cls.netchan, net_from, cls.qport);
+		MSG_WriteChar (&cls.netchan.message, clc_stringcmd);
+		MSG_WriteString (&cls.netchan.message, "new");	
+		cls.state = ca_connected;
+		Con_Printf ("Connected.\n");
+		allowremotecmd = false; // localid required now for remote cmds
+		return;
+	}
+	// remote command from gui front end
+	if (c == A2C_CLIENT_COMMAND)
+	{
+		char	cmdtext[2048];
+
+		Con_Printf ("client command\n");
+
+		// TODO
+		//if ((*(unsigned *)net_from.ip != *(unsigned *)net_local_adr.ip && *(unsigned *)net_from.ip != htonl(INADDR_LOOPBACK)) )
+		{
+			Con_Printf ("Command packet from remote host.  Ignored.\n");
+			return;
+		}
+#ifdef _WIN32
+		ShowWindow (mainwindow, SW_RESTORE);
+		SetForegroundWindow (mainwindow);
+#endif
+		s = MSG_ReadString ();
+
+		strncpy(cmdtext, s, sizeof(cmdtext) - 1);
+		cmdtext[sizeof(cmdtext) - 1] = 0;
+
+		s = MSG_ReadString ();
+
+		while (*s && isspace(*s))
+			s++;
+		while (*s && isspace(s[strlen(s) - 1]))
+			s[strlen(s) - 1] = 0;
+
+		if (!allowremotecmd && (!*localid.string || strcmp(localid.string, s))) {
+			if (!*localid.string) {
+				Con_Printf("===========================\n");
+				Con_Printf("Command packet received from local host, but no "
+					"localid has been set.  You may need to upgrade your server "
+					"browser.\n");
+				Con_Printf("===========================\n");
+				return;
+			}
+			Con_Printf("===========================\n");
+			Con_Printf("Invalid localid on command packet received from local host. "
+				"\n|%s| != |%s|\n"
+				"You may need to reload your server browser and QuakeWorld.\n",
+				s, localid.string);
+			Con_Printf("===========================\n");
+			Cvar_Set("localid", "");
+			return;
+		}
+
+		Cbuf_AddText (cmdtext);
+		allowremotecmd = false;
+		return;
+	}
+	// print command from somewhere
+	if (c == A2C_PRINT)
+	{
+		Con_Printf ("print\n");
+
+		s = MSG_ReadString ();
+		Con_Print (s);
+		return;
+	}
+
+	// ping from somewhere
+	if (c == A2A_PING)
+	{
+		char	data[6];
+
+		Con_Printf ("ping\n");
+
+		data[0] = 0xff;
+		data[1] = 0xff;
+		data[2] = 0xff;
+		data[3] = 0xff;
+		data[4] = A2A_ACK;
+		data[5] = 0;
+		
+		NET_SendPacket (NS_CLIENT, 6, &data, net_from);
+		return;
+	}
+
+	if (c == S2C_CHALLENGE) {
+		Con_Printf ("challenge\n");
+
+		s = MSG_ReadString ();
+		cls.challenge = atoi(s);
+		CL_SendConnectPacket ();
+		return;
+	}
+
+#if 0
+	if (c == svc_disconnect) {
+		Con_Printf ("disconnect\n");
+
+		Host_EndGame ("Server disconnected");
+		return;
+	}
+#endif
+
+	Con_Printf ("unknown:  %c\n", c);
+}
+
+
+/*
+=================
+CL_ReadPackets
+=================
+*/
+void CL_ReadPackets (void)
+{
+//	while (NET_GetPacket ())
+	while (CL_GetMessage())
+	{
+		//
+		// remote command packet
+		//
+		if (*(int *)net_message.data == -1)
+		{
+			CL_ConnectionlessPacket ();
+			continue;
+		}
+
+		if (net_message.cursize < 8)
+		{
+			Con_Printf ("%s: Runt packet\n",NET_AdrToString(net_from));
+			continue;
+		}
+
+		//
+		// packet from server
+		//
+		if (!cls.demoplayback && 
+			!NET_CompareAdr (net_from, cls.netchan.remote_address))
+		{
+			Con_DPrintf ("%s:sequenced packet without connection\n"
+				,NET_AdrToString(net_from));
+			continue;
+		}
+		if (!Netchan_Process(&cls.netchan, &net_message))
+			continue;		// wasn't accepted for some reason
+		CL_ParseServerMessage ();
+
+//		if (cls.demoplayback && cls.state >= ca_active && !CL_DemoBehind())
+//			return;
+	}
+
+	//
+	// check timeout
+	//
+	if (cls.state >= ca_connected
+	 && realtime - cls.netchan.last_received > cl_timeout.value)
+	{
+		Con_Printf ("\nServer connection timed out.\n");
+		CL_Disconnect ();
+		return;
+	}
+	
+}
+
+//=============================================================================
 
 /*
 ===============
@@ -634,6 +920,7 @@ CL_ReadFromServer
 Read all incoming data from the server
 ===============
 */
+/*
 int CL_ReadFromServer (void)
 {
 	int		ret;
@@ -664,6 +951,7 @@ int CL_ReadFromServer (void)
 //
 	return 0;
 }
+*/
 
 /*
 =================
@@ -738,6 +1026,7 @@ void CL_Init (void)
 	Cvar_RegisterVariable (&cl_anglespeedkey);
 	Cvar_RegisterVariable (&cl_shownet);
 	Cvar_RegisterVariable (&cl_nolerp);
+	Cvar_RegisterVariable (&cl_timeout);
 	Cvar_RegisterVariable (&lookspring);
 	Cvar_RegisterVariable (&lookstrafe);
 	Cvar_RegisterVariable (&sensitivity);
