@@ -18,6 +18,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 #include "quakedef.h"
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 /*
 
@@ -159,6 +162,13 @@ Interactive line editing and console scrollback
 void Key_Console (int key)
 {
 	char	*cmd;
+
+#ifdef _WIN32
+	char *s;
+	int		i;
+	HANDLE	th;
+	char	*clipText, *textCopied;
+#endif
 	
 	if (key == K_ENTER)
 	{
@@ -262,6 +272,34 @@ void Key_Console (int key)
 		return;
 	}
 	
+#ifdef _WIN32
+	if ((key=='V' || key=='v') && GetKeyState(VK_CONTROL)<0) {
+		if (OpenClipboard(NULL)) {
+			th = GetClipboardData(CF_TEXT);
+			if (th) {
+				clipText = GlobalLock(th);
+				if (clipText) {
+					textCopied = malloc(GlobalSize(th)+1);
+					strcpy(textCopied, clipText);
+	/* Substitutes a NULL for every token */strtok(textCopied, "\n\r\b");
+					i = strlen(textCopied);
+					if (i+key_linepos>=MAXCMDLINE)
+						i=MAXCMDLINE-key_linepos;
+					if (i>0) {
+						textCopied[i]=0;
+						strcat(key_lines[edit_line], textCopied);
+						key_linepos+=i;;
+					}
+					free(textCopied);
+				}
+				GlobalUnlock(th);
+			}
+			CloseClipboard();
+		return;
+		}
+	}
+#endif
+
 	if (key < 32 || key > 127)
 		return;	// non printable
 		
@@ -601,6 +639,8 @@ void Key_Event (int key, qboolean down)
 	char	*kb;
 	char	cmd[1024];
 
+	//Con_Printf ("%i : %i\n", key, down); //@@@
+
 	keydown[key] = down;
 
 	if (!down)
@@ -718,9 +758,7 @@ void Key_Event (int key, qboolean down)
 		return;		// other systems only care about key down events
 
 	if (shift_down)
-	{
 		key = keyshift[key];
-	}
 
 	switch (key_dest)
 	{
@@ -739,7 +777,6 @@ void Key_Event (int key, qboolean down)
 		Sys_Error ("Bad key_dest");
 	}
 }
-
 
 /*
 ===================

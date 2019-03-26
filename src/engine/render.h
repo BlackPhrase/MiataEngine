@@ -112,6 +112,7 @@ extern vec3_t	r_origin, vpn, vright, vup;
 
 extern	struct texture_s	*r_notexture_mip;
 
+extern	entity_t	r_worldentity;
 
 void R_Init (void);
 void R_InitTextures (void);
@@ -142,6 +143,10 @@ void R_LavaSplash (vec3_t org);
 void R_TeleportSplash (vec3_t org);
 
 void R_PushDlights (void);
+void R_InitParticles (void);
+void R_ClearParticles (void);
+void R_DrawParticles (void);
+void R_DrawWaterSurfaces (void);
 
 
 //

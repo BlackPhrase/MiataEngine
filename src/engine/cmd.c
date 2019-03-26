@@ -34,9 +34,6 @@ typedef struct cmdalias_s
 
 cmdalias_t	*cmd_alias;
 
-int trashtest;
-int *trashspot;
-
 qboolean	cmd_wait;
 
 //=============================================================================
@@ -74,7 +71,6 @@ void Cbuf_Init (void)
 {
 	SZ_Alloc (&cmd_text, 8192);		// space for commands and script files
 }
-
 
 /*
 ============
@@ -291,6 +287,7 @@ void Cmd_Exec_f (void)
 		return;
 	}
 
+	// FIXME: is this safe freeing the hunk here???
 	mark = Hunk_LowMark ();
 	f = (char *)COM_LoadHunkFile (Cmd_Argv(1));
 	if (!f)
@@ -463,10 +460,14 @@ char	*Cmd_Argv (int arg)
 /*
 ============
 Cmd_Args
+
+Returns a single string containing argv(1) to argv(argc()-1)
 ============
 */
 char		*Cmd_Args (void)
 {
+	if (!cmd_args)
+		return "";
 	return cmd_args;
 }
 
@@ -689,7 +690,6 @@ Returns the position (1 to argc-1) in the command's argument list
 where the given parameter apears, or 0 if not present
 ================
 */
-
 int Cmd_CheckParm (char *parm)
 {
 	int i;

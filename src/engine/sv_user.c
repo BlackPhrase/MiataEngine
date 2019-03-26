@@ -37,7 +37,7 @@ float	*angles;
 float	*origin;
 float	*velocity;
 
-qboolean	onground;
+//qboolean	onground;
 
 usercmd_t	cmd;
 

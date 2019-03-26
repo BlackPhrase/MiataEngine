@@ -19,10 +19,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // cl.input.c  -- builds an intended movement command to send to the server
 
-// Quake is a trademark of Id Software, Inc., (c) 1996 Id Software, Inc. All
-// rights reserved.
-
 #include "quakedef.h"
+
+cvar_t	cl_nodelta = {"cl_nodelta","0"};
 
 /*
 ===============================================================================
@@ -444,5 +443,6 @@ void CL_InitInput (void)
 	Cmd_AddCommand ("+mlook", IN_MLookDown);
 	Cmd_AddCommand ("-mlook", IN_MLookUp);
 
+	Cvar_RegisterVariable (&cl_nodelta);
 }
 

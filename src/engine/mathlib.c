@@ -151,7 +151,6 @@ void RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point, 
 
 /*-----------------------------------------------------------------*/
 
-
 float	anglemod(float a)
 {
 #if 0
@@ -175,7 +174,6 @@ void BOPS_Error (void)
 {
 	Sys_Error ("BoxOnPlaneSide:  Bad signbits");
 }
-
 
 #if	!id386
 
@@ -419,7 +417,7 @@ void VectorScale (vec3_t in, vec_t scale, vec3_t out)
 int Q_log2(int val)
 {
 	int answer=0;
-	while (val>>=1)
+	while ((val>>=1) != 0)
 		answer++;
 	return answer;
 }

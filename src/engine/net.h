@@ -1,5 +1,5 @@
 /*
-Copyright (C) 1997-2001 Id Software, Inc.
+Copyright (C) 1996-2001 Id Software, Inc.
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -32,6 +32,8 @@ NET
 
 //#define	MAX_MSGLEN		1400		// max length of a message // TODO: already defined in quakedef
 #define	PACKET_HEADER	10			// two ints and a short
+
+extern cvar_t hostname;
 
 typedef enum {NA_LOOPBACK, NA_BROADCAST, NA_IP, NA_IPX, NA_BROADCAST_IPX} netadrtype_t;
 

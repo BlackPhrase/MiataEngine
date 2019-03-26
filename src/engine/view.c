@@ -62,7 +62,9 @@ cvar_t	crosshair = {"crosshair", "0", true};
 cvar_t	cl_crossx = {"cl_crossx", "0", false};
 cvar_t	cl_crossy = {"cl_crossy", "0", false};
 
+#ifdef GLQUAKE
 cvar_t	gl_cshiftpercent = {"gl_cshiftpercent", "100", false};
+#endif
 
 float	v_dmg_time, v_dmg_roll, v_dmg_pitch;
 
@@ -569,6 +571,8 @@ void V_UpdatePalette (void)
 
 	V_CalcBlend ();
 
+	//Con_Printf("b: %4.2f %4.2f %4.2f %4.6f\n", v_blend[0],	v_blend[1],	v_blend[2],	v_blend[3]);
+
 	a = v_blend[3];
 	r = 255*v_blend[0]*a;
 	g = 255*v_blend[1]*a;
@@ -679,7 +683,6 @@ void V_UpdatePalette (void)
 	VID_ShiftPalette (pal);	
 }
 #endif	// !GLQUAKE
-
 
 /* 
 ============================================================================== 
@@ -1091,7 +1094,9 @@ void V_Init (void)
 	Cvar_RegisterVariable (&crosshair);
 	Cvar_RegisterVariable (&cl_crossx);
 	Cvar_RegisterVariable (&cl_crossy);
+#ifdef GLQUAKE
 	Cvar_RegisterVariable (&gl_cshiftpercent);
+#endif
 
 	Cvar_RegisterVariable (&scr_ofsx);
 	Cvar_RegisterVariable (&scr_ofsy);

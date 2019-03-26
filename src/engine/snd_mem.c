@@ -224,6 +224,7 @@ void FindChunk(char *name)
 }
 
 
+#if 0
 void DumpChunks(void)
 {
 	char	str[5];
@@ -239,6 +240,7 @@ void DumpChunks(void)
 		data_p += (iff_chunk_len + 1) & ~1;
 	} while (data_p < iff_end);
 }
+#endif
 
 /*
 ============

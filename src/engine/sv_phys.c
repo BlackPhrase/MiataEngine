@@ -389,7 +389,6 @@ void SV_AddGravity (edict_t *ent)
 	ent->v.velocity[2] -= ent_gravity * sv_gravity.value * host_frametime;
 }
 
-
 /*
 ===============================================================================
 

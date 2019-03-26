@@ -677,8 +677,8 @@ void IN_MouseMove (usercmd_t *cmd)
 		my_accum = 0;
 	}
 
-//if (mx ||  my)
-//	Con_DPrintf("mx=%d, my=%d\n", mx, my);
+	//if (mx ||  my)
+	//	Con_DPrintf("mx=%d, my=%d\n", mx, my);
 
 	if (m_filter.value)
 	{

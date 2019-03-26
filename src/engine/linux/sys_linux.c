@@ -105,7 +105,7 @@ void Sys_Printf (char *fmt, ...)
 void Sys_Printf (char *fmt, ...)
 {
 	va_list		argptr;
-	char		text[1024];
+	char		text[2048];
 	unsigned char		*p;
 
 	va_start (argptr,fmt);
@@ -118,7 +118,8 @@ void Sys_Printf (char *fmt, ...)
     if (nostdout)
         return;
 
-	for (p = (unsigned char *)text; *p; p++) {
+	for (p = (unsigned char *)text; *p; p++)
+	{
 		*p &= 0x7f;
 		if ((*p > 128 || *p < 32) && *p != 10 && *p != 13 && *p != 9)
 			printf("[%02x]", *p);
@@ -377,11 +378,7 @@ int main (int c, char **v)
 	parms.argc = com_argc;
 	parms.argv = com_argv;
 
-#ifdef GLQUAKE
 	parms.memsize = 16*1024*1024;
-#else
-	parms.memsize = 8*1024*1024;
-#endif
 
 	j = COM_CheckParm("-mem");
 	if (j)

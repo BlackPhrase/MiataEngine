@@ -106,6 +106,8 @@ typedef struct client_s
 	int				old_frags;
 	
 //===== NETWORK ============
+	int				chokecount;
+	int				delta_sequence;		// -1 = no compression
 	netchan_t		netchan;
 } client_t;
 

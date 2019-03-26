@@ -44,6 +44,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <stdio.h>
 #include <stdlib.h>
 #include <setjmp.h>
+#include <time.h>
 
 #if defined(_WIN32) && !defined(WINDED)
 
@@ -210,6 +211,7 @@ void	VID_UnlockBuffer (void);
 // #define IDGODS
 
 #include "common.h"
+#include "info.h"
 #include "bspfile.h"
 #include "vid.h"
 #include "sys.h"
@@ -257,6 +259,7 @@ typedef struct
 #include "menu.h"
 #include "crc.h"
 #include "cdaudio.h"
+#include "pmove.h"
 
 #ifdef GLQUAKE
 #include "glquake.h"
