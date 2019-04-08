@@ -18,6 +18,8 @@ struct IEngine
 		};
 		
 		PlatformProps PlatformSpecific{};
+		
+		bool mbDedicated{false};
 	};
 	
 	///
