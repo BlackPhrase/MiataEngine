@@ -21,7 +21,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include <cstdlib>
 #include "konbini/shared_lib.hpp"
-#include "engine/IEngine.hpp"
+#include "IEngine.hpp"
 
 int main(int argc, char **argv)
 {
@@ -30,25 +30,27 @@ int main(int argc, char **argv)
 	if(!EngineLib)
 		return EXIT_FAILURE;
 	
-	auto fnGetEngine{EngineLib.getexportfunc<pfnGetEngine>("GetEngine")};
+	auto pfnGetEngine{EngineLib.getexportfunc<fnGetEngine>("GetEngine")};
 	
-	if(!fnGetEngine)
+	if(!pfnGetEngine)
 		return EXIT_FAILURE;
 	
-	auto *pEngine{fnGetEngine()};
+	auto *pEngine{pfnGetEngine()};
 	
 	if(!pEngine)
 		return EXIT_FAILURE;
 	
-	quakeparms_t host_parms{};
+	IEngine::InitProps InitProps{}; //quakeparms_t host_parms{};
 	
-	host_parms.argc = argc;
-	host_parms.argv = argv;
+	// TODO
+	//InitProps.argc = argc;
+	//InitProps.argv = argv;
 	
-	host_parms.dedicated = true;
+	InitProps.mbDedicated = true;
 	
 	//printf("Host_Init\n");
-	pEngine->Init(&host_parms);
+	if(!pEngine->Init(InitProps))
+		return EXIT_FAILURE;
 	
 	// run one frame immediately for first heartbeat
 	//pEngine->Frame();
@@ -59,7 +61,7 @@ int main(int argc, char **argv)
 	while(true)
 		pEngine->Frame();
 	
-	pEngine->Shutdown();
+	//pEngine->Shutdown();
 	
 	// return success of application
 	return EXIT_SUCCESS;
