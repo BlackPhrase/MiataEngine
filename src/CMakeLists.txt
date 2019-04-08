@@ -12,3 +12,4 @@ add_subdirectory(game)
 add_subdirectory(engine)
 
 add_subdirectory(launcher)
+add_subdirectory(dedicated)
