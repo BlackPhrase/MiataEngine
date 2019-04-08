@@ -25,5 +25,13 @@ set(CMAKE_CXX_EXTENSIONS ON)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/../bin)
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/../bin)
 
+set(MIATA_KONBINILIB_PATH
+	${CMAKE_SOURCE_DIR}/../konbinilib
+	CACHE PATH
+	"Path to konbinilib"
+)
+
+include_directories(${MIATA_KONBINILIB_PATH}/include)
+
 # Add subdirectories
 add_subdirectory(src)
