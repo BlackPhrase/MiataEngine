@@ -645,15 +645,6 @@ void _Host_Frame (float time)
 // decide the simulation time
 	if (!Host_FilterTime (time))
 		return;			// don't run too fast, or packets will flood out
-		
-// get new key events
-	Sys_SendKeyEvents ();
-
-// allow mice or other external controllers to add commands
-	IN_Commands ();
-
-// process console commands
-	Cbuf_Execute ();
 
 	NET_Poll();
 
@@ -679,50 +670,7 @@ void _Host_Frame (float time)
 //
 //-------------------
 
-// if running the server remotely, send intentions now after
-// the incoming messages have been read
-	if (!sv.active)
-		CL_SendCmd ();
-
-	host_time += host_frametime;
-
-// fetch results from server
-	if (cls.state == ca_connected)
-	{
-		CL_ReadFromServer ();
-	}
-
-// update video
-	if (host_speeds.value)
-		time1 = Sys_FloatTime ();
-		
-	SCR_UpdateScreen ();
-
-	if (host_speeds.value)
-		time2 = Sys_FloatTime ();
-		
-// update audio
-	if (cls.signon == SIGNONS)
-	{
-		S_Update (r_origin, vpn, vright, vup);
-		CL_DecayLights ();
-	}
-	else
-		S_Update (vec3_origin, vec3_origin, vec3_origin, vec3_origin);
-	
-	CDAudio_Update();
-
-	if (host_speeds.value)
-	{
-		pass1 = (time1 - time3)*1000;
-		time3 = Sys_FloatTime ();
-		pass2 = (time2 - time1)*1000;
-		pass3 = (time3 - time2)*1000;
-		Con_Printf ("%3i tot %3i server %3i gfx %3i snd\n",
-					pass1+pass2+pass3, pass1, pass2, pass3);
-	}
-	
-	host_framecount++;
+	CL_Frame(time);
 }
 
 void Host_Frame (float time)
