@@ -2,6 +2,9 @@
 
 #include "quakedef.h"
 #include "Engine.hpp"
+#include "Host.hpp"
+
+CHost gHost;
 
 #ifdef _WIN32
 HINSTANCE global_hInstance{};
@@ -150,9 +153,9 @@ bool CEngine::Init(const InitProps &apInitProps)
 	S_BlockSound ();
 
 	Sys_Printf ("Host_Init\n");
-	Host_Init (&parms);
+	gHost.Init (&parms);
 
-	oldtime = Sys_FloatTime ();
+	oldtime = Sys_GetDoubleTime ();
 };
 
 void CEngine::Frame()
@@ -186,6 +189,6 @@ void CEngine::Frame()
 		time = newtime - oldtime;
 	};
 
-	Host_Frame (time);
+	gHost.Frame (time);
 	oldtime = newtime;
 };

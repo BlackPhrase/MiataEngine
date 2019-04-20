@@ -4,6 +4,6 @@
 
 C_EXPORT IEngine *GetEngine()
 {
-	CEngine Engine();
+	static CEngine Engine();
 	return &Engine;
 };
