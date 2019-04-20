@@ -21,7 +21,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include <cstdlib>
 #include "konbini/shared_lib.hpp"
-#include "IEngine.hpp"
+#include "engine/IEngine.h"
 
 int main(int argc, char **argv)
 {
