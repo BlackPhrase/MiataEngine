@@ -23,10 +23,10 @@ struct IEngine
 	};
 	
 	///
-	virtual bool Init(const InitProps &apInitProps) = 0;
+	bool (*Init)(const InitProps &apInitProps);
 	
 	///
-	virtual void Frame() = 0;
+	void (*Frame)();
 };
 
 using fnGetEngine = IEngine *(*)();
