@@ -662,7 +662,7 @@ int MSG_GetReadCount(void)
 }
 
 // returns -1 and sets msg_badread if no more characters are available
-int MSG_ReadChar (void)
+int MSG_ReadChar (sizebuf_t &net_message)
 {
 	int     c;
 	
@@ -678,7 +678,7 @@ int MSG_ReadChar (void)
 	return c;
 }
 
-int MSG_ReadByte (void)
+int MSG_ReadByte (sizebuf_t &net_message)
 {
 	int     c;
 	
@@ -694,7 +694,7 @@ int MSG_ReadByte (void)
 	return c;
 }
 
-int MSG_ReadShort (void)
+int MSG_ReadShort (sizebuf_t &net_message)
 {
 	int     c;
 	
@@ -712,7 +712,7 @@ int MSG_ReadShort (void)
 	return c;
 }
 
-int MSG_ReadLong (void)
+int MSG_ReadLong (sizebuf_t &net_message)
 {
 	int     c;
 	
@@ -732,7 +732,7 @@ int MSG_ReadLong (void)
 	return c;
 }
 
-float MSG_ReadFloat (void)
+float MSG_ReadFloat (sizebuf_t &net_message)
 {
 	union
 	{
@@ -752,7 +752,7 @@ float MSG_ReadFloat (void)
 	return dat.f;   
 }
 
-char *MSG_ReadString (void)
+char *MSG_ReadString (sizebuf_t &net_message)
 {
 	static char     string[2048];
 	int             l,c;
@@ -760,7 +760,7 @@ char *MSG_ReadString (void)
 	l = 0;
 	do
 	{
-		c = MSG_ReadChar ();
+		c = MSG_ReadChar (net_message);
 		if (c == -1 || c == 0)
 			break;
 		string[l] = c;
@@ -772,14 +772,14 @@ char *MSG_ReadString (void)
 	return string;
 }
 
-float MSG_ReadCoord (void)
+float MSG_ReadCoord (sizebuf_t &net_message)
 {
-	return MSG_ReadShort() * (1.0/8);
+	return MSG_ReadShort(net_message) * (1.0/8);
 }
 
-float MSG_ReadAngle (void)
+float MSG_ReadAngle (sizebuf_t &net_message)
 {
-	return MSG_ReadChar() * (360.0/256);
+	return MSG_ReadChar(net_message) * (360.0/256);
 }
 
 

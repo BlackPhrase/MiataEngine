@@ -116,20 +116,20 @@ void MSG_WriteDeltaUsercmd (sizebuf_t *sb, struct usercmd_s *from, struct usercm
 extern	int			msg_readcount;
 extern	qboolean	msg_badread;		// set if a read goes beyond end of message
 
-void MSG_BeginReading (void);
-int MSG_GetReadCount(void);
-int MSG_ReadChar (void);
-int MSG_ReadByte (void);
-int MSG_ReadShort (void);
-int MSG_ReadLong (void);
-float MSG_ReadFloat (void);
-char *MSG_ReadString (void);
-char *MSG_ReadStringLine (void);
+void MSG_BeginReading (sizebuf_t &net_message);
+int MSG_GetReadCount(sizebuf_t &net_message);
+int MSG_ReadChar (sizebuf_t &net_message);
+int MSG_ReadByte (sizebuf_t &net_message);
+int MSG_ReadShort (sizebuf_t &net_message);
+int MSG_ReadLong (sizebuf_t &net_message);
+float MSG_ReadFloat (sizebuf_t &net_message);
+char *MSG_ReadString (sizebuf_t &net_message);
+char *MSG_ReadStringLine (sizebuf_t &net_message);
 
-float MSG_ReadCoord (void);
-float MSG_ReadAngle (void);
-float MSG_ReadAngle16 (void);
-void MSG_ReadDeltaUsercmd (struct usercmd_s *from, struct usercmd_s *cmd);
+float MSG_ReadCoord (sizebuf_t &net_message);
+float MSG_ReadAngle (sizebuf_t &net_message);
+float MSG_ReadAngle16 (sizebuf_t &net_message);
+void MSG_ReadDeltaUsercmd (sizebuf_t &net_message, struct usercmd_s *from, struct usercmd_s *cmd);
 
 //============================================================================
 
