@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // cl_inv.c -- client inventory screen
 
-#include "client.h"
+#include "quakedef.h"
 
 /*
 ================
@@ -114,7 +114,7 @@ void CL_DrawInventory (void)
 	{
 		item = index[i];
 		// search for a binding
-		Com_sprintf (binding, sizeof(binding), "use %s", cl.configstrings[CS_ITEMS+item]);
+		Q_snprintf (binding, sizeof(binding), "use %s", cl.configstrings[CS_ITEMS+item]);
 		bind = "";
 		for (j=0 ; j<256 ; j++)
 			if (keybindings[j] && !Q_stricmp (keybindings[j], binding))
@@ -123,7 +123,7 @@ void CL_DrawInventory (void)
 				break;
 			}
 
-		Com_sprintf (string, sizeof(string), "%6s %3i %s", bind, cl.inventory[item],
+		Q_snprintf (string, sizeof(string), "%6s %3i %s", bind, cl.inventory[item],
 			cl.configstrings[CS_ITEMS+item] );
 		if (item != selected)
 			SetStringHighBit (string);
@@ -138,5 +138,3 @@ void CL_DrawInventory (void)
 
 
 }
-
-
