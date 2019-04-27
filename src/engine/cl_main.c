@@ -21,6 +21,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "quakedef.h"
 
+#ifdef _WIN32
+#include "winquake.h"
+#include "winsock.h"
+#else
+#include <netinet/in.h>
+#endif
+
 // we need to declare some mouse variables here, because the menu system
 // references them even when on a unix system.
 
@@ -33,18 +40,43 @@ cvar_t	cl_timeout = {"cl_timeout", "60"};
 cvar_t	cl_shownet = {"cl_shownet","0"};	// can be 0, 1, or 2
 cvar_t	cl_nolerp = {"cl_nolerp","0"};
 
+cvar_t	cl_maxfps	= {"cl_maxfps", "0", true};
+
 cvar_t	lookspring = {"lookspring","0", true};
 cvar_t	lookstrafe = {"lookstrafe","0", true};
 cvar_t	sensitivity = {"sensitivity","3", true};
 
 cvar_t	m_pitch = {"m_pitch","0.022", true};
-cvar_t	m_yaw = {"m_yaw","0.022", true};
-cvar_t	m_forward = {"m_forward","1", true};
-cvar_t	m_side = {"m_side","0.8", true};
+cvar_t	m_yaw = {"m_yaw","0.022", true}; // TODO: not in archive?
+cvar_t	m_forward = {"m_forward","1", true}; // TODO: not in archive?
+cvar_t	m_side = {"m_side","0.8", true}; // TODO: not in archive?
 
+cvar_t	entlatency = {"entlatency", "20"};
+cvar_t	cl_predict_players = {"cl_predict_players", "1"};
+cvar_t	cl_predict_players2 = {"cl_predict_players2", "1"};
+cvar_t	cl_solid_players = {"cl_solid_players", "1"};
+
+cvar_t  localid = {"localid", ""};
+
+//
+// info mirrors
+//
+cvar_t	password = {"password", "", false, true};
+cvar_t	spectator = {"spectator", "", false, true};
+cvar_t	name = {"name","unnamed", true, true};
+cvar_t	team = {"team","", true, true};
+cvar_t	skin = {"skin","", true, true};
+cvar_t	topcolor = {"topcolor","0", true, true};
+cvar_t	bottomcolor = {"bottomcolor","0", true, true};
+cvar_t	rate = {"rate","2500", true, true};
+cvar_t	noaim = {"noaim","0", true, true};
+cvar_t	msg = {"msg","1", true, true};
+
+static qboolean allowremotecmd = true;
 
 client_static_t	cls;
 client_state_t	cl;
+
 // FIXME: put these on hunk?
 efrag_t			cl_efrags[MAX_EFRAGS];
 entity_t		cl_entities[MAX_EDICTS];
@@ -52,8 +84,77 @@ entity_t		cl_static_entities[MAX_STATIC_ENTITIES];
 lightstyle_t	cl_lightstyle[MAX_LIGHTSTYLES];
 dlight_t		cl_dlights[MAX_DLIGHTS];
 
-int				cl_numvisedicts;
-entity_t		*cl_visedicts[MAX_VISEDICTS];
+// refresh list
+// this is double buffered so the last frame
+// can be scanned for oldorigins of trailing objects
+int				cl_numvisedicts, cl_oldnumvisedicts;
+entity_t		*cl_visedicts, *cl_oldvisedicts;
+entity_t		cl_visedicts_list[2][MAX_VISEDICTS];
+
+double			connect_time = -1;		// for connection retransmits
+
+int			fps_count;
+
+float	server_version = 0;	// version of server we connected to
+
+char emodel_name[] = 
+	{ 'e' ^ 0xff, 'm' ^ 0xff, 'o' ^ 0xff, 'd' ^ 0xff, 'e' ^ 0xff, 'l' ^ 0xff, 0 };
+char pmodel_name[] = 
+	{ 'p' ^ 0xff, 'm' ^ 0xff, 'o' ^ 0xff, 'd' ^ 0xff, 'e' ^ 0xff, 'l' ^ 0xff, 0 };
+
+/*
+================
+CL_Connect_f
+
+================
+*/
+void CL_Connect_f (void)
+{
+	char	*server;
+
+	if (Cmd_Argc() != 2)
+	{
+		Con_Printf ("usage: connect <server>\n");
+		return;	
+	}
+	
+	server = Cmd_Argv (1);
+
+	CL_Disconnect ();
+
+	strncpy (cls.servername, server, sizeof(cls.servername)-1);
+	CL_BeginServerConnect();
+}
+
+/*
+=================
+CL_Reconnect_f
+
+The server is changing levels
+=================
+*/
+void CL_Reconnect_f (void)
+{
+	if (cls.download)  // don't change when downloading
+		return;
+
+	S_StopAllSounds (true);
+
+	if (cls.state == ca_connected) {
+		Con_Printf ("reconnecting...\n");
+		MSG_WriteChar (&cls.netchan.message, clc_stringcmd);
+		MSG_WriteString (&cls.netchan.message, "new");
+		return;
+	}
+
+	if (!*cls.servername) {
+		Con_Printf("No server to reconnect to...\n");
+		return;
+	}
+
+	CL_Disconnect();
+	CL_BeginServerConnect();
+}
 
 /*
 =====================
@@ -68,6 +169,8 @@ void CL_ClearState (void)
 	if (!sv.active)
 		Host_ClearMemory ();
 
+	CL_ClearTEnts ();
+	
 // wipe the entire cl structure
 	memset (&cl, 0, sizeof(cl));
 
@@ -100,6 +203,8 @@ This is also called on Host_Error, so it shouldn't cause any errors
 */
 void CL_Disconnect (void)
 {
+	connect_time = -1;
+
 // stop sounds (especially looping!)
 	S_StopAllSounds (true);
 	
@@ -114,23 +219,33 @@ void CL_Disconnect (void)
 		if (cls.demorecording)
 			CL_Stop_f ();
 
-		Con_DPrintf ("Sending clc_disconnect\n");
 		SZ_Clear (&cls.netchan.message);
 		MSG_WriteByte (&cls.netchan.message, clc_disconnect);
 		
 		Netchan_Transmit (&cls.netchan, 6, cls.netchan.message.data);
 		Netchan_Transmit (&cls.netchan, 6, cls.netchan.message.data);
 		Netchan_Transmit (&cls.netchan, 6, cls.netchan.message.data);
-		
-		SZ_Clear (&cls.netchan.message);
 
 		cls.state = ca_disconnected;
+		
+		//cls.demoplayback = cls.demorecording = cls.timedemo = false;
+		
 		if (sv.active)
 			Host_ShutdownServer(false);
 	}
 
 	cls.demoplayback = cls.timedemo = false;
 	cls.signon = 0;
+	
+	Cam_Reset();
+
+	if (cls.download)
+	{
+		fclose(cls.download);
+		cls.download = NULL;
+	}
+
+	CL_StopUpload();
 }
 
 void CL_Disconnect_f (void)
@@ -138,6 +253,262 @@ void CL_Disconnect_f (void)
 	CL_Disconnect ();
 	if (sv.active)
 		Host_ShutdownServer (false);
+}
+
+/*
+====================
+CL_User_f
+
+user <name or userid>
+
+Dump userdata / masterdata for a user
+====================
+*/
+void CL_User_f (void)
+{
+	int		uid;
+	int		i;
+
+	if (Cmd_Argc() != 2)
+	{
+		Con_Printf ("Usage: user <username / userid>\n");
+		return;
+	}
+
+	uid = atoi(Cmd_Argv(1));
+
+	for (i=0 ; i<MAX_CLIENTS ; i++)
+	{
+		if (!cl.players[i].name[0])
+			continue;
+		if (cl.players[i].userid == uid
+		|| !strcmp(cl.players[i].name, Cmd_Argv(1)) )
+		{
+			Info_Print (cl.players[i].userinfo);
+			return;
+		}
+	}
+	Con_Printf ("User not in server.\n");
+}
+
+/*
+====================
+CL_Users_f
+
+Dump userids for all current players
+====================
+*/
+void CL_Users_f (void)
+{
+	int		i;
+	int		c;
+
+	c = 0;
+	Con_Printf ("userid frags name\n");
+	Con_Printf ("------ ----- ----\n");
+	for (i=0 ; i<MAX_CLIENTS ; i++)
+	{
+		if (cl.players[i].name[0])
+		{
+			Con_Printf ("%6i %4i %s\n", cl.players[i].userid, cl.players[i].frags, cl.players[i].name);
+			c++;
+		}
+	}
+
+	Con_Printf ("%i total users\n", c);
+}
+
+void CL_Color_f (void)
+{
+	// just for quake compatability...
+	int		top, bottom;
+	char	num[16];
+
+	if (Cmd_Argc() == 1)
+	{
+		Con_Printf ("\"color\" is \"%s %s\"\n",
+			Info_ValueForKey (cls.userinfo, "topcolor"),
+			Info_ValueForKey (cls.userinfo, "bottomcolor") );
+		Con_Printf ("color <0-13> [0-13]\n");
+		return;
+	}
+
+	if (Cmd_Argc() == 2)
+		top = bottom = atoi(Cmd_Argv(1));
+	else
+	{
+		top = atoi(Cmd_Argv(1));
+		bottom = atoi(Cmd_Argv(2));
+	}
+	
+	top &= 15;
+	if (top > 13)
+		top = 13;
+	bottom &= 15;
+	if (bottom > 13)
+		bottom = 13;
+	
+	sprintf (num, "%i", top);
+	Cvar_Set ("topcolor", num);
+	sprintf (num, "%i", bottom);
+	Cvar_Set ("bottomcolor", num);
+}
+
+/*
+==================
+CL_FullServerinfo_f
+
+Sent by server when serverinfo changes
+==================
+*/
+void CL_FullServerinfo_f (void)
+{
+	char *p;
+	float v;
+
+	if (Cmd_Argc() != 2)
+	{
+		Con_Printf ("usage: fullserverinfo <complete info string>\n");
+		return;
+	}
+
+	strcpy (cl.serverinfo, Cmd_Argv(1));
+
+	if ((p = Info_ValueForKey(cl.serverinfo, "*vesion")) && *p) {
+		v = Q_atof(p);
+		if (v) {
+			if (!server_version)
+				Con_Printf("Version %1.2f Server\n", v);
+			server_version = v;
+		}
+	}
+}
+
+/*
+==================
+CL_FullInfo_f
+
+Allow clients to change userinfo
+==================
+*/
+void CL_FullInfo_f (void)
+{
+	char	key[512];
+	char	value[512];
+	char	*o;
+	char	*s;
+
+	if (Cmd_Argc() != 2)
+	{
+		Con_Printf ("fullinfo <complete info string>\n");
+		return;
+	}
+
+	s = Cmd_Argv(1);
+	if (*s == '\\')
+		s++;
+	while (*s)
+	{
+		o = key;
+		while (*s && *s != '\\')
+			*o++ = *s++;
+		*o = 0;
+
+		if (!*s)
+		{
+			Con_Printf ("MISSING VALUE\n");
+			return;
+		}
+
+		o = value;
+		s++;
+		while (*s && *s != '\\')
+			*o++ = *s++;
+		*o = 0;
+
+		if (*s)
+			s++;
+
+		if (!stricmp(key, pmodel_name) || !stricmp(key, emodel_name))
+			continue;
+
+		Info_SetValueForKey (cls.userinfo, key, value, MAX_INFO_STRING);
+	}
+}
+
+/*
+==================
+CL_SetInfo_f
+
+Allow clients to change userinfo
+==================
+*/
+void CL_SetInfo_f (void)
+{
+	if (Cmd_Argc() == 1)
+	{
+		Info_Print (cls.userinfo);
+		return;
+	}
+	if (Cmd_Argc() != 3)
+	{
+		Con_Printf ("usage: setinfo [ <key> <value> ]\n");
+		return;
+	}
+	if (!stricmp(Cmd_Argv(1), pmodel_name) || !strcmp(Cmd_Argv(1), emodel_name))
+		return;
+
+	Info_SetValueForKey (cls.userinfo, Cmd_Argv(1), Cmd_Argv(2), MAX_INFO_STRING);
+	if (cls.state >= ca_connected)
+		Cmd_ForwardToServer ();
+}
+
+/*
+====================
+CL_Packet_f
+
+packet <destination> <contents>
+
+Contents allows \n escape character
+====================
+*/
+void CL_Packet_f (void)
+{
+	char	send[2048];
+	int		i, l;
+	char	*in, *out;
+	netadr_t	adr;
+
+	if (Cmd_Argc() != 3)
+	{
+		Con_Printf ("packet <destination> <contents>\n");
+		return;
+	}
+
+	if (!NET_StringToAdr (Cmd_Argv(1), &adr))
+	{
+		Con_Printf ("Bad address\n");
+		return;
+	}
+
+	in = Cmd_Argv(2);
+	out = send+4;
+	send[0] = send[1] = send[2] = send[3] = 0xff;
+
+	l = strlen (in);
+	for (i=0 ; i<l ; i++)
+	{
+		if (in[i] == '\\' && in[i+1] == 'n')
+		{
+			*out++ = '\n';
+			i++;
+		}
+		else
+			*out++ = in[i];
+	}
+	*out = 0;
+
+	NET_SendPacket (NS_CLIENT, out-send, send, adr);
 }
 
 /*
@@ -710,7 +1081,7 @@ void CL_RelinkEntities (void)
 #endif
 		if (cl_numvisedicts < MAX_VISEDICTS)
 		{
-			cl_visedicts[cl_numvisedicts] = ent;
+			cl_visedicts[cl_numvisedicts] = *ent;
 			cl_numvisedicts++;
 		}
 	}
@@ -730,7 +1101,7 @@ void CL_ConnectionlessPacket (void)
 	int		c;
 
     MSG_BeginReading ();
-    MSG_ReadLong ();        // skip the -1
+    MSG_ReadLong (net_message);        // skip the -1
 
 	c = MSG_ReadByte ();
 	if (!cls.demoplayback)
@@ -1005,12 +1376,27 @@ CL_Init
 =================
 */
 void CL_Init (void)
-{	
-	SZ_Alloc (&cls.netchan.message, 1024);
+{
+	char st[80];
+	
+	cls.state = ca_disconnected;
+	
+	//SZ_Alloc (&cls.netchan.message, 1024);
+
+	Info_SetValueForKey (cls.userinfo, "name", "unnamed", MAX_INFO_STRING);
+	Info_SetValueForKey (cls.userinfo, "topcolor", "0", MAX_INFO_STRING);
+	Info_SetValueForKey (cls.userinfo, "bottomcolor", "0", MAX_INFO_STRING);
+	Info_SetValueForKey (cls.userinfo, "rate", "2500", MAX_INFO_STRING);
+	Info_SetValueForKey (cls.userinfo, "msg", "1", MAX_INFO_STRING);
+	sprintf (st, "%4.2f-%04d", VERSION, build_number());
+	Info_SetValueForStarKey (cls.userinfo, "*ver", st, MAX_INFO_STRING);
 
 	CL_InitInput ();
 	CL_InitTEnts ();
-	
+	CL_InitPrediction ();
+	CL_InitCam ();
+	Pmove_Init ();
+
 //
 // register our commands
 //
@@ -1024,9 +1410,11 @@ void CL_Init (void)
 	Cvar_RegisterVariable (&cl_yawspeed);
 	Cvar_RegisterVariable (&cl_pitchspeed);
 	Cvar_RegisterVariable (&cl_anglespeedkey);
+	
 	Cvar_RegisterVariable (&cl_shownet);
 	Cvar_RegisterVariable (&cl_nolerp);
 	Cvar_RegisterVariable (&cl_timeout);
+	
 	Cvar_RegisterVariable (&lookspring);
 	Cvar_RegisterVariable (&lookstrafe);
 	Cvar_RegisterVariable (&sensitivity);
@@ -1037,11 +1425,39 @@ void CL_Init (void)
 	Cvar_RegisterVariable (&m_side);
 
 //	Cvar_RegisterVariable (&cl_autofire);
-	
-	Cmd_AddCommand ("entities", CL_PrintEntities_f);
+
+	Cvar_RegisterVariable (&entlatency);
+	Cvar_RegisterVariable (&cl_predict_players2);
+	Cvar_RegisterVariable (&cl_predict_players);
+	Cvar_RegisterVariable (&cl_solid_players);
+
+	//
+	// info mirrors
+	//
+	Cvar_RegisterVariable (&name);
+	Cvar_RegisterVariable (&password);
+	Cvar_RegisterVariable (&spectator);
+	Cvar_RegisterVariable (&skin);
+	Cvar_RegisterVariable (&team);
+	Cvar_RegisterVariable (&topcolor);
+	Cvar_RegisterVariable (&bottomcolor);
+	Cvar_RegisterVariable (&rate);
+	Cvar_RegisterVariable (&msg);
+	Cvar_RegisterVariable (&noaim);
+
+	Cmd_AddCommand ("connect", CL_Connect_f);
+	Cmd_AddCommand ("reconnect", CL_Reconnect_f);
 	Cmd_AddCommand ("disconnect", CL_Disconnect_f);
+
+	Cmd_AddCommand ("setinfo", CL_SetInfo_f);
+	Cmd_AddCommand ("fullinfo", CL_FullInfo_f);
+	Cmd_AddCommand ("fullserverinfo", CL_FullServerinfo_f);
+
+	Cmd_AddCommand ("entities", CL_PrintEntities_f);
+	
 	Cmd_AddCommand ("record", CL_Record_f);
 	Cmd_AddCommand ("stop", CL_Stop_f);
+	
 	Cmd_AddCommand ("playdemo", CL_PlayDemo_f);
 	Cmd_AddCommand ("timedemo", CL_TimeDemo_f);
 }
@@ -1061,7 +1477,7 @@ void CL_Frame(float time)
 	static double		time3 = 0;
 	int			pass1, pass2, pass3;
 	float fps;
-	if (setjmp (host_abort) )
+	if (setjmp (host_abortframe) )
 		return;			// something bad happened, or the server disconnected
 
 	// decide the simulation time

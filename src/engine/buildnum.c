@@ -23,9 +23,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <quakedef.h>
 
 // char *date = "Oct 24 1996";
-// char *time = "13:22:52";
+// char *buildtime = "13:22:52";
 char *date = __DATE__ ;
-char *time = __TIME__ ;
+char *buildtime = __TIME__ ;
 
 char *mon[12] = 
 { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
@@ -64,9 +64,9 @@ int build_number( void )
 
 	b -= 34995; // Oct 24 1996
 
-	hr = (time[0] - '0') * 10 + (time[1] - '0');
-	min = (time[3] - '0') * 10 + (time[4] - '0');
-//	sec = (time[6] - '0') * 10 + (time[7] - '0');
+	hr = (buildtime[0] - '0') * 10 + (buildtime[1] - '0');
+	min = (buildtime[3] - '0') * 10 + (buildtime[4] - '0');
+//	sec = (buildtime[6] - '0') * 10 + (buildtime[7] - '0');
 
 	b *= 60*24;
 	b += hr * 60 + min;

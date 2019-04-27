@@ -303,6 +303,7 @@ void CL_PlayDemo_f (void)
 	cls.demoplayback = true;
 	cls.state = ca_connected;
 	cls.forcetrack = 0;
+	Netchan_Setup (NS_CLIENT, &cls.netchan, net_from, 0);
 
 	while ((c = getc(cls.demofile)) != '\n')
 		if (c == '-')
@@ -312,8 +313,9 @@ void CL_PlayDemo_f (void)
 
 	if (neg)
 		cls.forcetrack = -cls.forcetrack;
-// ZOID, fscanf is evil
-//	fscanf (cls.demofile, "%i\n", &cls.forcetrack);
+
+	// ZOID, fscanf is evil
+	//fscanf (cls.demofile, "%i\n", &cls.forcetrack);
 }
 
 /*

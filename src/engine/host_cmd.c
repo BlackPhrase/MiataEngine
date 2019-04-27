@@ -76,12 +76,13 @@ void Host_Status_f (void)
 
 	print ("host:    %s\n", Cvar_VariableString ("hostname"));
 	print ("version: %4.2f\n", VERSION);
-	if (tcpipAvailable)
-		print ("tcp/ip:  %s\n", my_tcpip_address);
-	if (ipxAvailable)
-		print ("ipx:     %s\n", my_ipx_address);
+	// TODO
+	//if (tcpipAvailable)
+		//print ("tcp/ip:  %s\n", my_tcpip_address);
+	//if (ipxAvailable)
+		//print ("ipx:     %s\n", my_ipx_address);
 	print ("map:     %s\n", sv.name);
-	print ("players: %i active (%i max)\n\n", net_activeconnections, svs.maxclients);
+	//print ("players: %i active (%i max)\n\n", net_activeconnections, svs.maxclients); // TODO
 	for (j=0, client = svs.clients ; j<svs.maxclients ; j++, client++)
 	{
 		if (!client->active)

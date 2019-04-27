@@ -36,9 +36,10 @@ Memory is cleared / released when a server or client begins, not when they end.
 quakeparms_t host_parms;
 
 qboolean	host_initialized;		// true if into command execution
+//qboolean	nomaster; // TODO: qw
 
 double		host_frametime;
-double		host_time;
+//double		host_time; // TODO: nq
 double		realtime;				// without any filtering or bounding
 double		oldrealtime;			// last frame run
 int			host_framecount;
@@ -49,7 +50,7 @@ int			minimum_memory;
 
 client_t	*host_client;			// current client
 
-jmp_buf 	host_abortserver;
+jmp_buf 	host_abortframe;
 
 byte		*host_basepal;
 byte		*host_colormap;
@@ -67,11 +68,7 @@ cvar_t	teamplay = {"teamplay","0",false,true};
 cvar_t	samelevel = {"samelevel","0"};
 cvar_t	noexit = {"noexit","0",false,true};
 
-#ifdef QUAKE2
-cvar_t	developer = {"developer","1"};	// should be 0 for release!
-#else
 cvar_t	developer = {"developer","0"};
-#endif
 
 cvar_t	skill = {"skill","1"};						// 0 - 3
 cvar_t	deathmatch = {"deathmatch","0"};			// 0, 1, or 2
@@ -80,7 +77,6 @@ cvar_t	coop = {"coop","0"};			// 0 or 1
 cvar_t	pausable = {"pausable","1"};
 
 cvar_t	temp1 = {"temp1","0"};
-
 
 /*
 ================
@@ -108,7 +104,7 @@ void Host_EndGame (char *message, ...)
 	else
 		CL_Disconnect ();
 
-	longjmp (host_abortserver, 1);
+	longjmp (host_abortframe, 1);
 }
 
 /*
@@ -146,7 +142,7 @@ void Host_Error (char *error, ...)
 
 	inerror = false;
 
-	longjmp (host_abortserver, 1);
+	longjmp (host_abortframe, 1);
 }
 
 /*
@@ -375,7 +371,6 @@ void SV_DropClient (qboolean crash)
 	host_client->active = false;
 	host_client->name[0] = 0;
 	host_client->old_frags = -999999;
-	net_activeconnections--;
 
 // send notification to all clients
 	for (i=0, client = svs.clients ; i<svs.maxclients ; i++, client++)
@@ -419,7 +414,7 @@ void Host_ShutdownServer(qboolean crash)
 		CL_Disconnect ();
 
 // flush any pending messages - like the score!!!
-	start = Sys_FloatTime();
+	start = Sys_DoubleTime();
 	do
 	{
 		count = 0;
@@ -439,7 +434,7 @@ void Host_ShutdownServer(qboolean crash)
 				}
 			}
 		}
-		if ((Sys_FloatTime() - start) > 3.0)
+		if ((Sys_DoubleTime() - start) > 3.0)
 			break;
 	}
 	while (count);
@@ -636,7 +631,7 @@ void _Host_Frame (float time)
 	static double		time3 = 0;
 	int			pass1, pass2, pass3;
 
-	if (setjmp (host_abortserver) )
+	if (setjmp (host_abortframe) )
 		return;			// something bad happened, or the server disconnected
 
 // keep the random time dependent
@@ -686,9 +681,9 @@ void Host_Frame (float time)
 		return;
 	}
 	
-	time1 = Sys_FloatTime ();
+	time1 = Sys_DoubleTime ();
 	_Host_Frame (time);
-	time2 = Sys_FloatTime ();	
+	time2 = Sys_DoubleTime ();	
 	
 	timetotal += time2 - time1;
 	timecount++;
@@ -802,20 +797,27 @@ void Host_Init (quakeparms_t *parms)
 	Cbuf_Init ();
 	Cmd_Init ();	
 	V_Init ();
+	
 	Chase_Init ();
-	Host_InitVCR (parms);
-	COM_Init (parms->basedir);
+	//Host_InitVCR (parms);
+	
+	COM_Init ();
+	
 	Host_InitLocal ();
+	
+	NET_Init ();
+	Netchan_Init ();
+	
 	W_LoadWadFile ("gfx.wad");
 	Key_Init ();
 	Con_Init ();	
-	M_Init ();	
+	
 	PR_Init ();
 	Mod_Init ();
-	NET_Init ();
+	
 	SV_Init ();
 
-	Con_Printf ("Exe: "__TIME__" "__DATE__"\n");
+	Con_Printf ("Exe: " __TIME__ " " __DATE__ "\n");
 	Con_Printf ("%4.1f megabyte heap\n",parms->memsize/ (1024*1024.0));
 	
 	R_InitTextures ();		// needed even for dedicated servers
@@ -850,7 +852,7 @@ void Host_Init (quakeparms_t *parms)
 
 #endif	// _WIN32
 		CDAudio_Init ();
-		Sbar_Init ();
+		
 		CL_Init ();
 #ifdef _WIN32 // on non win32, mouse comes before video for security reasons
 		IN_Init ();

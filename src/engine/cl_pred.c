@@ -79,7 +79,7 @@ void CL_PredictUsercmd (player_state_t *from, player_state_t *to, usercmd_t *u, 
 
 	VectorCopy (from->origin, pmove.origin);
 //	VectorCopy (from->viewangles, pmove.angles);
-	VectorCopy (u->angles, pmove.angles);
+	VectorCopy (u->viewangles, pmove.angles);
 	VectorCopy (from->velocity, pmove.velocity);
 
 	pmove.oldbuttons = from->oldbuttons;
