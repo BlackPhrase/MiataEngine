@@ -759,7 +759,7 @@ void SaveGamestate()
 	Con_Printf ("done.\n");
 }
 
-int LoadGamestate(char *level, char *startspot)
+int LoadGamestate(const char *level, const char *startspot)
 {
 	char	name[MAX_OSPATH];
 	FILE	*f;

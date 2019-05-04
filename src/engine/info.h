@@ -18,9 +18,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-char *Info_ValueForKey (char *s, char *key);
-void Info_RemoveKey (char *s, char *key);
+const char *Info_ValueForKey (const char *s, const char *key);
+void Info_RemoveKey (char *s, const char *key);
 void Info_RemovePrefixedKeys (char *start, char prefix);
-void Info_SetValueForKey (char *s, char *key, char *value, int maxsize);
-void Info_SetValueForStarKey (char *s, char *key, char *value, int maxsize);
-void Info_Print (char *s);
+void Info_SetValueForKey (char *s, const char *key, const char *value, int maxsize);
+void Info_SetValueForStarKey (char *s, const char *key, const char *value, int maxsize);
+void Info_Print (const char *s);

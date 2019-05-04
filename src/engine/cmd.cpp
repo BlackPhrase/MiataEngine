@@ -79,7 +79,7 @@ Cbuf_AddText
 Adds command text at the end of the buffer
 ============
 */
-void Cbuf_AddText (char *text)
+void Cbuf_AddText (const char *text)
 {
 	int		l;
 	
@@ -104,7 +104,7 @@ Adds a \n to the text
 FIXME: actually change the command buffer to do less copying
 ============
 */
-void Cbuf_InsertText (char *text)
+void Cbuf_InsertText (const char *text)
 {
 	char	*temp;
 	int		templen;
@@ -326,7 +326,7 @@ Creates a new command that executes a command string (possibly ; seperated)
 ===============
 */
 
-char *CopyString (char *in)
+char *CopyString (const char *in)
 {
 	char	*out;
 	
@@ -400,7 +400,7 @@ void Cmd_Alias_f (void)
 typedef struct cmd_function_s
 {
 	struct cmd_function_s	*next;
-	char					*name;
+	const char					*name;
 	xcommand_t				function;
 } cmd_function_t;
 
@@ -408,9 +408,9 @@ typedef struct cmd_function_s
 #define	MAX_ARGS		80
 
 static	int			cmd_argc;
-static	char		*cmd_argv[MAX_ARGS];
-static	char		*cmd_null_string = "";
-static	char		*cmd_args = NULL;
+static	const char		*cmd_argv[MAX_ARGS];
+static	const char		*cmd_null_string = "";
+static	const char		*cmd_args = NULL;
 
 cmd_source_t	cmd_source;
 
@@ -450,7 +450,7 @@ int		Cmd_Argc (void)
 Cmd_Argv
 ============
 */
-char	*Cmd_Argv (int arg)
+const char	*Cmd_Argv (int arg)
 {
 	if ( (unsigned)arg >= cmd_argc )
 		return cmd_null_string;
@@ -464,7 +464,7 @@ Cmd_Args
 Returns a single string containing argv(1) to argv(argc()-1)
 ============
 */
-char		*Cmd_Args (void)
+const char		*Cmd_Args (void)
 {
 	if (!cmd_args)
 		return "";
@@ -479,7 +479,7 @@ Cmd_TokenizeString
 Parses the given string into command line tokens.
 ============
 */
-void Cmd_TokenizeString (char *text)
+void Cmd_TokenizeString (const char *text)
 {
 	int		i;
 	
@@ -530,7 +530,7 @@ void Cmd_TokenizeString (char *text)
 Cmd_AddCommand
 ============
 */
-void	Cmd_AddCommand (char *cmd_name, xcommand_t function)
+void	Cmd_AddCommand (const char *cmd_name, xcommand_t function)
 {
 	cmd_function_t	*cmd;
 	
@@ -566,7 +566,7 @@ void	Cmd_AddCommand (char *cmd_name, xcommand_t function)
 Cmd_Exists
 ============
 */
-qboolean	Cmd_Exists (char *cmd_name)
+qboolean	Cmd_Exists (const char *cmd_name)
 {
 	cmd_function_t	*cmd;
 
@@ -586,7 +586,7 @@ qboolean	Cmd_Exists (char *cmd_name)
 Cmd_CompleteCommand
 ============
 */
-char *Cmd_CompleteCommand (char *partial)
+const char *Cmd_CompleteCommand (const char *partial)
 {
 	cmd_function_t	*cmd;
 	int				len;
@@ -612,7 +612,7 @@ A complete command line has been parsed, so try to execute it
 FIXME: lookupnoadd the token to speed search?
 ============
 */
-void	Cmd_ExecuteString (char *text, cmd_source_t src)
+void	Cmd_ExecuteString (const char *text, cmd_source_t src)
 {	
 	cmd_function_t	*cmd;
 	cmdalias_t		*a;
@@ -690,7 +690,7 @@ Returns the position (1 to argc-1) in the command's argument list
 where the given parameter apears, or 0 if not present
 ================
 */
-int Cmd_CheckParm (char *parm)
+int Cmd_CheckParm (const char *parm)
 {
 	int i;
 	

@@ -24,10 +24,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 // char *date = "Oct 24 1996";
 // char *buildtime = "13:22:52";
-char *date = __DATE__ ;
-char *buildtime = __TIME__ ;
+const char *date = __DATE__ ;
+const char *buildtime = __TIME__ ;
 
-char *mon[12] = 
+const char *mon[12] = 
 { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
 char mond[12] = 
 { 31,    28,    31,    30,    31,    30,    31,    31,    30,    31,    30,    31 };

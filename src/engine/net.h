@@ -60,8 +60,8 @@ void		NET_SendPacket (netsrc_t sock, int length, void *data, netadr_t to);
 qboolean	NET_CompareAdr (netadr_t a, netadr_t b);
 qboolean	NET_CompareBaseAdr (netadr_t a, netadr_t b);
 qboolean	NET_IsLocalAddress (netadr_t adr);
-char		*NET_AdrToString (netadr_t a);
-qboolean	NET_StringToAdr (char *s, netadr_t *a);
+const char		*NET_AdrToString (netadr_t a);
+qboolean	NET_StringToAdr (const char *s, netadr_t *a);
 void		NET_Sleep(int msec);
 
 //============================================================================
@@ -114,7 +114,7 @@ void Netchan_Setup (netsrc_t sock, netchan_t *chan, netadr_t adr, int qport);
 qboolean Netchan_NeedReliable (netchan_t *chan);
 void Netchan_Transmit (netchan_t *chan, int length, byte *data);
 void Netchan_OutOfBand (int net_socket, netadr_t adr, int length, byte *data);
-void Netchan_OutOfBandPrint (int net_socket, netadr_t adr, char *format, ...);
+void Netchan_OutOfBandPrint (int net_socket, netadr_t adr, const char *format, ...);
 qboolean Netchan_Process (netchan_t *chan, sizebuf_t *msg);
 
 qboolean Netchan_CanPacket (netchan_t *chan);

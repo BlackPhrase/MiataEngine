@@ -48,8 +48,8 @@ void SZ_Alloc (sizebuf_t *buf, int startsize);
 void SZ_Free (sizebuf_t *buf);
 void SZ_Clear (sizebuf_t *buf);
 void *SZ_GetSpace (sizebuf_t *buf, int length);
-void SZ_Write (sizebuf_t *buf, void *data, int length);
-void SZ_Print (sizebuf_t *buf, char *data);	// strcats onto the sizebuf
+void SZ_Write (sizebuf_t *buf, const void *data, int length);
+void SZ_Print (sizebuf_t *buf, const char *data);	// strcats onto the sizebuf
 
 //============================================================================
 
@@ -107,7 +107,7 @@ void MSG_WriteByte (sizebuf_t *sb, int c);
 void MSG_WriteShort (sizebuf_t *sb, int c);
 void MSG_WriteLong (sizebuf_t *sb, int c);
 void MSG_WriteFloat (sizebuf_t *sb, float f);
-void MSG_WriteString (sizebuf_t *sb, char *s);
+void MSG_WriteString (sizebuf_t *sb, const char *s);
 void MSG_WriteCoord (sizebuf_t *sb, float f);
 void MSG_WriteAngle (sizebuf_t *sb, float f);
 void MSG_WriteAngle16 (sizebuf_t *sb, float f);
@@ -134,19 +134,19 @@ void MSG_ReadDeltaUsercmd (sizebuf_t &net_message, struct usercmd_s *from, struc
 //============================================================================
 
 void Q_memset (void *dest, int fill, int count);
-void Q_memcpy (void *dest, void *src, int count);
-int Q_memcmp (void *m1, void *m2, int count);
-void Q_strcpy (char *dest, char *src);
-void Q_strncpy (char *dest, char *src, int count);
-int Q_strlen (char *str);
-char *Q_strrchr (char *s, char c);
-void Q_strcat (char *dest, char *src);
-int Q_strcmp (char *s1, char *s2);
-int Q_strncmp (char *s1, char *s2, int count);
-int Q_strcasecmp (char *s1, char *s2);
-int Q_strncasecmp (char *s1, char *s2, int n);
-int	Q_atoi (char *str);
-float Q_atof (char *str);
+void Q_memcpy (void *dest, const void *src, int count);
+int Q_memcmp (const void *m1, const void *m2, int count);
+void Q_strcpy (char *dest, const char *src);
+void Q_strncpy (char *dest, const char *src, int count);
+int Q_strlen (const char *str);
+char *Q_strrchr (const char *s, char c);
+void Q_strcat (char *dest, const char *src);
+int Q_strcmp (const char *s1, const char *s2);
+int Q_strncmp (const char *s1, const char *s2, int count);
+int Q_strcasecmp (const char *s1, const char *s2);
+int Q_strncasecmp (const char *s1, const char *s2, int n);
+int	Q_atoi (const char *str);
+float Q_atof (const char *str);
 
 //============================================================================
 
@@ -159,18 +159,18 @@ char *COM_Parse (char *data);
 extern	int		com_argc;
 extern	char	**com_argv;
 
-int COM_CheckParm (char *parm);
-void COM_AddParm (char *parm);
+int COM_CheckParm (const char *parm);
+void COM_AddParm (const char *parm);
 
 void COM_Init (void);
-void COM_InitArgv (int argc, char **argv);
+void COM_InitArgv (int argc, const char **argv);
 
-char *COM_SkipPath (char *pathname);
-void COM_StripExtension (char *in, char *out);
-void COM_FileBase (char *in, char *out);
-void COM_DefaultExtension (char *path, char *extension);
+char *COM_SkipPath (const char *pathname);
+void COM_StripExtension (const char *in, char *out);
+void COM_FileBase (const char *in, char *out);
+void COM_DefaultExtension (const char *path, const char *extension);
 
-char	*va(char *format, ...);
+const char	*va(const char *format, ...);
 // does a varargs printf into a temp buffer
 
 
@@ -181,17 +181,17 @@ struct cache_user_s;
 
 extern	char	com_gamedir[MAX_OSPATH];
 
-void COM_WriteFile (char *filename, void *data, int len);
-int COM_OpenFile (char *filename, int *hndl);
-int COM_FOpenFile (char *filename, FILE **file);
+void COM_WriteFile (const char *filename, void *data, int len);
+int COM_OpenFile (const char *filename, int *hndl);
+int COM_FOpenFile (const char *filename, FILE **file);
 void COM_CloseFile (int h);
 
-byte *COM_LoadStackFile (char *path, void *buffer, int bufsize);
-byte *COM_LoadTempFile (char *path);
-byte *COM_LoadHunkFile (char *path);
-void COM_LoadCacheFile (char *path, struct cache_user_s *cu);
-void COM_CreatePath (char *path);
-void COM_Gamedir (char *dir);
+byte *COM_LoadStackFile (const char *path, void *buffer, int bufsize);
+byte *COM_LoadTempFile (const char *path);
+byte *COM_LoadHunkFile (const char *path);
+void COM_LoadCacheFile (const char *path, struct cache_user_s *cu);
+void COM_CreatePath (const char *path);
+void COM_Gamedir (const char *dir);
 
 extern	struct cvar_s	registered;
 
