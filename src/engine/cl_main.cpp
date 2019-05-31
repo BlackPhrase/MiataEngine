@@ -1377,6 +1377,46 @@ CL_Init
 */
 void CL_Init (void)
 {
+	V_Init ();
+	
+	Chase_Init ();
+	
+	if (cls.state == ca_dedicated)
+		return;
+	
+	host_basepal = (byte *)COM_LoadHunkFile ("gfx/palette.lmp");
+	if (!host_basepal)
+		Sys_Error ("Couldn't load gfx/palette.lmp");
+	host_colormap = (byte *)COM_LoadHunkFile ("gfx/colormap.lmp");
+	if (!host_colormap)
+		Sys_Error ("Couldn't load gfx/colormap.lmp");
+
+#ifndef _WIN32 // on non win32, mouse comes before video for security reasons
+	IN_Init ();
+#endif
+	VID_Init (host_basepal);
+
+	Draw_Init ();
+	SCR_Init ();
+	R_Init ();
+#ifndef	_WIN32
+// on Win32, sound initialization has to come before video initialization, so we
+// can put up a popup if the sound hardware is in use
+	S_Init ();
+#else
+
+#ifdef	GLQUAKE
+// FIXME: doesn't use the new one-window approach yet
+	S_Init ();
+#endif
+
+#endif	// _WIN32
+	CDAudio_Init ();
+	
+#ifdef _WIN32 // on non win32, mouse comes before video for security reasons
+	IN_Init ();
+#endif
+
 	char st[80];
 	
 	cls.state = ca_disconnected;

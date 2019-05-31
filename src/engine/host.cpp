@@ -796,9 +796,7 @@ void Host_Init (quakeparms_t *parms)
 	Memory_Init (parms->membase, parms->memsize);
 	Cbuf_Init ();
 	Cmd_Init ();	
-	V_Init ();
 	
-	Chase_Init ();
 	//Host_InitVCR (parms);
 	
 	COM_Init ();
@@ -821,43 +819,8 @@ void Host_Init (quakeparms_t *parms)
 	Con_Printf ("%4.1f megabyte heap\n",parms->memsize/ (1024*1024.0));
 	
 	R_InitTextures ();		// needed even for dedicated servers
- 
-	if (cls.state != ca_dedicated)
-	{
-		host_basepal = (byte *)COM_LoadHunkFile ("gfx/palette.lmp");
-		if (!host_basepal)
-			Sys_Error ("Couldn't load gfx/palette.lmp");
-		host_colormap = (byte *)COM_LoadHunkFile ("gfx/colormap.lmp");
-		if (!host_colormap)
-			Sys_Error ("Couldn't load gfx/colormap.lmp");
-
-#ifndef _WIN32 // on non win32, mouse comes before video for security reasons
-		IN_Init ();
-#endif
-		VID_Init (host_basepal);
-
-		Draw_Init ();
-		SCR_Init ();
-		R_Init ();
-#ifndef	_WIN32
-	// on Win32, sound initialization has to come before video initialization, so we
-	// can put up a popup if the sound hardware is in use
-		S_Init ();
-#else
-
-#ifdef	GLQUAKE
-	// FIXME: doesn't use the new one-window approach yet
-		S_Init ();
-#endif
-
-#endif	// _WIN32
-		CDAudio_Init ();
-		
-		CL_Init ();
-#ifdef _WIN32 // on non win32, mouse comes before video for security reasons
-		IN_Init ();
-#endif
-	}
+	
+	CL_Init();
 
 	Cbuf_InsertText ("exec quake.rc\n");
 
