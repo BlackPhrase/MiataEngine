@@ -1462,6 +1462,21 @@ void CL_Init (void)
 	Cmd_AddCommand ("timedemo", CL_TimeDemo_f);
 }
 
+void CL_Shutdown()
+{
+	if (cls.state == ca_dedicated)
+		return;
+	
+	Host_WriteConfiguration (); 
+	
+	gClGame.Shutdown();
+	
+	CDAudio_Shutdown ();
+	S_Shutdown();
+	IN_Shutdown ();
+	VID_Shutdown();
+};
+
 /*
 ==================
 Host_Frame

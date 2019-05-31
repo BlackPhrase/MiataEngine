@@ -292,6 +292,8 @@ dlight_t *CL_AllocDlight (int key);
 void	CL_DecayLights (void);
 
 void CL_Init (void);
+void CL_Shutdown();
+
 
 void CL_EstablishConnection (char *host);
 void CL_Signon1 (void);
