@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define NUM_SAFE_ARGVS  7
 
-static char     *largv[MAX_NUM_ARGVS + NUM_SAFE_ARGVS + 1];
+static const char     *largv[MAX_NUM_ARGVS + NUM_SAFE_ARGVS + 1];
 static const char     *argvdummy = " ";
 
 static const char     *safeargvs[NUM_SAFE_ARGVS] =
@@ -207,7 +207,7 @@ int Q_strlen (const char *str)
 	return count;
 }
 
-char *Q_strrchr(const char *s, char c)
+const char *Q_strrchr(const char *s, char c)
 {
     int len = Q_strlen(s);
     s += len;
@@ -859,9 +859,9 @@ void SZ_Print (sizebuf_t *buf, char *data)
 COM_SkipPath
 ============
 */
-char *COM_SkipPath (const char *pathname)
+const char *COM_SkipPath (const char *pathname)
 {
-	char    *last;
+	const char    *last;
 	
 	last = pathname;
 	while (*pathname)
@@ -913,7 +913,7 @@ COM_FileBase
 */
 void COM_FileBase (const char *in, char *out)
 {
-	char *s, *s2;
+	const char *s, *s2;
 	
 	s = in + strlen(in) - 1;
 	
@@ -966,7 +966,7 @@ COM_Parse
 Parse a token out of a string
 ==============
 */
-char *COM_Parse (char *data)
+const char *COM_Parse (const char *data)
 {
 	int             c;
 	int             len;
@@ -1361,7 +1361,7 @@ COM_CreatePath
 Only used for CopyFile
 ============
 */
-void    COM_CreatePath (const char *path)
+void    COM_CreatePath (char *path)
 {
 	char    *ofs;
 	

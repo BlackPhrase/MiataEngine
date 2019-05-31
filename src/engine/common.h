@@ -139,7 +139,7 @@ int Q_memcmp (const void *m1, const void *m2, int count);
 void Q_strcpy (char *dest, const char *src);
 void Q_strncpy (char *dest, const char *src, int count);
 int Q_strlen (const char *str);
-char *Q_strrchr (const char *s, char c);
+const char *Q_strrchr (const char *s, char c);
 void Q_strcat (char *dest, const char *src);
 int Q_strcmp (const char *s1, const char *s2);
 int Q_strncmp (const char *s1, const char *s2, int count);
@@ -153,7 +153,7 @@ float Q_atof (const char *str);
 extern	char		com_token[1024];
 extern	qboolean	com_eof;
 
-char *COM_Parse (char *data);
+const char *COM_Parse (const char *data);
 
 
 extern	int		com_argc;
@@ -165,7 +165,7 @@ void COM_AddParm (const char *parm);
 void COM_Init (void);
 void COM_InitArgv (int argc, const char **argv);
 
-char *COM_SkipPath (const char *pathname);
+const char *COM_SkipPath (const char *pathname);
 void COM_StripExtension (const char *in, char *out);
 void COM_FileBase (const char *in, char *out);
 void COM_DefaultExtension (const char *path, const char *extension);
@@ -190,7 +190,7 @@ byte *COM_LoadStackFile (const char *path, void *buffer, int bufsize);
 byte *COM_LoadTempFile (const char *path);
 byte *COM_LoadHunkFile (const char *path);
 void COM_LoadCacheFile (const char *path, struct cache_user_s *cu);
-void COM_CreatePath (const char *path);
+void COM_CreatePath (char *path);
 void COM_Gamedir (const char *dir);
 
 extern	struct cvar_s	registered;

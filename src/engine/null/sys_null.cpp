@@ -62,7 +62,7 @@ int filelength (FILE *f)
 	return end;
 }
 
-int Sys_FileOpenRead (char *path, int *hndl)
+int Sys_FileOpenRead (const char *path, int *hndl)
 {
 	FILE    *f;
 	int             i;
@@ -81,7 +81,7 @@ int Sys_FileOpenRead (char *path, int *hndl)
 	return filelength(f);
 }
 
-int Sys_FileOpenWrite (char *path)
+int Sys_FileOpenWrite (const char *path)
 {
 	FILE    *f;
 	int             i;
@@ -117,7 +117,7 @@ int Sys_FileWrite (int handle, void *data, int count)
 	return fwrite (data, 1, count, sys_handles[handle]);
 }
 
-int     Sys_FileTime (char *path)
+int     Sys_FileTime (const char *path)
 {
 	FILE    *f;
 	
@@ -131,7 +131,7 @@ int     Sys_FileTime (char *path)
 	return -1;
 }
 
-void Sys_mkdir (char *path)
+void Sys_mkdir (const char *path)
 {
 }
 
@@ -149,7 +149,7 @@ void Sys_MakeCodeWriteable (unsigned long startaddr, unsigned long length)
 }
 
 
-void Sys_Error (char *error, ...)
+void Sys_Error (const char *error, ...)
 {
 	va_list         argptr;
 
@@ -162,7 +162,7 @@ void Sys_Error (char *error, ...)
 	exit (1);
 }
 
-void Sys_Printf (char *fmt, ...)
+void Sys_Printf (const char *fmt, ...)
 {
 	va_list         argptr;
 	

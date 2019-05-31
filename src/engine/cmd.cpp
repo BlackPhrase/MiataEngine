@@ -278,7 +278,7 @@ Cmd_Exec_f
 */
 void Cmd_Exec_f (void)
 {
-	char	*f;
+	const char	*f;
 	int		mark;
 
 	if (Cmd_Argc () != 2)
@@ -340,7 +340,7 @@ void Cmd_Alias_f (void)
 	cmdalias_t	*a;
 	char		cmd[1024];
 	int			i, c;
-	char		*s;
+	const char		*s;
 
 	if (Cmd_Argc() == 1)
 	{
@@ -408,7 +408,7 @@ typedef struct cmd_function_s
 #define	MAX_ARGS		80
 
 static	int			cmd_argc;
-static	const char		*cmd_argv[MAX_ARGS];
+static	char		*cmd_argv[MAX_ARGS];
 static	const char		*cmd_null_string = "";
 static	const char		*cmd_args = NULL;
 

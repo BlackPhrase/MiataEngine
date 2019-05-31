@@ -38,8 +38,8 @@ loopback_t	loopbacks[2];
 int			ip_sockets[2];
 int			ipx_sockets[2];
 
-int NET_Socket (char *net_interface, int port);
-char *NET_ErrorString (void);
+int NET_Socket (const char *net_interface, int port);
+const char *NET_ErrorString (void);
 
 //=============================================================================
 
@@ -108,7 +108,7 @@ qboolean	NET_CompareBaseAdr (netadr_t a, netadr_t b)
 	}
 }
 
-char	*NET_AdrToString (netadr_t a)
+const char	*NET_AdrToString (netadr_t a)
 {
 	static	char	s[64];
 	
@@ -117,7 +117,7 @@ char	*NET_AdrToString (netadr_t a)
 	return s;
 }
 
-char	*NET_BaseAdrToString (netadr_t a)
+const char	*NET_BaseAdrToString (netadr_t a)
 {
 	static	char	s[64];
 	
@@ -137,7 +137,7 @@ idnewt:28000
 192.246.40.70:28000
 =============
 */
-qboolean	NET_StringToSockaddr (char *s, struct sockaddr *sadr)
+qboolean	NET_StringToSockaddr (const char *s, struct sockaddr *sadr)
 {
 	struct hostent	*h;
 	char	*colon;
@@ -182,7 +182,7 @@ idnewt:28000
 192.246.40.70:28000
 =============
 */
-qboolean	NET_StringToAdr (char *s, netadr_t *a)
+qboolean	NET_StringToAdr (const char *s, netadr_t *a)
 {
 	struct sockaddr_in sadr;
 	
@@ -239,7 +239,7 @@ qboolean	NET_GetLoopPacket (netsrc_t sock, netadr_t *net_from, sizebuf_t *net_me
 }
 
 
-void NET_SendLoopPacket (netsrc_t sock, int length, void *data, netadr_t to)
+void NET_SendLoopPacket (netsrc_t sock, int length, const void *data, netadr_t to)
 {
 	int		i;
 	loopback_t	*loop;
@@ -306,7 +306,7 @@ qboolean	NET_GetPacket (netsrc_t sock, netadr_t *net_from, sizebuf_t *net_messag
 
 //=============================================================================
 
-void NET_SendPacket (netsrc_t sock, int length, void *data, netadr_t to)
+void NET_SendPacket (netsrc_t sock, int length, const void *data, netadr_t to)
 {
 	int		ret;
 	struct sockaddr_in	addr;
@@ -441,7 +441,7 @@ void NET_Init (void)
 NET_Socket
 ====================
 */
-int NET_Socket (char *net_interface, int port)
+int NET_Socket (const char *net_interface, int port)
 {
 	int newsocket;
 	struct sockaddr_in address;
@@ -507,7 +507,7 @@ void	NET_Shutdown (void)
 NET_ErrorString
 ====================
 */
-char *NET_ErrorString (void)
+const char *NET_ErrorString (void)
 {
 	int		code;
 

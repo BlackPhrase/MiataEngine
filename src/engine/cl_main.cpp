@@ -110,7 +110,7 @@ CL_Connect_f
 */
 void CL_Connect_f (void)
 {
-	char	*server;
+	const char	*server;
 
 	if (Cmd_Argc() != 2)
 	{
@@ -363,7 +363,7 @@ Sent by server when serverinfo changes
 */
 void CL_FullServerinfo_f (void)
 {
-	char *p;
+	const char *p;
 	float v;
 
 	if (Cmd_Argc() != 2)
@@ -396,7 +396,7 @@ void CL_FullInfo_f (void)
 	char	key[512];
 	char	value[512];
 	char	*o;
-	char	*s;
+	const char	*s;
 
 	if (Cmd_Argc() != 2)
 	{
@@ -476,7 +476,8 @@ void CL_Packet_f (void)
 {
 	char	send[2048];
 	int		i, l;
-	char	*in, *out;
+	const char	*in;
+	char *out;
 	netadr_t	adr;
 
 	if (Cmd_Argc() != 3)

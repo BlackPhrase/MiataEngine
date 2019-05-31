@@ -213,7 +213,7 @@ void Con_Init (void)
 {
 #define MAXGAMEDIRLEN	1000
 	char	temp[MAXGAMEDIRLEN+1];
-	char	*t2 = "/qconsole.log";
+	const char	*t2 = "/qconsole.log";
 
 	con_debuglog = COM_CheckParm("-condebug");
 
