@@ -89,6 +89,18 @@ void Z_Free (void *ptr);
 void *Z_Malloc (int size);			// returns 0 filled memory
 void *Z_TagMalloc (int size, int tag);
 
+template<typename T>
+T *Z_Malloc(int size)
+{
+	return static_cast<T*>(Z_Malloc(size));
+};
+
+template<typename T>
+T *Z_TagMalloc(int size, int tag)
+{
+	return static_cast<T*>(Z_TagMalloc(size, tag));
+};
+
 void Z_DumpHeap (void);
 void Z_CheckHeap (void);
 int Z_FreeMemory (void);
@@ -98,6 +110,24 @@ void *Hunk_AllocName (int size, const char *name);
 
 void *Hunk_HighAllocName (int size, const char *name);
 
+template<typename T>
+T *Hunk_Alloc(int size)
+{
+	return static_cast<T*>(Hunk_Alloc(size));
+};
+
+template<typename T>
+T *Hunk_AllocName(int size, const char *name)
+{
+	return static_cast<T*>(Hunk_AllocName(size, name));
+};
+
+template<typename T>
+T *Hunk_HighAllocName(int size, const char *name)
+{
+	return static_cast<T*>(Hunk_HighAllocName(size, name));
+};
+
 int	Hunk_LowMark (void);
 void Hunk_FreeToLowMark (int mark);
 
@@ -105,6 +135,12 @@ int	Hunk_HighMark (void);
 void Hunk_FreeToHighMark (int mark);
 
 void *Hunk_TempAlloc (int size);
+
+template<typename T>
+T *Hunk_TempAlloc(int size)
+{
+	return static_cast<T*>(Hunk_TempAlloc(size));
+};
 
 void Hunk_Check (void);
 
@@ -124,6 +160,12 @@ void Cache_Free (cache_user_t *c);
 void *Cache_Alloc (cache_user_t *c, int size, const char *name);
 // Returns NULL if all purgable data was tossed and there still
 // wasn't enough room.
+
+template<typename T>
+T *Cache_Alloc(cache_user_t *c, int size, const char *name)
+{
+	return static_cast<T*>(Cache_Alloc(c, size, name));
+};
 
 void Cache_Report (void);
 
