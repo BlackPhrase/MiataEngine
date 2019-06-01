@@ -312,11 +312,7 @@ extern	entity_t		*cl_visedicts[MAX_VISEDICTS];
 //
 // cl_input
 //
-typedef struct
-{
-	int		down[2];		// key nums holding it down
-	int		state;			// low bit is down state
-} kbutton_t;
+#include "kbutton.h"
 
 extern	kbutton_t	in_mlook, in_klook;
 extern 	kbutton_t 	in_strafe;
