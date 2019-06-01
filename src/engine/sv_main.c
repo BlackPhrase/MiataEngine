@@ -309,7 +309,7 @@ void SV_CheckForNewClients (void)
 //
 	while (1)
 	{
-		ret = NET_CheckNewConnections ();
+		//ret = NET_CheckNewConnections ();
 		if (!ret)
 			break;
 
@@ -323,9 +323,7 @@ void SV_CheckForNewClients (void)
 			Sys_Error ("Host_CheckForNewClients: no free clients");
 		
 		svs.clients[i].netchan = *ret;
-		SV_ConnectClient (i);	
-	
-		net_activeconnections++;
+		SV_ConnectClient (i);
 	}
 }
 
