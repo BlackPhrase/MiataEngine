@@ -1542,9 +1542,9 @@ void CL_Frame(float time)
 		oldrealtime = 0;
 
 	if (cl_maxfps.value)
-		fps = max(30.0, min(cl_maxfps.value, 72.0));
+		fps = std::max(30.0, std::min((double)cl_maxfps.value, 72.0));
 	else
-		fps = max(30.0, min(rate.value/80.0, 72.0));
+		fps = std::max(30.0, std::min((double)rate.value/80.0, 72.0));
 
 	if (!cls.timedemo && realtime - oldrealtime < 1.0/fps)
 		return;			// framerate is too high
