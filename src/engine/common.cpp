@@ -790,7 +790,7 @@ void SZ_Alloc (sizebuf_t *buf, int startsize)
 {
 	if (startsize < 256)
 		startsize = 256;
-	buf->data = Hunk_AllocName (startsize, "sizebuf");
+	buf->data = Hunk_AllocName<byte>(startsize, "sizebuf");
 	buf->maxsize = startsize;
 	buf->cursize = 0;
 }
@@ -1604,17 +1604,17 @@ byte *COM_LoadFile (const char *path, int usehunk)
 	COM_FileBase (path, base);
 	
 	if (usehunk == 1)
-		buf = Hunk_AllocName (len+1, base);
+		buf = Hunk_AllocName<byte>(len+1, base);
 	else if (usehunk == 2)
-		buf = Hunk_TempAlloc (len+1);
+		buf = Hunk_TempAlloc<byte>(len+1);
 	else if (usehunk == 0)
-		buf = Z_Malloc (len+1);
+		buf = Z_Malloc<byte>(len+1);
 	else if (usehunk == 3)
-		buf = Cache_Alloc (loadcache, len+1, base);
+		buf = Cache_Alloc<byte>(loadcache, len+1, base);
 	else if (usehunk == 4)
 	{
 		if (len+1 > loadsize)
-			buf = Hunk_TempAlloc (len+1);
+			buf = Hunk_TempAlloc<byte>(len+1);
 		else
 			buf = loadbuf;
 	}
@@ -1703,7 +1703,7 @@ pack_t *COM_LoadPackFile (const char *packfile)
 	if (numpackfiles != PAK0_COUNT)
 		com_modified = true;    // not the original file
 
-	newfiles = Hunk_AllocName (numpackfiles * sizeof(packfile_t), "packfile");
+	newfiles = Hunk_AllocName<packfile_t>(numpackfiles * sizeof(packfile_t), "packfile");
 
 	Sys_FileSeek (packhandle, header.dirofs);
 	Sys_FileRead (packhandle, (void *)info, header.dirlen);
@@ -1723,7 +1723,7 @@ pack_t *COM_LoadPackFile (const char *packfile)
 		newfiles[i].filelen = LittleLong(info[i].filelen);
 	}
 
-	pack = Hunk_Alloc (sizeof (pack_t));
+	pack = Hunk_Alloc<pack_t>(sizeof (pack_t));
 	strcpy (pack->filename, packfile);
 	pack->handle = packhandle;
 	pack->numfiles = numpackfiles;
@@ -1754,7 +1754,7 @@ void COM_AddGameDirectory (const char *dir)
 //
 // add the directory to the search path
 //
-	search = Hunk_Alloc (sizeof(searchpath_t));
+	search = Hunk_Alloc<searchpath_t>(sizeof(searchpath_t));
 	strcpy (search->filename, dir);
 	search->next = com_searchpaths;
 	com_searchpaths = search;
@@ -1768,7 +1768,7 @@ void COM_AddGameDirectory (const char *dir)
 		pak = COM_LoadPackFile (pakfile);
 		if (!pak)
 			break;
-		search = Hunk_Alloc (sizeof(searchpath_t));
+		search = Hunk_Alloc<searchpath_t>(sizeof(searchpath_t));
 		search->pack = pak;
 		search->next = com_searchpaths;
 		com_searchpaths = search;               
@@ -1862,7 +1862,7 @@ void COM_InitFilesystem (void)
 			if (!com_argv[i] || com_argv[i][0] == '+' || com_argv[i][0] == '-')
 				break;
 			
-			search = Hunk_Alloc (sizeof(searchpath_t));
+			search = Hunk_Alloc<searchpath_t>(sizeof(searchpath_t));
 			if ( !strcmp(COM_FileExtension(com_argv[i]), "pak") )
 			{
 				search->pack = COM_LoadPackFile (com_argv[i]);
