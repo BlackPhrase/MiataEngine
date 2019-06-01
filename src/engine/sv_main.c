@@ -245,25 +245,25 @@ void SV_ConnectClient (int clientnum)
 	edict_t			*ent;
 	client_t		*client;
 	int				edictnum;
-	struct qsocket_s *netconnection;
+	struct netchan_s *netconnection;
 	int				i;
 	float			spawn_parms[NUM_SPAWN_PARMS];
 
 	client = svs.clients + clientnum;
 
-	Con_DPrintf ("Client %s connected\n", client->netconnection->address);
+	Con_DPrintf ("Client %s connected\n", client->netchan.remote_address);
 
 	edictnum = clientnum+1;
 
 	ent = EDICT_NUM(edictnum);
 	
 // set up the client_t
-	netconnection = client->netconnection;
+	netconnection = &client->netchan;
 	
 	if (sv.loadgame)
 		memcpy (spawn_parms, client->spawn_parms, sizeof(spawn_parms));
 	memset (client, 0, sizeof(*client));
-	client->netconnection = netconnection;
+	client->netchan = *netconnection;
 
 	strcpy (client->name, "unconnected");
 	client->active = true;
@@ -274,7 +274,7 @@ void SV_ConnectClient (int clientnum)
 	client->message.allowoverflow = true;		// we can catch it
 
 #ifdef IDGODS
-	client->privileged = IsID(&client->netconnection->addr);
+	client->privileged = IsID(&client->netchan->addr);
 #else	
 	client->privileged = false;				
 #endif
@@ -301,7 +301,7 @@ SV_CheckForNewClients
 */
 void SV_CheckForNewClients (void)
 {
-	struct qsocket_s	*ret;
+	struct netchan_s	*ret;
 	int				i;
 		
 //
@@ -322,7 +322,7 @@ void SV_CheckForNewClients (void)
 		if (i == svs.maxclients)
 			Sys_Error ("Host_CheckForNewClients: no free clients");
 		
-		svs.clients[i].netconnection = ret;
+		svs.clients[i].netchan = *ret;
 		SV_ConnectClient (i);	
 	
 		net_activeconnections++;
