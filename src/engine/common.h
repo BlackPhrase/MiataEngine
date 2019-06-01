@@ -27,7 +27,11 @@ typedef unsigned char 		byte;
 #undef true
 #undef false
 
+#ifdef __cplusplus
+using qboolean = int;
+#else
 typedef enum {false, true}	qboolean;
+#endif
 
 #define	MAX_INFO_STRING	196
 #define	MAX_SERVERINFO_STRING	512
