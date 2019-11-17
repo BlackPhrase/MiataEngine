@@ -1501,6 +1501,9 @@ void CL_Init (void)
 	
 	Cmd_AddCommand ("playdemo", CL_PlayDemo_f);
 	Cmd_AddCommand ("timedemo", CL_TimeDemo_f);
+	
+	if(!gClGame.Init())
+		Sys_Error("Failed to init the clgame module!");
 }
 
 void CL_Shutdown()
@@ -1614,6 +1617,8 @@ void CL_Frame(float time)
 	
 	CDAudio_Update();
 
+	gClGame.Frame();
+	
 	if (host_speeds.value)
 	{
 		pass1 = (time1 - time3)*1000;
