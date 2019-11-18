@@ -88,7 +88,7 @@ SV_SetPlayer
 Sets sv_client and sv_player to the player with idnum Cmd_Argv(1)
 ==================
 */
-qboolean SV_SetPlayer (void)
+bool SV_SetPlayer (void)
 {
 	client_t	*cl;
 	int			i;
@@ -331,7 +331,7 @@ SV_WriteServerFile
 
 ==============
 */
-void SV_WriteServerFile (qboolean autosave)
+void SV_WriteServerFile (bool autosave)
 {
 	FILE	*f;
 	cvar_t	*var;
@@ -490,7 +490,7 @@ void SV_GameMap_f (void)
 	char		*map;
 	int			i;
 	client_t	*cl;
-	qboolean	*savedInuse;
+	bool	*savedInuse;
 
 	if (Cmd_Argc() != 2)
 	{
