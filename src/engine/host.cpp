@@ -80,73 +80,6 @@ cvar_t	temp1 = {"temp1","0"};
 
 /*
 ================
-Host_EndGame
-================
-*/
-void Host_EndGame (const char *message, ...)
-{
-	va_list		argptr;
-	char		string[1024];
-	
-	va_start (argptr,message);
-	vsprintf (string,message,argptr);
-	va_end (argptr);
-	Con_DPrintf ("Host_EndGame: %s\n",string);
-	
-	if (sv.active)
-		Host_ShutdownServer (false);
-
-	if (cls.state == ca_dedicated)
-		Sys_Error ("Host_EndGame: %s\n",string);	// dedicated servers exit
-	
-	if (cls.demonum != -1)
-		CL_NextDemo ();
-	else
-		CL_Disconnect ();
-
-	longjmp (host_abortframe, 1);
-}
-
-/*
-================
-Host_Error
-
-This shuts down both the client and server
-================
-*/
-void Host_Error (const char *error, ...)
-{
-	va_list		argptr;
-	char		string[1024];
-	static	qboolean inerror = false;
-	
-	if (inerror)
-		Sys_Error ("Host_Error: recursively entered");
-	inerror = true;
-	
-	SCR_EndLoadingPlaque ();		// reenable screen updates
-
-	va_start (argptr,error);
-	vsprintf (string,error,argptr);
-	va_end (argptr);
-	Con_Printf ("Host_Error: %s\n",string);
-	
-	if (sv.active)
-		Host_ShutdownServer (false);
-
-	if (cls.state == ca_dedicated)
-		Sys_Error ("Host_Error: %s\n",string);	// dedicated servers exit
-
-	CL_Disconnect ();
-	cls.demonum = -1;
-
-	inerror = false;
-
-	longjmp (host_abortframe, 1);
-}
-
-/*
-================
 Host_FindMaxClients
 ================
 */
@@ -195,42 +128,6 @@ void	Host_FindMaxClients (void)
 	else
 		Cvar_SetValue ("deathmatch", 0.0);
 }
-
-
-/*
-=======================
-Host_InitLocal
-======================
-*/
-void Host_InitLocal (void)
-{
-	Host_InitCommands ();
-	
-	Cvar_RegisterVariable (&host_framerate);
-	Cvar_RegisterVariable (&host_speeds);
-
-	Cvar_RegisterVariable (&sys_ticrate);
-	Cvar_RegisterVariable (&serverprofile);
-
-	Cvar_RegisterVariable (&fraglimit);
-	Cvar_RegisterVariable (&timelimit);
-	Cvar_RegisterVariable (&teamplay);
-	Cvar_RegisterVariable (&samelevel);
-	Cvar_RegisterVariable (&noexit);
-	Cvar_RegisterVariable (&skill);
-	Cvar_RegisterVariable (&developer);
-	Cvar_RegisterVariable (&deathmatch);
-	Cvar_RegisterVariable (&coop);
-
-	Cvar_RegisterVariable (&pausable);
-
-	Cvar_RegisterVariable (&temp1);
-
-	Host_FindMaxClients ();
-	
-	host_time = 1.0;		// so a think at time 0 won't get called
-}
-
 
 /*
 ===============
@@ -458,29 +355,6 @@ void Host_ShutdownServer(qboolean crash)
 	memset (&sv, 0, sizeof(sv));
 	memset (svs.clients, 0, svs.maxclientslimit*sizeof(client_t));
 }
-
-
-/*
-================
-Host_ClearMemory
-
-This clears all the memory used by both the client and server, but does
-not reinitialize anything.
-================
-*/
-void Host_ClearMemory (void)
-{
-	Con_DPrintf ("Clearing memory\n");
-	D_FlushCaches ();
-	Mod_ClearAll ();
-	if (host_hunklevel)
-		Hunk_FreeToLowMark (host_hunklevel);
-
-	cls.signon = 0;
-	memset (&sv, 0, sizeof(sv));
-	memset (&cl, 0, sizeof(cl));
-}
-
 
 //============================================================================
 
@@ -831,33 +705,3 @@ void Host_Init (quakeparms_t *parms)
 	
 	Sys_Printf ("========Quake Initialized=========\n");	
 }
-
-
-/*
-===============
-Host_Shutdown
-
-FIXME: this is a callback from Sys_Quit and Sys_Error.  It would be better
-to run quit through here before the final handoff to the sys code.
-===============
-*/
-void Host_Shutdown(void)
-{
-	static qboolean isdown = false;
-	
-	if (isdown)
-	{
-		printf ("recursive shutdown\n");
-		return;
-	}
-	isdown = true;
-
-// keep Con_Printf from trying to update the screen
-	scr_disabled_for_loading = true;
-
-	CL_Shutdown();
-	SV_Shutdown();
-	
-	NET_Shutdown ();
-}
-
