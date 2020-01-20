@@ -91,7 +91,39 @@ void CHost::ClearMemory()
 
 void CHost::Frame(float time)
 {
-	Host_Frame(time);
+	double time1, time2;
+	static double timetotal;
+	static int timecount;
+	int i, c, m;
+
+	if(!serverprofile.value)
+	{
+		_Host_Frame(time);
+		return;
+	};
+	
+	time1 = Sys_DoubleTime();
+	_Host_Frame(time);
+	time2 = Sys_DoubleTime();	
+	
+	timetotal += time2 - time1;
+	timecount++;
+	
+	if (timecount < 1000)
+		return;
+
+	m = timetotal*1000/timecount;
+	timecount = 0;
+	timetotal = 0;
+	c = 0;
+	
+	for(i = 0; i < svs.maxclients; ++i)
+	{
+		if (svs.clients[i].active)
+			c++;
+	};
+
+	mpConsole->Printf("serverprofile: %2i clients %2i msec\n",  c,  m);
 };
 
 void CHost::ServerFrame()
