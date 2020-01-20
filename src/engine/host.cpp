@@ -175,10 +175,10 @@ void SV_DropClient (qboolean crash)
 	if (!crash)
 	{
 		// send any final messages (don't check for errors)
-		if (NET_CanSendMessage (host_client->netchan))
+		if (Netchan_CanPacket (&host_client->netchan))
 		{
 			MSG_WriteByte (&host_client->netchan.message, svc_disconnect);
-			NET_SendMessage (host_client->netchan, &host_client->netchan.message);
+			Netchan_Transmit(&host_client->netchan, host_client->netchan.message.cursize, host_client->netchan.message.data);
 		}
 	
 		if (host_client->edict && host_client->spawned)
@@ -193,9 +193,6 @@ void SV_DropClient (qboolean crash)
 
 		Sys_Printf ("Client %s removed\n",host_client->name);
 	}
-
-// break the net connection
-	NET_Close (host_client->netchan);
 
 // free the client (the body stays around)
 	host_client->active = false;
@@ -252,14 +249,14 @@ void Host_ShutdownServer(qboolean crash)
 		{
 			if (host_client->active && host_client->netchan.message.cursize)
 			{
-				if (NET_CanSendMessage (host_client->netchan))
+				if (Netchan_CanPacket (&host_client->netchan))
 				{
-					NET_SendMessage(host_client->netchan, &host_client->netchan.message);
+					Netchan_Transmit(&host_client->netchan, host_client->netchan.message.cursize, host_client->netchan.message.data);
 					SZ_Clear (&host_client->netchan.message);
 				}
 				else
 				{
-					NET_GetMessage(host_client->netchan);
+					NET_GetPacket(host_client->netchan);
 					count++;
 				}
 			}
