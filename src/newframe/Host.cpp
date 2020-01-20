@@ -242,3 +242,52 @@ void CHost::InitLocal()
 	
 	host_time = 1.0; // so a think at time 0 won't get called
 };
+
+/*
+==================
+Host_Frame
+
+Runs all active servers
+==================
+*/
+void CHost::_Frame(float time)
+{
+	static double		time1 = 0;
+	static double		time2 = 0;
+	static double		time3 = 0;
+	int			pass1, pass2, pass3;
+
+	if (setjmp (host_abortframe) )
+		return;			// something bad happened, or the server disconnected
+
+// keep the random time dependent
+	rand ();
+	
+// decide the simulation time
+	if (!Host_FilterTime(time))
+		return;			// don't run too fast, or packets will flood out
+
+// if running the server locally, make intentions now
+	if (sv.active)
+		CL_SendCmd ();
+	
+//-------------------
+//
+// server operations
+//
+//-------------------
+
+	// check for commands typed to the host
+	Host_GetConsoleCommands();
+	
+	if(mpServer->active)
+		mpServer->Frame(time);
+
+//-------------------
+//
+// client operations
+//
+//-------------------
+
+	mpClient->Frame(time);
+};

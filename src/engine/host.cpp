@@ -432,58 +432,6 @@ void SV_Frame (float time)
 
 #endif
 
-
-/*
-==================
-Host_Frame
-
-Runs all active servers
-==================
-*/
-void _Host_Frame (float time)
-{
-	static double		time1 = 0;
-	static double		time2 = 0;
-	static double		time3 = 0;
-	int			pass1, pass2, pass3;
-
-	if (setjmp (host_abortframe) )
-		return;			// something bad happened, or the server disconnected
-
-// keep the random time dependent
-	rand ();
-	
-// decide the simulation time
-	if (!Host_FilterTime (time))
-		return;			// don't run too fast, or packets will flood out
-
-	NET_Poll();
-
-// if running the server locally, make intentions now
-	if (sv.active)
-		CL_SendCmd ();
-	
-//-------------------
-//
-// server operations
-//
-//-------------------
-
-// check for commands typed to the host
-	Host_GetConsoleCommands ();
-	
-	if (sv.active)
-		SV_Frame (time);
-
-//-------------------
-//
-// client operations
-//
-//-------------------
-
-	CL_Frame(time);
-}
-
 //============================================================================
 
 

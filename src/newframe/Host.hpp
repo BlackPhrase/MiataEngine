@@ -40,4 +40,6 @@ public:
 	void ClientCommands(const char *fmt, ...);
 	
 	void Host_Quit_f();
+private:
+	void _Frame(float time);
 };
