@@ -363,7 +363,13 @@ void _Host_ServerFrame (void)
 		SV_Physics ();
 }
 
-void Host_ServerFrame (void)
+/*
+==================
+SV_Frame
+
+==================
+*/
+void SV_Frame (float time)
 {
 	float	save_host_frametime;
 	float	temp_host_frametime;
@@ -395,7 +401,13 @@ void Host_ServerFrame (void)
 
 #else
 
-void Host_ServerFrame (void)
+/*
+==================
+SV_Frame
+
+==================
+*/
+void SV_Frame (float time)
 {
 // run the world state	
 	pr_global_struct->frametime = host_frametime;
