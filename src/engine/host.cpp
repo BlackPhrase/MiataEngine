@@ -473,7 +473,7 @@ void _Host_Frame (float time)
 	Host_GetConsoleCommands ();
 	
 	if (sv.active)
-		Host_ServerFrame ();
+		SV_Frame (time);
 
 //-------------------
 //

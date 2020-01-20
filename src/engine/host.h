@@ -24,7 +24,7 @@ extern double oldrealtime;
 extern jmp_buf host_abortframe;
 
 void Host_ClearMemory (void);
-void Host_ServerFrame (void);
+void SV_Frame (float time);
 void Host_InitCommands (void);
 void Host_Init (quakeparms_t *parms);
 void Host_Shutdown(void);
