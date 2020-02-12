@@ -29,5 +29,7 @@ public:
 	void SendClientCmd(client_t *host_client, const char *fmt, ...);
 	
 	void BroadcastPrintf(const char *fmt, ...);
-private:
+	
+	void ReconnectAllClients();
+public:
 };

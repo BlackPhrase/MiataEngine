@@ -66,3 +66,31 @@ void CServer::BroadcastPrintf(const char *fmt, ...)
 			MSG_WriteString(&svs.clients[i].message, string);
 		};
 };
+
+/*
+================
+SV_SendReconnect
+
+Tell all the clients that the server is changing levels
+================
+*/
+void CServer::ReconnectAllClients()
+{
+	char data[128]{};
+	sizebuf_t msg;
+
+	msg.data = data;
+	msg.cursize = 0;
+	msg.maxsize = sizeof(data);
+
+	MSG_WriteChar(&msg, svc_stufftext);
+	MSG_WriteString(&msg, "reconnect\n");
+	NET_SendToAll(&msg, 5);
+	
+	if(cls.state != ca_dedicated)
+#ifdef QUAKE2
+		Cbuf_InsertText("reconnect\n");
+#else
+		Cmd_ExecuteString("reconnect\n", src_command);
+#endif
+};
