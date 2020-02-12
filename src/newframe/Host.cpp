@@ -22,9 +22,66 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 #include "Host.hpp"
 
+/*
+====================
+Host_Init
+====================
+*/
 void CHost::Init(quakeparms_t *parms)
 {
-	Host_Init(parms);
+	if(standard_quake)
+		minimum_memory = MINIMUM_MEMORY;
+	else
+		minimum_memory = MINIMUM_MEMORY_LEVELPAK;
+
+	if(COM_CheckParm("-minmemory"))
+		parms->memsize = minimum_memory;
+
+	host_parms = *parms;
+
+	if(parms->memsize < minimum_memory)
+		mpSys->Error("Only %4.1f megs of memory available, can't execute game", parms->memsize / (float)0x100000);
+
+	com_argc = parms->argc;
+	com_argv = parms->argv;
+
+	mpMemory->Init(parms->membase, parms->memsize);
+	mpCbuf->Init();
+	mpCmd->Init();
+	
+	//Host_InitVCR(parms);
+	
+	COM_Init();
+	
+	InitLocal();
+	
+	mpNet->Init();
+	Netchan_Init();
+	
+	W_LoadWadFile("gfx.wad");
+	Key_Init();
+	mpConsole->Init();
+	
+	mpProgs->Init();
+	mpModelCache->Init();
+	
+	mpServer->Init();
+	
+	mpConsole->Printf("Exe: " __TIME__ " " __DATE__ "\n");
+	mpConsole->Printf("%4.1f megabyte heap\n", parms->memsize / (1024 * 1024.0));
+	
+	R_InitTextures(); // needed even for dedicated servers
+	
+	mpClient->Init();
+	
+	mpCbuf->InsertText("exec quake.rc\n");
+
+	Hunk_AllocName(0, "-HOST_HUNKLEVEL-");
+	host_hunklevel = Hunk_LowMark();
+
+	host_initialized = true;
+	
+	mpSys->Printf("========Quake Initialized=========\n");
 };
 
 /*
