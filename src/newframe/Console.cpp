@@ -33,7 +33,7 @@ void CConsole::Printf(const char *fmt, ...)
 
 void CConsole::DPrintf(const char *fmt, ...)
 {
-	Con_DPrintff(fmt);
+	Con_DPrintf(fmt);
 };
 
 void CConsole::SafePrintf(const char *fmt, ...)

@@ -3,25 +3,25 @@
 
 void CWAD::LoadWadFile(const char *filename)
 {
-	WAD_LoadWadFile(filename);
+	W_LoadWadFile(filename);
 };
 
 void CWAD::CleanupName(const char *in, char *out)
 {
-	WAD_CleanupName(in, out);
+	W_CleanupName(in, out);
 };
 
-lumpinfo_t CWAD::GetLumpInfo(const char *name)
+lumpinfo_t *CWAD::GetLumpInfo(const char *name)
 {
-	return WAD_GetLumpInfo(name);
+	return W_GetLumpinfo(name);
 };
 
 void *CWAD::GetLumpName(const char *name)
 {
-	return WAD_GetLumpName(name);
+	return W_GetLumpName(name);
 };
 
 void *CWAD::GetLumpNum(int num)
 {
-	return WAD_GetLumpNum(num);
+	return W_GetLumpNum(num);
 };

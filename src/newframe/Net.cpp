@@ -46,7 +46,7 @@ bool CNet::IsLocalAddress(const netadr_t &adr)
 	return NET_IsLocalAddress(adr);
 };
 
-char *CNet::AdrToString(const netadr_t &a)
+const char *CNet::AdrToString(const netadr_t &a)
 {
 	return NET_AdrToString(a);
 };

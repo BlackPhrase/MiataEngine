@@ -36,6 +36,6 @@ public:
 	
 	bool IsLocalAddress(const netadr_t &adr);
 	
-	char *AdrToString(const netadr_t &a);
+	const char *AdrToString(const netadr_t &a);
 	bool StringToAdr(const char *s, netadr_t *a);
 };

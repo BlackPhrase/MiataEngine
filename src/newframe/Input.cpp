@@ -21,12 +21,9 @@ void CInput::Move(usercmd_t *cmd)
 	IN_Move(cmd);
 };
 
+#ifdef _WIN32
 void CInput::ClearStates()
 {
 	IN_ClearStates();
 };
-
-void CInput::ModeChanged()
-{
-	IN_ModeChanged();
-};
+#endif

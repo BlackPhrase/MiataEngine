@@ -29,22 +29,22 @@ public:
 	void AddCommand(const char *cmd_name, xcommand_t function);
 
 	/// used by the cvar code to check for cvar / command name overlap
-	bool Exists(const char *cmd_name);
+	bool Exists(const char *cmd_name) const;
 
 	/// attempts to match a partial command for automatic command line completion
 	/// returns nullptr if nothing fits
-	char *CompleteCommand(const char *partial);
+	const char *CompleteCommand(const char *partial) const;
 
 	/// The functions that execute commands get their parameters with these
 	/// functions. Cmd_Argv () will return an empty string, not a nullptr
 	/// if arg > argc, so string operations are allways safe
-	int GetArgc();
-	char *GetArgv(int arg);
-	char *GetArgs();
+	int GetArgc() const;
+	const char *GetArgv(int arg) const;
+	const char *GetArgs() const;
 
 	/// Returns the position (1 to argc-1) in the command's argument list
 	/// where the given parameter apears, or 0 if not present
-	int CheckParm(const char *parm);
+	int CheckParm(const char *parm) const;
 
 	/// Takes a null terminated string.
 	/// Does not need to be /n terminated.

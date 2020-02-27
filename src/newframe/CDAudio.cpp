@@ -3,7 +3,7 @@
 
 int CCDAudio::Init()
 {
-	CDAudio_Init();
+	return CDAudio_Init();
 };
 
 void CCDAudio::Shutdown()

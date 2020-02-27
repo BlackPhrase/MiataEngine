@@ -11,32 +11,32 @@ void CCmd::AddCommand(const char *cmd_name, xcommand_t function)
 	Cmd_AddCommand(cmd_name, function);
 };
 
-bool CCmd::Exists(const char *cmd_name)
+bool CCmd::Exists(const char *cmd_name) const
 {
 	return Cmd_Exists(cmd_name);
 };
 
-char *CCmd::CompleteCommand(const char *partial)
+const char *CCmd::CompleteCommand(const char *partial) const
 {
 	return Cmd_CompleteCommand(partial);
 };
 
-int CCmd::GetArgc()
+int CCmd::GetArgc() const
 {
 	return Cmd_Argc();
 };
 
-char *CCmd::GetArgv(int arg)
+const char *CCmd::GetArgv(int arg) const
 {
 	return Cmd_Argv(arg);
 };
 
-char *CCmd::GetArgs()
+const char *CCmd::GetArgs() const
 {
 	return Cmd_Args();
 };
 
-int CCmd::CheckParm(const char *parm)
+int CCmd::CheckParm(const char *parm) const
 {
 	return Cmd_CheckParm(parm);
 };

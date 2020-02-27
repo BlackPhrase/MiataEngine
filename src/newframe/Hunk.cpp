@@ -38,10 +38,10 @@ void CHunk::Check()
 
 int	CHunk::GetHighMark()
 {
-	return Hunk_GetHighMark();
+	return Hunk_HighMark();
 };
 
 int	CHunk::GetLowMark()
 {
-	return Hunk_GetLowMark();
+	return Hunk_LowMark();
 };

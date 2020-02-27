@@ -68,7 +68,7 @@ void CSys::Quit()
 
 double CSys::GetDoubleTime()
 {
-	return Sys_DoubleTime();
+	return Sys_GetDoubleTime();
 };
 
 char *CSys::GetConsoleInput()

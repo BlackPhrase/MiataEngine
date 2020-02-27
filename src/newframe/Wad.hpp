@@ -25,7 +25,7 @@ public:
 	
 	void CleanupName(const char *in, char *out);
 	
-	lumpinfo_t GetLumpInfo(const char *name);
+	lumpinfo_t *GetLumpInfo(const char *name);
 	void *GetLumpName(const char *name);
 	void *GetLumpNum(int num);
 };

@@ -32,14 +32,14 @@ public:
 	void SetValue(const char *var_name, float value);
 
 	/// returns 0 if not defined or non numeric
-	float VariableValue(const char *var_name);
+	float VariableValue(const char *var_name) const;
 
 	/// returns an empty string if not defined
-	char *VariableString(const char *var_name);
+	const char *VariableString(const char *var_name) const;
 
 	/// attempts to match a partial variable name for command line completion
 	/// returns nullptr if nothing fits
-	char *CompleteVariable(const char *partial);
+	const char *CompleteVariable(const char *partial) const;
 
 	/// called by Cmd_ExecuteString when Cmd_Argv(0) doesn't match a known
 	/// command.  Returns true if the command was a variable reference that
@@ -50,5 +50,5 @@ public:
 	/// with the archive flag set to true.
 	void WriteVariables(FILE *f);
 
-	cvar_t *FindVar(const char *var_name);
+	cvar_t *FindVar(const char *var_name) const;
 };

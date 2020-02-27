@@ -31,9 +31,8 @@ public:
 	/// Add additional movement on top of the keyboard move cmd
 	void Move(usercmd_t *cmd);
 
+#ifdef _WIN32
 	/// Restores all button and position states to defaults
 	void ClearStates();
-
-	/// Called whenever screen dimensions change
-	void ModeChanged();
+#endif
 };
