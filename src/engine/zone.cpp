@@ -155,7 +155,7 @@ Z_CheckHeap ();	// DEBUG
 void *Z_TagMalloc (int size, int tag)
 {
 	int		extra;
-	memblock_t	*start, *rover, *new, *base;
+	memblock_t	*start, *rover, *pnew, *base;
 
 	if (!tag)
 		Sys_Error ("Z_TagMalloc: tried to use a 0 tag");
@@ -187,14 +187,14 @@ void *Z_TagMalloc (int size, int tag)
 	extra = base->size - size;
 	if (extra >  MINFRAGMENT)
 	{	// there will be a free fragment after the allocated block
-		new = (memblock_t *) ((byte *)base + size );
-		new->size = extra;
-		new->tag = 0;			// free block
-		new->prev = base;
-		new->id = ZONEID;
-		new->next = base->next;
-		new->next->prev = new;
-		base->next = new;
+		pnew = (memblock_t *) ((byte *)base + size );
+		pnew->size = extra;
+		pnew->tag = 0;			// free block
+		pnew->prev = base;
+		pnew->id = ZONEID;
+		pnew->next = base->next;
+		pnew->next->prev = pnew;
+		base->next = pnew;
 		base->size = size;
 	}
 	
@@ -574,19 +574,19 @@ Cache_Move
 */
 void Cache_Move ( cache_system_t *c)
 {
-	cache_system_t		*new;
+	cache_system_t		*pnew;
 
 // we are clearing up space at the bottom, so only allocate it late
-	new = Cache_TryAlloc (c->size, true);
-	if (new)
+	pnew = Cache_TryAlloc (c->size, true);
+	if (pnew)
 	{
 //		Con_Printf ("cache_move ok\n");
 
-		Q_memcpy ( new+1, c+1, c->size - sizeof(cache_system_t) );
-		new->user = c->user;
-		Q_memcpy (new->name, c->name, sizeof(new->name));
+		Q_memcpy ( pnew+1, c+1, c->size - sizeof(cache_system_t) );
+		pnew->user = c->user;
+		Q_memcpy (pnew->name, c->name, sizeof(pnew->name));
 		Cache_Free (c->user);
-		new->user->data = (void *)(new+1);
+		pnew->user->data = (void *)(pnew+1);
 	}
 	else
 	{
@@ -679,7 +679,7 @@ Size should already include the header and padding
 */
 cache_system_t *Cache_TryAlloc (int size, qboolean nobottom)
 {
-	cache_system_t	*cs, *new;
+	cache_system_t	*cs, *pnew;
 	
 // is the cache completely empty?
 
@@ -688,62 +688,62 @@ cache_system_t *Cache_TryAlloc (int size, qboolean nobottom)
 		if (hunk_size - hunk_high_used - hunk_low_used < size)
 			Sys_Error ("Cache_TryAlloc: %i is greater then free hunk", size);
 
-		new = (cache_system_t *) (hunk_base + hunk_low_used);
-		memset (new, 0, sizeof(*new));
-		new->size = size;
+		pnew = (cache_system_t *) (hunk_base + hunk_low_used);
+		memset (pnew, 0, sizeof(*pnew));
+		pnew->size = size;
 
-		cache_head.prev = cache_head.next = new;
-		new->prev = new->next = &cache_head;
+		cache_head.prev = cache_head.next = pnew;
+		pnew->prev = pnew->next = &cache_head;
 		
-		Cache_MakeLRU (new);
-		return new;
+		Cache_MakeLRU (pnew);
+		return pnew;
 	}
 	
 // search from the bottom up for space
 
-	new = (cache_system_t *) (hunk_base + hunk_low_used);
+	pnew = (cache_system_t *) (hunk_base + hunk_low_used);
 	cs = cache_head.next;
 	
 	do
 	{
 		if (!nobottom || cs != cache_head.next)
 		{
-			if ( (byte *)cs - (byte *)new >= size)
+			if ( (byte *)cs - (byte *)pnew >= size)
 			{	// found space
-				memset (new, 0, sizeof(*new));
-				new->size = size;
+				memset (pnew, 0, sizeof(*pnew));
+				pnew->size = size;
 				
-				new->next = cs;
-				new->prev = cs->prev;
-				cs->prev->next = new;
-				cs->prev = new;
+				pnew->next = cs;
+				pnew->prev = cs->prev;
+				cs->prev->next = pnew;
+				cs->prev = pnew;
 				
-				Cache_MakeLRU (new);
+				Cache_MakeLRU (pnew);
 	
-				return new;
+				return pnew;
 			}
 		}
 
 	// continue looking		
-		new = (cache_system_t *)((byte *)cs + cs->size);
+		pnew = (cache_system_t *)((byte *)cs + cs->size);
 		cs = cs->next;
 
 	} while (cs != &cache_head);
 	
 // try to allocate one at the very end
-	if ( hunk_base + hunk_size - hunk_high_used - (byte *)new >= size)
+	if ( hunk_base + hunk_size - hunk_high_used - (byte *)pnew >= size)
 	{
-		memset (new, 0, sizeof(*new));
-		new->size = size;
+		memset (pnew, 0, sizeof(*pnew));
+		pnew->size = size;
 		
-		new->next = &cache_head;
-		new->prev = cache_head.prev;
-		cache_head.prev->next = new;
-		cache_head.prev = new;
+		pnew->next = &cache_head;
+		pnew->prev = cache_head.prev;
+		cache_head.prev->next = pnew;
+		cache_head.prev = pnew;
 		
-		Cache_MakeLRU (new);
+		Cache_MakeLRU (pnew);
 
-		return new;
+		return pnew;
 	}
 	
 	return NULL;		// couldn't allocate
