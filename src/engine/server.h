@@ -221,6 +221,8 @@ extern	edict_t		*sv_player;
 //===========================================================
 
 void SV_Init (void);
+void SV_Shutdown (char *finalmsg, qboolean reconnect);
+void SV_Frame (int msec);
 
 void SV_StartParticle (vec3_t org, vec3_t dir, int color, int count);
 void SV_StartSound (edict_t *entity, int channel, const char *sample, int volume,
