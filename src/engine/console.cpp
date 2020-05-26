@@ -635,10 +635,10 @@ void Con_NotifyBox (const char *text)
 
 	do
 	{
-		t1 = Sys_DoubleTime ();
+		t1 = Sys_GetDoubleTime ();
 		SCR_UpdateScreen ();
 		Sys_SendKeyEvents ();
-		t2 = Sys_DoubleTime ();
+		t2 = Sys_GetDoubleTime ();
 		realtime += t2-t1;		// make the cursor blink
 	} while (key_count < 0);
 

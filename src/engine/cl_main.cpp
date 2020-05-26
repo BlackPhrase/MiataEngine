@@ -531,7 +531,7 @@ void CL_SendConnectPacket (void)
 	if (cls.state != ca_disconnected)
 		return;
 
-	t1 = Sys_DoubleTime ();
+	t1 = Sys_GetDoubleTime ();
 
 	if (!NET_StringToAdr (cls.servername, &adr))
 	{
@@ -542,7 +542,7 @@ void CL_SendConnectPacket (void)
 
 	if (adr.port == 0)
 		adr.port = BigShort (27500);
-	t2 = Sys_DoubleTime ();
+	t2 = Sys_GetDoubleTime ();
 
 	connect_time = realtime+t2-t1;	// for retransmit requests
 
@@ -577,7 +577,7 @@ void CL_CheckForResend (void)
 	if (connect_time && realtime - connect_time < 5.0)
 		return;
 
-	t1 = Sys_DoubleTime ();
+	t1 = Sys_GetDoubleTime ();
 	if (!NET_StringToAdr (cls.servername, &adr))
 	{
 		Con_Printf ("Bad server address\n");
@@ -587,7 +587,7 @@ void CL_CheckForResend (void)
 
 	if (adr.port == 0)
 		adr.port = BigShort (27500);
-	t2 = Sys_DoubleTime ();
+	t2 = Sys_GetDoubleTime ();
 
 	connect_time = realtime+t2-t1;	// for retransmit requests
 
@@ -1598,12 +1598,12 @@ void CL_Frame(float time)
 
 	// update video
 	if (host_speeds.value)
-		time1 = Sys_DoubleTime ();
+		time1 = Sys_GetDoubleTime ();
 
 	SCR_UpdateScreen ();
 
 	if (host_speeds.value)
-		time2 = Sys_DoubleTime ();
+		time2 = Sys_GetDoubleTime ();
 		
 	// update audio
 	if (cls.signon == SIGNONS)
@@ -1622,7 +1622,7 @@ void CL_Frame(float time)
 	if (host_speeds.value)
 	{
 		pass1 = (time1 - time3)*1000;
-		time3 = Sys_DoubleTime ();
+		time3 = Sys_GetDoubleTime ();
 		pass2 = (time2 - time1)*1000;
 		pass3 = (time3 - time2)*1000;
 		Con_Printf ("%3i tot %3i server %3i gfx %3i snd\n",
