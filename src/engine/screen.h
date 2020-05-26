@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // screen.h
 
+#pragma once
+
 //extern	vrect_t		scr_vrect;		// position of render window // TODO: q2
 
 //extern	char		crosshair_pic[MAX_QPATH]; // TODO: q2

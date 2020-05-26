@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // winquake.h: Win32-specific Quake header file
 
+#pragma once
+
 #ifdef _WIN32 
 #pragma warning( disable : 4229 )  // mgraph gets this
 

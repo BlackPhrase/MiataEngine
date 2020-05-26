@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 // protocol.h -- communications protocols
 
+#pragma once
+
 #define	PROTOCOL_VERSION	15
 
 // if the high bit of the servercmd is set, the low bits are fast update flags:
