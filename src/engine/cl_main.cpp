@@ -1101,10 +1101,10 @@ void CL_ConnectionlessPacket (void)
 	char	*s;
 	int		c;
 
-    MSG_BeginReading ();
+    MSG_BeginReading (net_message);
     MSG_ReadLong (net_message);        // skip the -1
 
-	c = MSG_ReadByte ();
+	c = MSG_ReadByte (net_message);
 	if (!cls.demoplayback)
 		Con_Printf ("%s: ", NET_AdrToString (net_from));
 //	Con_DPrintf ("%s", net_message.data + 5);
@@ -1142,12 +1142,12 @@ void CL_ConnectionlessPacket (void)
 		ShowWindow (mainwindow, SW_RESTORE);
 		SetForegroundWindow (mainwindow);
 #endif
-		s = MSG_ReadString ();
+		s = MSG_ReadString (net_message);
 
 		strncpy(cmdtext, s, sizeof(cmdtext) - 1);
 		cmdtext[sizeof(cmdtext) - 1] = 0;
 
-		s = MSG_ReadString ();
+		s = MSG_ReadString (net_message);
 
 		while (*s && isspace(*s))
 			s++;
@@ -1182,7 +1182,7 @@ void CL_ConnectionlessPacket (void)
 	{
 		Con_Printf ("print\n");
 
-		s = MSG_ReadString ();
+		s = MSG_ReadString (net_message);
 		Con_Print (s);
 		return;
 	}
@@ -1208,7 +1208,7 @@ void CL_ConnectionlessPacket (void)
 	if (c == S2C_CHALLENGE) {
 		Con_Printf ("challenge\n");
 
-		s = MSG_ReadString ();
+		s = MSG_ReadString (net_message);
 		cls.challenge = atoi(s);
 		CL_SendConnectPacket ();
 		return;
