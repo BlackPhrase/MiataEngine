@@ -56,7 +56,7 @@ void Sys_Printf (const char *fmt, ...);
 
 void Sys_Quit (void);
 
-double Sys_DoubleTime (void);
+double Sys_GetDoubleTime (void);
 
 char *Sys_ConsoleInput (void);
 
