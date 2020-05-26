@@ -25,70 +25,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define DEFAULT_SOUND_PACKET_VOLUME 255
 #define DEFAULT_SOUND_PACKET_ATTENUATION 1.0
 
-// !!! if this is changed, it much be changed in asm_i386.h too !!!
-typedef struct
-{
-	int left;
-	int right;
-} portable_samplepair_t;
-
-typedef struct sfx_s
-{
-	char 	name[MAX_QPATH];
-	cache_user_t	cache;
-} sfx_t;
-
-// !!! if this is changed, it much be changed in asm_i386.h too !!!
-typedef struct
-{
-	int 	length;
-	int 	loopstart;
-	int 	speed;
-	int 	width;
-	int 	stereo;
-	byte	data[1];		// variable sized
-} sfxcache_t;
-
-typedef struct
-{
-	qboolean		gamealive;
-	qboolean		soundalive;
-	qboolean		splitbuffer;
-	int				channels;
-	int				samples;				// mono samples in buffer
-	int				submission_chunk;		// don't mix less than this #
-	int				samplepos;				// in mono samples
-	int				samplebits;
-	int				speed;
-	unsigned char	*buffer;
-} dma_t;
-
-// !!! if this is changed, it much be changed in asm_i386.h too !!!
-typedef struct
-{
-	sfx_t	*sfx;			// sfx number
-	int		leftvol;		// 0-255 volume
-	int		rightvol;		// 0-255 volume
-	int		end;			// end time in global paintsamples
-	int 	pos;			// sample position in sfx
-	int		looping;		// where to loop, -1 = no looping
-	int		entnum;			// to allow overriding a specific sound
-	int		entchannel;		//
-	vec3_t	origin;			// origin of sound effect
-	vec_t	dist_mult;		// distance multiplier (attenuation/clipK)
-	int		master_vol;		// 0-255 master volume
-} channel_t;
-
-typedef struct
-{
-	int		rate;
-	int		width;
-	int		channels;
-	int		loopstart;
-	int		samples;
-	int		dataofs;		// chunk starts this many bytes from file start
-} wavinfo_t;
-
 void S_Init (void);
 void S_Startup (void);
 void S_Shutdown (void);
@@ -105,23 +41,9 @@ void S_TouchSound (const char *sample);
 void S_ClearPrecache (void);
 void S_BeginPrecaching (void);
 void S_EndPrecaching (void);
-void S_PaintChannels(int endtime);
 void S_InitPaintChannels (void);
 
-// picks a channel based on priorities, empty slots, number of channels
-channel_t *SND_PickChannel(int entnum, int entchannel);
 
-// spatializes a channel
-void SND_Spatialize(channel_t *ch);
-
-// initializes cycling through a DMA buffer and returns information on it
-qboolean SNDDMA_Init(void);
-
-// gets the current DMA position
-int SNDDMA_GetDMAPos(void);
-
-// shutdown the DMA xfer.
-void SNDDMA_Shutdown(void);
 
 // ====================================================================
 // User-setable variables
@@ -164,12 +86,6 @@ extern qboolean	snd_initialized;
 extern int		snd_blocked;
 
 void S_LocalSound (const char *s);
-sfxcache_t *S_LoadSound (sfx_t *s);
-
-wavinfo_t GetWavinfo (const char *name, byte *wav, int wavlength);
-
-void SND_InitScaletable (void);
-void SNDDMA_Submit(void);
 
 void S_AmbientOff (void);
 void S_AmbientOn (void);

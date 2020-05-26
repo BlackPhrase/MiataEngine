@@ -239,6 +239,7 @@ typedef struct
 #include "net.h"
 #include "protocol.h"
 #include "cmd.h"
+#include "snd_local.h"
 #include "sound.h"
 #include "render.h"
 #include "client.h"
