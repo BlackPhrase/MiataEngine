@@ -15,3 +15,22 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+
+/// @file
+
+#pragma once
+
+class CClientState
+{
+public:
+	void Init();
+	void Shutdown();
+	
+	void Frame(float time);
+	
+	void Disconnect();
+	
+	void NextDemo();
+public:
+	cactive_t state;
+};
