@@ -1,5 +1,5 @@
 /*
-Copyright (C) 1996-1997 Id Software, Inc.
+Copyright (C) 1996-2001 Id Software, Inc.
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -227,6 +227,12 @@ void SV_Frame (int msec);
 void SV_StartParticle (vec3_t org, vec3_t dir, int color, int count);
 void SV_StartSound (edict_t *entity, int channel, const char *sample, int volume,
     float attenuation);
+
+//
+// sv_packetfilter
+//
+qboolean SV_FilterPacket();
+void SV_SendBan();
 
 void SV_DropClient (client_t *client, qboolean crash);
 
