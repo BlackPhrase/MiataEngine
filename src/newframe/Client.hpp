@@ -20,7 +20,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-class CClientState
+class CClient
 {
 public:
 	void Init();

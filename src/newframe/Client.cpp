@@ -20,20 +20,20 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 /// @file
 
 #include "quakedef.h"
-#include "ClientState.hpp"
+#include "Client.hpp"
 
-void CClientState::Init()
+void CClient::Init()
 {
 };
 
-void CClientState::Shutdown()
+void CClient::Shutdown()
 {
 };
 
-void CClientState::Disconnect()
+void CClient::Disconnect()
 {
 };
 
-void CClientState::NextDemo()
+void CClient::NextDemo()
 {
 };
