@@ -15,3 +15,18 @@ See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+
+/// @file
+
+#pragma once
+
+typedef struct sizebuf_s sizebuf_t;
+
+class CClient
+{
+public:
+	sizebuf_t message{};
+	
+	bool active{false};
+	bool spawned{false};
+};
