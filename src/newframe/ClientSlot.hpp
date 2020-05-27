@@ -22,7 +22,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 typedef struct sizebuf_s sizebuf_t;
 
-class CClient
+class CClientSlot
 {
 public:
 	sizebuf_t message{};
