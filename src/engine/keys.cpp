@@ -277,9 +277,9 @@ void Key_Console (int key)
 		if (OpenClipboard(NULL)) {
 			th = GetClipboardData(CF_TEXT);
 			if (th) {
-				clipText = GlobalLock(th);
+				clipText = (char*)GlobalLock(th);
 				if (clipText) {
-					textCopied = malloc(GlobalSize(th)+1);
+					textCopied = (char*)malloc(GlobalSize(th)+1);
 					strcpy(textCopied, clipText);
 	/* Substitutes a NULL for every token */strtok(textCopied, "\n\r\b");
 					i = strlen(textCopied);
@@ -446,7 +446,7 @@ void Key_SetBinding (int keynum, const char *binding)
 			
 // allocate memory for new binding
 	l = Q_strlen (binding);	
-	new = Z_Malloc (l+1);
+	pnew = Z_Malloc<char>(l+1);
 	Q_strcpy (new, binding);
 	new[l] = 0;
 	keybindings[keynum] = new;	

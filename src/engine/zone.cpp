@@ -915,7 +915,7 @@ void Memory_Init (void *buf, int size)
 	int p;
 	int zonesize = DYNAMIC_SIZE;
 
-	hunk_base = buf;
+	hunk_base = reinterpret_cast<byte*>(buf);
 	hunk_size = size;
 	hunk_low_used = 0;
 	hunk_high_used = 0;
@@ -929,7 +929,6 @@ void Memory_Init (void *buf, int size)
 		else
 			Sys_Error ("Memory_Init: you must specify a size in KB after -zone");
 	}
-	mainzone = Hunk_AllocName (zonesize, "zone" );
+	mainzone = Hunk_AllocName<memzone_t>(zonesize, "zone" );
 	Z_ClearZone (mainzone, zonesize);
 }
-

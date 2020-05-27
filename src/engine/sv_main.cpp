@@ -1066,7 +1066,7 @@ void SV_SpawnServer (char *server)
 // allocate server memory
 	sv.max_edicts = MAX_EDICTS;
 	
-	sv.edicts = Hunk_AllocName (sv.max_edicts*pr_edict_size, "edicts");
+	sv.edicts = Hunk_AllocName<edict_t>(sv.max_edicts*pr_edict_size, "edicts");
 
 	sv.datagram.maxsize = sizeof(sv.datagram_buf);
 	sv.datagram.cursize = 0;

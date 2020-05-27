@@ -698,7 +698,7 @@ char *ED_NewString (const char *string)
 	int		i,l;
 	
 	l = strlen(string) + 1;
-	new = Hunk_Alloc (l);
+	pnew = Hunk_Alloc<char>(l);
 	new_p = new;
 
 	for (i=0 ; i< l ; i++)
