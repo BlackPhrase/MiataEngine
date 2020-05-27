@@ -1166,6 +1166,120 @@ void SV_SpawnServer (char *server)
 	Con_DPrintf ("Server spawned.\n");
 }
 
+//============================================================================
+
+/*
+=================
+SV_ReadPackets
+=================
+*/
+void SV_ReadPackets (void)
+{
+	int			i;
+	client_t	*cl;
+	qboolean	good;
+	int			qport;
+
+	good = false;
+	while (NET_GetPacket (NS_SERVER, &net_from, &net_message))
+	{
+		if (SV_FilterPacket ())
+		{
+			SV_SendBan ();	// tell them we aren't listening...
+			continue;
+		}
+
+		// check for connectionless packet (0xffffffff) first
+		if (*(int *)net_message.data == -1)
+		{
+			SV_ConnectionlessPacket ();
+			continue;
+		}
+		
+		// read the qport out of the message so we can fix up
+		// stupid address translating routers
+		MSG_BeginReading (net_message);
+		MSG_ReadLong (net_message);		// sequence number
+		MSG_ReadLong (net_message);		// sequence number
+		qport = MSG_ReadShort (net_message) & 0xffff;
+
+		// check for packets from connected clients
+		for (i=0, cl=svs.clients ; i<svs.maxclients ; i++,cl++)
+		{
+			if (cl->state == cs_free)
+				continue;
+			if (!NET_CompareBaseAdr (net_from, cl->netchan.remote_address))
+				continue;
+			if (cl->netchan.qport != qport)
+				continue;
+			if (cl->netchan.remote_address.port != net_from.port)
+			{
+				Con_DPrintf ("SV_ReadPackets: fixing up a translated port\n");
+				cl->netchan.remote_address.port = net_from.port;
+			}
+			if (Netchan_Process(&cl->netchan, &net_message))
+			{	// this is a valid, sequenced packet, so process it
+				svs.stats.packets++;
+				good = true;
+				cl->send_message = true;	// reply at end of frame
+				if (cl->state != cs_zombie)
+					SV_ExecuteClientMessage (cl);
+			}
+			break;
+		}
+		
+		if (i != MAX_CLIENTS)
+			continue;
+	
+		// packet is not from a known client
+		//	Con_Printf ("%s:sequenced packet without connection\n", NET_AdrToString(net_from));
+	}
+}
+
+/*
+==================
+SV_CheckTimeouts
+
+If a packet has not been received from a client in timeout.value
+seconds, drop the conneciton.
+
+When a client is normally dropped, the client_t goes into a zombie state
+for a few seconds to make sure any final reliable message gets resent
+if necessary
+==================
+*/
+void SV_CheckTimeouts (void)
+{
+	int		i;
+	client_t	*cl;
+	float	droptime;
+	int	nclients;
+	
+	droptime = realtime - sv_timeout.value;
+	nclients = 0;
+
+	for (i=0,cl=svs.clients ; i<svs.maxclients ; i++,cl++)
+	{
+		if (cl->state == cs_connected || cl->state == cs_spawned)
+		{
+			if (!cl->spectator)
+				nclients++;
+			if (cl->netchan.last_received < droptime)
+			{
+				SV_BroadcastPrintf (PRINT_HIGH, "%s timed out\n", cl->name);
+				SV_DropClient (cl, false); // TODO: should this be true?
+				cl->state = cs_free;	// don't bother with zombie state
+			}
+		}
+		if (cl->state == cs_zombie && realtime - cl->connection_started > sv_zombietime.value)
+			cl->state = cs_free;	// can now be reused
+	}
+	if (sv.paused && !nclients)
+	{
+		// nobody left, unpause the server
+		SV_TogglePause("Pause released since no players are left.\n");
+	}
+}
 
 /*
 ==================
