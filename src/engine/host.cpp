@@ -413,18 +413,24 @@ void SV_Frame (float time)
 	pr_global_struct->frametime = host_frametime;
 
 // set the time and clear the general datagram
-	SV_ClearDatagram ();
+	//SV_ClearDatagram ();
+	
+	// check timeouts
+	SV_CheckTimeouts();
 	
 // check for new clients
-	SV_CheckForNewClients ();
+	//SV_CheckForNewClients ();
 
 // read client messages
-	SV_RunClients ();
+	//SV_RunClients ();
 	
 // move things around and think
 // always pause in single player if in console or menus
 	if (!sv.paused && (svs.maxclients > 1 || key_dest == key_game) )
 		SV_Physics ();
+	
+	// get packets
+	SV_ReadPackets();
 
 // send all messages to the clients
 	SV_SendClientMessages ();
