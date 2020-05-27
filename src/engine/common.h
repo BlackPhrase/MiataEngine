@@ -57,6 +57,12 @@ void *SZ_GetSpace (sizebuf_t *buf, int length);
 void SZ_Write (sizebuf_t *buf, const void *data, int length);
 void SZ_Print (sizebuf_t *buf, const char *data);	// strcats onto the sizebuf
 
+template<typename T>
+T *SZ_GetSpace(sizebuf_t *buf, int length)
+{
+	return static_cast<T*>(SZ_GetSpace(buf, length));
+};
+
 //============================================================================
 
 typedef struct link_s
