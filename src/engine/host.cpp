@@ -241,7 +241,7 @@ void Host_ShutdownServer(qboolean crash)
 		CL_Disconnect ();
 
 // flush any pending messages - like the score!!!
-	start = Sys_DoubleTime();
+	start = Sys_GetDoubleTime();
 	do
 	{
 		count = 0;
@@ -261,7 +261,7 @@ void Host_ShutdownServer(qboolean crash)
 				}
 			}
 		}
-		if ((Sys_DoubleTime() - start) > 3.0)
+		if ((Sys_GetDoubleTime() - start) > 3.0)
 			break;
 	}
 	while (count);
