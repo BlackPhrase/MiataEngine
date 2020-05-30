@@ -60,7 +60,7 @@ void Host_Status_f (void)
 	int			minutes;
 	int			hours = 0;
 	int			j;
-	void		(*print) (char *fmt, ...);
+	void		(*print) (const char *fmt, ...);
 	
 	if (cmd_source == src_command)
 	{
@@ -565,7 +565,8 @@ void Host_Loadgame_f (void)
 	FILE	*f;
 	char	mapname[MAX_QPATH];
 	float	time, tfloat;
-	char	str[32768], *start;
+	char	str[32768];
+	const char *start;
 	int		i, r;
 	edict_t	*ent;
 	int		entnum;
@@ -1424,8 +1425,8 @@ Kicks a user off of the server
 */
 void Host_Kick_f (void)
 {
-	char		*who;
-	char		*message = NULL;
+	const char		*who;
+	const char		*message = NULL;
 	client_t	*save;
 	int			i;
 	qboolean	byNumber = false;

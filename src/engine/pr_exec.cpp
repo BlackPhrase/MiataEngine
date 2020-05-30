@@ -681,7 +681,7 @@ char *PR_GetString(int num)
 	return pr_strings + num;
 }
 
-int PR_SetString(const char *s)
+int PR_SetString(char *s)
 {
 	int i;
 

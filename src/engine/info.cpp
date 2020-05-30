@@ -34,7 +34,7 @@ Searches the string for the given
 key and returns the associated value, or an empty string.
 ===============
 */
-const char *Info_ValueForKey (char *s, const char *key)
+char *Info_ValueForKey (char *s, const char *key)
 {
 	char	pkey[512];
 	static	char value[4][512];	// use two buffers so compares

@@ -23,10 +23,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define NUM_SAFE_ARGVS  7
 
-static const char     *largv[MAX_NUM_ARGVS + NUM_SAFE_ARGVS + 1];
-static const char     *argvdummy = " ";
+static char     *largv[MAX_NUM_ARGVS + NUM_SAFE_ARGVS + 1];
+static char     *argvdummy = " ";
 
-static const char     *safeargvs[NUM_SAFE_ARGVS] =
+static char     *safeargvs[NUM_SAFE_ARGVS] =
 	{"-stdvid", "-nolan", "-nosound", "-nocdaudio", "-nojoy", "-nomouse", "-dibonly"};
 
 cvar_t  registered = {"registered","0"};
@@ -1385,7 +1385,7 @@ Copies a file over from the net to the local cache, creating any directories
 needed.  This is for the convenience of developers using ISDN from home.
 ===========
 */
-void COM_CopyFile (const char *netpath, const char *cachepath)
+void COM_CopyFile (const char *netpath, char *cachepath)
 {
 	int             in, out;
 	int             remaining, count;

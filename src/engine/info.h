@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #pragma once
 
-const char *Info_ValueForKey (const char *s, const char *key);
+char *Info_ValueForKey (char *s, const char *key);
 void Info_RemoveKey (char *s, const char *key);
 void Info_RemovePrefixedKeys (char *start, char prefix);
 void Info_SetValueForKey (char *s, const char *key, const char *value, int maxsize);

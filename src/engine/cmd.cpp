@@ -409,8 +409,8 @@ typedef struct cmd_function_s
 
 static	int			cmd_argc;
 static	char		*cmd_argv[MAX_ARGS];
-static	const char		*cmd_null_string = "";
-static	const char		*cmd_args = NULL;
+static	char		*cmd_null_string = "";
+static	char		*cmd_args = NULL;
 
 cmd_source_t	cmd_source;
 
@@ -450,7 +450,7 @@ int		Cmd_Argc (void)
 Cmd_Argv
 ============
 */
-const char	*Cmd_Argv (int arg)
+char	*Cmd_Argv (int arg)
 {
 	if ( (unsigned)arg >= cmd_argc )
 		return cmd_null_string;
@@ -464,7 +464,7 @@ Cmd_Args
 Returns a single string containing argv(1) to argv(argc()-1)
 ============
 */
-const char		*Cmd_Args (void)
+char		*Cmd_Args (void)
 {
 	if (!cmd_args)
 		return "";

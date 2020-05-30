@@ -94,8 +94,8 @@ const char 	*Cmd_CompleteCommand (const char *partial);
 // returns NULL if nothing fits
 
 int		Cmd_Argc (void);
-const char	*Cmd_Argv (int arg);
-const char	*Cmd_Args (void);
+char	*Cmd_Argv (int arg);
+char	*Cmd_Args (void);
 // The functions that execute commands get their parameters with these
 // functions. Cmd_Argv () will return an empty string, not a NULL
 // if arg > argc, so string operations are allways safe.
