@@ -1,0 +1,5 @@
+aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR} SOUND_SOURCES)
+
+target_sources(${PROJECT_NAME}
+	PRIVATE ${SOUND_SOURCES}
+)
