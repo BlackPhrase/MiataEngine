@@ -75,7 +75,7 @@ FindItemByClassname
 
 ===============
 */
-gitem_t	*FindItemByClassname (char *classname)
+gitem_t	*FindItemByClassname (const char *classname)
 {
 	int		i;
 	gitem_t	*it;
@@ -98,7 +98,7 @@ FindItem
 
 ===============
 */
-gitem_t	*FindItem (char *pickup_name)
+gitem_t	*FindItem (const char *pickup_name)
 {
 	int		i;
 	gitem_t	*it;
@@ -1015,7 +1015,7 @@ and for each item in each client's inventory.
 */
 void PrecacheItem (gitem_t *it)
 {
-	char	*s, *start;
+	const char	*s, *start;
 	char	data[MAX_QPATH];
 	int		len;
 	gitem_t	*ammo;
