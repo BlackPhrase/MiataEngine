@@ -26,6 +26,45 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 typedef struct
 {
 
+//#define	MAX_SCOREBOARDNAME	16 // TODO: already defined in quakedef
+typedef struct player_info_s
+{
+	int		userid;
+	char	userinfo[MAX_INFO_STRING];
+
+	// scoreboard information
+	char	name[MAX_SCOREBOARDNAME];
+	float	entertime;
+	int		frags;
+	int		ping;
+	byte	pl;
+
+	// skin information
+	int		topcolor;
+	int		bottomcolor;
+
+	int		_topcolor;
+	int		_bottomcolor;
+
+	int		spectator;
+	byte	translations[VID_GRADES*256];
+	//skin_t	*skin; // TODO
+} player_info_t;
+
+typedef struct
+{
+	// generated on client side
+	usercmd_t	cmd;		// cmd that generated the frame
+	double		senttime;	// time cmd was sent off
+	int			delta_sequence;		// sequence number to delta from, -1 = full update
+
+	// received from server
+	double		receivedtime;	// time message was received, or -1
+	player_state_t	playerstate[MAX_CLIENTS];	// message received that reflects performing
+							// the usercmd
+	packet_entities_t	packet_entities;
+	qboolean	invalid;		// true if the packet_entities delta was invalid
+} frame_t;
 
 typedef struct
 {
