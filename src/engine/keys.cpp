@@ -431,7 +431,7 @@ Key_SetBinding
 */
 void Key_SetBinding (int keynum, const char *binding)
 {
-	char	*new;
+	char	*pnew;
 	int		l;
 			
 	if (keynum == -1)
@@ -447,9 +447,9 @@ void Key_SetBinding (int keynum, const char *binding)
 // allocate memory for new binding
 	l = Q_strlen (binding);	
 	pnew = Z_Malloc<char>(l+1);
-	Q_strcpy (new, binding);
-	new[l] = 0;
-	keybindings[keynum] = new;	
+	Q_strcpy (pnew, binding);
+	pnew[l] = 0;
+	keybindings[keynum] = pnew;	
 }
 
 /*
