@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // vid_null.c -- null video driver to aid porting efforts
 
 #include "quakedef.h"
-#include "d_local.h"
+//#include "d_local.h"
 
 viddef_t	vid;				// global video state
 
@@ -33,6 +33,9 @@ byte	surfcache[256*1024];
 
 unsigned short	d_8to16table[256];
 unsigned	d_8to24table[256];
+
+// TODO: instead of d_local include
+short *d_pzbuffer;
 
 void	VID_SetPalette (unsigned char *palette)
 {
