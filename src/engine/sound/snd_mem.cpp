@@ -39,7 +39,7 @@ void ResampleSfx (sfx_t *sfx, int inrate, int inwidth, byte *data)
 	int		sample, samplefrac, fracstep;
 	sfxcache_t	*sc;
 	
-	sc = Cache_Check (&sfx->cache);
+	sc = Cache_Check<sfxcache_t>(&sfx->cache);
 	if (!sc)
 		return;
 
@@ -105,7 +105,7 @@ sfxcache_t *S_LoadSound (sfx_t *s)
 	byte	stackbuf[1*1024];		// avoid dirtying the cache heap
 
 // see if still in memory
-	sc = Cache_Check (&s->cache);
+	sc = Cache_Check<sfxcache_t>(&s->cache);
 	if (sc)
 		return sc;
 
@@ -136,7 +136,7 @@ sfxcache_t *S_LoadSound (sfx_t *s)
 
 	len = len * info.width * info.channels;
 
-	sc = Cache_Alloc ( &s->cache, len + sizeof(sfxcache_t), s->name);
+	sc = Cache_Alloc<sfxcache_t>( &s->cache, len + sizeof(sfxcache_t), s->name);
 	if (!sc)
 		return NULL;
 	
@@ -212,7 +212,7 @@ void FindNextChunk(const char *name)
 //			Sys_Error ("FindNextChunk: %i length is past the 1 meg sanity limit", iff_chunk_len);
 		data_p -= 8;
 		last_chunk = data_p + 8 + ( (iff_chunk_len + 1) & ~1 );
-		if (!Q_strncmp(data_p, name, 4))
+		if (!Q_strncmp(reinterpret_cast<char*>(data_p), name, 4))
 			return;
 	}
 }
@@ -264,7 +264,7 @@ wavinfo_t GetWavinfo (const char *name, byte *wav, int wavlength)
 
 // find "RIFF" chunk
 	FindChunk("RIFF");
-	if (!(data_p && !Q_strncmp(data_p+8, "WAVE", 4)))
+	if (!(data_p && !Q_strncmp(reinterpret_cast<char*>(data_p)+8, "WAVE", 4)))
 	{
 		Con_Printf("Missing RIFF/WAVE chunks\n");
 		return info;
@@ -305,7 +305,7 @@ wavinfo_t GetWavinfo (const char *name, byte *wav, int wavlength)
 		FindNextChunk ("LIST");
 		if (data_p)
 		{
-			if (!strncmp (data_p + 28, "mark", 4))
+			if (!strncmp (reinterpret_cast<char*>(data_p) + 28, "mark", 4))
 			{	// this is not a proper parse, but it works with cooledit...
 				data_p += 24;
 				i = GetLittleLong ();	// samples in loop
