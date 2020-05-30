@@ -1,5 +1,5 @@
 /*
-Copyright (C) 1996-1997 Id Software, Inc.
+Copyright (C) 1996-2001 Id Software, Inc.
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -74,6 +74,8 @@ void	VID_Init (unsigned char *palette);
 
 void	VID_Shutdown (void);
 // Called at shutdown
+
+void	VID_CheckChanges (void);
 
 //void	VID_Update (vrect_t *rects);
 // flushes the given rectangles from the view buffer to the screen
