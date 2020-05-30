@@ -40,6 +40,12 @@ struct clgame_export_t
 
 	///
 	void (*Frame)();
+	
+	///
+	bool (*ParseServerMessage)(int cmd, sizebuf_t &net_message);
+	
+	///
+	void (*BaseMove)(usercmd_t *cmd);
 };
 
 clgame_export_t *GetClGameAPI(engine_api_t *apEngine);
