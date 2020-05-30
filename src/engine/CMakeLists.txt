@@ -12,6 +12,8 @@ target_sources(${PROJECT_NAME}
 	PRIVATE ${PROJECT_SOURCES_PLATFORM}
 )
 
+add_subdirectory(sound)
+
 set_target_properties(${PROJECT_NAME} PROPERTIES
 	OUTPUT_NAME "engine"
 )
