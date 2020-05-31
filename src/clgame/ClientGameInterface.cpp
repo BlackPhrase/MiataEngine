@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2017-2019 BlackPhrase
+Copyright (C) 2017-2020 BlackPhrase
 
 This program is free software: you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -42,6 +42,16 @@ void ClientGame_Frame()
 	gpClientGame->Frame();
 };
 
+void ClientGame_ParseServerMessage(int cmd, sizebuf_t &net_message)
+{
+	gpClientGame->ParseServerMessage(cmd, net_message);
+};
+
+void ClientGame_BaseMove(usercmd_t *cmd)
+{
+	gpClientGame->BaseMove(cmd);
+};
+
 clgame_export_t gClGame =
 {
 	CLGAME_API_VERSION,
@@ -49,7 +59,11 @@ clgame_export_t gClGame =
 	ClientGame_Init,
 	ClientGame_Shutdown,
 	
-	ClientGame_Frame
+	ClientGame_Frame,
+	
+	ClientGame_ParseServerMessage,
+	
+	ClientGame_BaseMove,
 };
 
 }; // namespace
