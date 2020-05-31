@@ -20,3 +20,11 @@ void CClientGame::Shutdown()
 void CClientGame::Frame()
 {
 };
+
+void CClientGame::ParseServerMessage(int cmd, sizebuf_t &net_message)
+{
+};
+
+void CClientGame::BaseMove(usercmd_t *cmd)
+{
+};

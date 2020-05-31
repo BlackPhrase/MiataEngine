@@ -90,6 +90,10 @@ public:
 	void Shutdown();
 	
 	void Frame();
+	
+	void ParseServerMessage(int cmd, sizebuf_t &net_message);
+	
+	void BaseMove(usercmd_t *cmd);
 private:
 	IEngineInterface *mpEngine{nullptr};
 };
