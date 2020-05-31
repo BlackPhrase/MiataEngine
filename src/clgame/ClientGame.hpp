@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "clgame/IClientGame.hpp"
 
 /*
 void CL_ParticleSteamEffect2(cl_sustain_t *self);
@@ -81,16 +80,16 @@ void CL_KeyInventory(int key);
 void CL_DrawInventory(void);
 */
 
-class CClientGame final : public IClientGame
+class CClientGame
 {
 public:
 	CClientGame(IEngineInterface *apEngine);
 	~CClientGame();
 	
-	bool Init() override;
-	void Shutdown() override;
+	bool Init();
+	void Shutdown();
 	
-	void Frame() override;
+	void Frame();
 private:
 	IEngineInterface *mpEngine{nullptr};
 };
