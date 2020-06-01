@@ -30,7 +30,7 @@ typedef byte pixel_t;
 typedef struct vrect_s
 {
 	int				x,y,width,height;
-	struct vrect_s	*pnext;
+	struct vrect_s	*pnext; // TODO: not present in q2
 } vrect_t;
 
 typedef struct
@@ -55,7 +55,7 @@ typedef struct
 									//  NULL
 } viddef_t;
 
-extern	viddef_t	vid;				// global video state
+extern	viddef_t	vid;				// global video state // TODO: viddef in q2
 extern	unsigned short	d_8to16table[256];
 extern	unsigned	d_8to24table[256];
 extern void (*vid_menudrawfn)(void);
@@ -67,7 +67,8 @@ extern void (*vid_menukeyfn)(int key);
 //void	VID_ShiftPalette (unsigned char *palette);
 // called for bonus and pain flashes, and for underwater color changes
 
-void	VID_Init (unsigned char *palette);
+// Video module initialisation etc
+void	VID_Init (/*unsigned char *palette*/);
 // Called at startup to set up translation tables, takes 256 8 bit RGB values
 // the palette data will go away after the call, so it must be copied off if
 // the video driver will need it again
@@ -94,3 +95,6 @@ void	VID_CheckChanges (void);
 //bool VID_Is8bit(void);
 #endif
 
+//void VID_MenuInit(void); // TODO: q2
+//void VID_MenuDraw(void); // TODO: q2
+//const char *VID_MenuKey(int key); // TODO: q2
