@@ -78,6 +78,9 @@ void IN_SetQuakeMouseState (void);
 void IN_MouseEvent (int mstate);
 void IN_Accumulate();
 
+void IN_ClearStates (void);
+// restores all button and position states to defaults
+
 extern qboolean	winsock_lib_initialized;
 
 extern cvar_t		_windowed_mouse;
