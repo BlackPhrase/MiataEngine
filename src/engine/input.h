@@ -34,5 +34,3 @@ void IN_Move (usercmd_t *cmd);
 void IN_ClearStates (void);
 // restores all button and position states to defaults
 
-void IN_ModeChanged (void);
-// called whenever screen dimensions change
