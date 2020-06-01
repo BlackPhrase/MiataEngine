@@ -358,6 +358,7 @@ void Sys_LowFPPrecision (void)
 }
 #endif
 
+/*
 int main (int c, char **v)
 {
 
@@ -432,7 +433,7 @@ int main (int c, char **v)
     }
 
 }
-
+*/
 
 /*
 ================

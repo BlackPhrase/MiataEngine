@@ -265,6 +265,7 @@ main
 
 ==================
 */
+/*
 char	*newargv[256];
 
 int main (int argc, char **argv)
@@ -305,7 +306,7 @@ int main (int argc, char **argv)
 
 	oldtime = Sys_FloatTime ();
 
-    /* main window message loop */
+    // main window message loop
 	while (1)
 	{
 		time = Sys_FloatTime();
@@ -319,7 +320,7 @@ int main (int argc, char **argv)
 		oldtime = time;
 	}
 
-    /* return success of application */
+    // return success of application
     return TRUE;
 }
-
+*/

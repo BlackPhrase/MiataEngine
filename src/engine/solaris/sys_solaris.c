@@ -256,6 +256,7 @@ char *Sys_GetClipboardData(void)
 	return NULL;
 }
 
+/*
 int main (int argc, char **argv)
 {
 	int 	time, oldtime, newtime;
@@ -303,6 +304,7 @@ int main (int argc, char **argv)
     }
 
 }
+*/
 
 void Sys_CopyProtect(void)
 {

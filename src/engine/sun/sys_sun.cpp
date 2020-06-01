@@ -313,6 +313,7 @@ void Sys_Init(void)
 
 //=============================================================================
 
+/*
 int main (int argc, char **argv)
 {
     static quakeparms_t    parms;
@@ -346,7 +347,7 @@ int main (int argc, char **argv)
     }
 	return 0;
 }
-
+*/
 
 
 

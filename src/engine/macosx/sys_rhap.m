@@ -307,6 +307,7 @@ char *Sys_ConsoleInput (void)
 main
 =============
 */
+/*
 void main (int argc, char **argv)
 {
     int		frame;
@@ -335,4 +336,4 @@ void main (int argc, char **argv)
         [pool release];
     }
 }
-
+*/
