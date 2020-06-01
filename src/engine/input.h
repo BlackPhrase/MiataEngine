@@ -1,5 +1,5 @@
 /*
-Copyright (C) 1996-1997 Id Software, Inc.
+Copyright (C) 1996-2001 Id Software, Inc.
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -28,9 +28,12 @@ void IN_Shutdown (void);
 void IN_Commands (void);
 // oportunity for devices to stick commands on the script buffer
 
+//void IN_Frame (void); // TODO: q2
+
 void IN_Move (usercmd_t *cmd);
 // add additional movement on top of the keyboard move cmd
 
 void IN_ClearStates (void);
 // restores all button and position states to defaults
 
+//void IN_Activate (qboolean active); // TODO: q2
