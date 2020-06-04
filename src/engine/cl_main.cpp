@@ -1395,7 +1395,7 @@ void CL_Init (void)
 #ifndef _WIN32 // on non win32, mouse comes before video for security reasons
 	IN_Init ();
 #endif
-	VID_Init (host_basepal);
+	VID_Init (/*host_basepal*/);
 
 	Draw_Init ();
 	SCR_Init ();
