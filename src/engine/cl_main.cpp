@@ -1432,7 +1432,6 @@ void CL_Init (void)
 	sprintf (st, "%4.2f-%04d", VERSION, build_number());
 	Info_SetValueForStarKey (cls.userinfo, "*ver", st, MAX_INFO_STRING);
 
-	CL_InitInput ();
 	CL_InitTEnts ();
 	CL_InitPrediction ();
 	CL_InitCam ();
