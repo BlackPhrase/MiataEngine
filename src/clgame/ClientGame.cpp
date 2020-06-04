@@ -22,9 +22,17 @@ void CClientGame::Frame()
 };
 
 void CClientGame::ParseServerMessage(int cmd, sizebuf_t &net_message)
+void CClientGame::CreateMove(usercmd_t &cmd)
+{
+	// get basic movement from keyboard
+	CL_BaseMove(&cmd);
+	
+	// allow mice or other external controllers to add to the move
+	IN_Move(&cmd);
+};
+
 {
 };
 
-void CClientGame::BaseMove(usercmd_t *cmd)
 {
 };

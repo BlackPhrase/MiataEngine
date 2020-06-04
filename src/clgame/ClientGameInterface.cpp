@@ -47,9 +47,9 @@ void ClientGame_ParseServerMessage(int cmd, sizebuf_t &net_message)
 	gpClientGame->ParseServerMessage(cmd, net_message);
 };
 
-void ClientGame_BaseMove(usercmd_t *cmd)
+void ClientGame_CreateMove(usercmd_t &cmd)
 {
-	gpClientGame->BaseMove(cmd);
+	gpClientGame->CreateMove(cmd);
 };
 
 clgame_export_t gClGame =
@@ -63,7 +63,7 @@ clgame_export_t gClGame =
 	
 	ClientGame_ParseServerMessage,
 	
-	ClientGame_BaseMove,
+	ClientGame_CreateMove,
 };
 
 }; // namespace
