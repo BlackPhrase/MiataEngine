@@ -22,18 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "quakedef.h"
 
 /*
-================
-CL_BaseMove
-
-Send the intended movement message to the server
-================
-*/
-void CL_BaseMove (usercmd_t *cmd)
-{
-	gpClGame->BaseMove(cmd);
-}
-
-/*
 ==============
 CL_SendMove
 ==============
