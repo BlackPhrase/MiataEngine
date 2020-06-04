@@ -57,7 +57,7 @@ interface from being ambiguous.
 typedef struct cvar_s
 {
 	const char	*name;
-	const char	*string;
+	char	*string;
 	qboolean archive;		// set to true to cause it to be saved to vars.rc
 	qboolean server;		// notifies players when changed
 	float	value;
