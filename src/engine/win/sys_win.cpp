@@ -379,11 +379,11 @@ void Sys_Error (const char *error, ...)
 		WriteFile (houtput, text4, strlen (text4), &dummy, NULL);
 
 
-		starttime = Sys_FloatTime ();
+		starttime = Sys_GetDoubleTime ();
 		sc_return_on_enter = true;	// so Enter will get us out of here
 
 		while (!Sys_ConsoleInput () &&
-				((Sys_FloatTime () - starttime) < CONSOLE_ERROR_TIMEOUT))
+				((Sys_GetDoubleTime () - starttime) < CONSOLE_ERROR_TIMEOUT))
 		{
 		}
 	}
@@ -462,7 +462,7 @@ void Sys_Quit (void)
 Sys_FloatTime
 ================
 */
-double Sys_FloatTime (void)
+double Sys_GetDoubleTime (void)
 {
 	static int			sametimecount;
 	static unsigned int	oldtime;
@@ -533,7 +533,7 @@ void Sys_InitFloatTime (void)
 {
 	int		j;
 
-	Sys_FloatTime ();
+	Sys_GetDoubleTime ();
 
 	j = COM_CheckParm("-starttime");
 
