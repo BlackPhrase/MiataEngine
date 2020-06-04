@@ -21,9 +21,13 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+#include "commontypes.hpp"
 #include "engine/engine_api.h"
 
 #define	CLGAME_API_VERSION 1
+
+using sizebuf_t = struct sizebuf_s;
+using usercmd_t = struct usercmd_s;
 
 //
 // functions exported by the client game subsystem
