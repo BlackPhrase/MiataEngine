@@ -509,16 +509,7 @@ typedef struct
 #define	BUTTON_ANY			128			// any key whatsoever
 
 
-// usercmd_t is sent to the server each client frame
-typedef struct usercmd_s
-{
-	byte	msec;
-	byte	buttons;
-	short	angles[3];
-	short	forwardmove, sidemove, upmove;
-	byte	impulse;		// remove?
-	byte	lightlevel;		// light level the player is standing on
-} usercmd_t;
+#include "game/q2/usercmd.h"
 
 
 #define	MAXTOUCH	32
