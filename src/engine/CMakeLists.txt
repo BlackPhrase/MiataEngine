@@ -17,3 +17,7 @@ add_subdirectory(sound)
 set_target_properties(${PROJECT_NAME} PROPERTIES
 	OUTPUT_NAME "engine"
 )
+
+if(WIN32)
+	target_link_libraries(${PROJECT_NAME} winmm)
+endif()
