@@ -71,7 +71,7 @@ cvar_t	sv_filterban = {"sv_filterban", "1"};
 StringToFilter
 =================
 */
-qboolean StringToFilter (char *s, ipfilter_t *f)
+qboolean StringToFilter (const char *s, ipfilter_t *f)
 {
 	char	num[128];
 	int		i, j;

@@ -56,7 +56,7 @@ void Sys_DebugNumber(int y, int val)
 }
 
 /*
-void Sys_Printf (char *fmt, ...)
+void Sys_Printf (const char *fmt, ...)
 {
 	va_list		argptr;
 	char		text[1024];
@@ -69,7 +69,7 @@ void Sys_Printf (char *fmt, ...)
 	Con_Print (text);
 }
 
-void Sys_Printf (char *fmt, ...)
+void Sys_Printf (const char *fmt, ...)
 {
 
     va_list     argptr;

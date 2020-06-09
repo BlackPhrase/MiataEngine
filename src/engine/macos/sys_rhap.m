@@ -162,7 +162,7 @@ int Sys_Milliseconds (void)
 Sys_Error
 ================
 */
-void Sys_Error (char *error, ...)
+void Sys_Error (const char *error, ...)
 {
 	va_list		argptr;
 	char		string[1024];
@@ -190,7 +190,7 @@ void Sys_Error (char *error, ...)
 Sys_Printf
 ================
 */
-void	Sys_ConsoleOutput (char *text)
+void	Sys_ConsoleOutput (const char *text)
 {
 	char		*t_p;
 	int			l, r;
