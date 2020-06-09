@@ -64,7 +64,7 @@ typedef struct
 ipfilter_t	ipfilters[MAX_IPFILTERS];
 int			numipfilters;
 
-cvar_t	filterban = {"filterban", "1"};
+cvar_t	sv_filterban = {"sv_filterban", "1"};
 
 /*
 =================
@@ -245,7 +245,7 @@ qboolean SV_FilterPacket (void)
 
 	for (i=0 ; i<numipfilters ; i++)
 		if ( (in & ipfilters[i].mask) == ipfilters[i].compare)
-			return filterban.value;
+			return sv_filterban.value;
 
-	return !filterban.value;
+	return !sv_filterban.value;
 }
