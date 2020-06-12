@@ -37,17 +37,11 @@ cvar_t	sv_mintic = {"sv_mintic","0.03"};	// bound the size of the
 cvar_t	sv_maxtic = {"sv_maxtic","0.1"};	// physics time tic 
 
 cvar_t	developer = {"developer","0"};		// show extra messages
-cvar_t	rcon_password = {"rcon_password", ""};	// password for remote server commands
-cvar_t	password = {"password", ""};	// password for entering the game
-cvar_t	spectator_password = {"spectator_password", ""};	// password for entering as a sepctator
-
 cvar_t	allow_download = {"allow_download", "1"};
 cvar_t	allow_download_skins = {"allow_download_skins", "1"};
 cvar_t	allow_download_models = {"allow_download_models", "1"};
 cvar_t	allow_download_sounds = {"allow_download_sounds", "1"};
 cvar_t	allow_download_maps = {"allow_download_maps", "1"};
-
-cvar_t sv_highchars = {"sv_highchars", "1"};
 
 cvar_t sv_phs = {"sv_phs", "1"};
 
@@ -958,10 +952,6 @@ void SV_InitLocal (void)
 
 	SV_InitOperatorCommands	();
 	SV_UserInit ();
-	
-	Cvar_RegisterVariable (&rcon_password);
-	Cvar_RegisterVariable (&password);
-	Cvar_RegisterVariable (&spectator_password);
 
 	Cvar_RegisterVariable (&sv_mintic);
 	Cvar_RegisterVariable (&sv_maxtic);

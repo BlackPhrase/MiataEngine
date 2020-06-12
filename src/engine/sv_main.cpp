@@ -27,6 +27,11 @@ server_static_t	svs;
 cvar_t	sv_timeout = {"sv_timeout","65"};		// seconds without any message
 cvar_t	sv_zombietime = {"sv_zombietime", "2"};	// seconds to sink messages after disconnect
 
+cvar_t	sv_rcon_password = {"sv_rcon_password", ""};	// password for remote server commands
+cvar_t	sv_password = {"sv_password", ""};	// password for entering the game
+cvar_t	sv_spectator_password = {"sv_spectator_password", ""};	// password for entering as a sepctator
+
+cvar_t sv_highchars = {"sv_highchars", "1"};
 
 char	localmodels[MAX_MODELS][5];			// inline model names for precache
 
@@ -51,6 +56,10 @@ void SV_Init (void)
 	extern	cvar_t	sv_idealpitchscale;
 	extern	cvar_t	sv_aim;
 
+	Cvar_RegisterVariable (&sv_rcon_password);
+	Cvar_RegisterVariable (&sv_password);
+	Cvar_RegisterVariable (&sv_spectator_password);
+	
 	Cvar_RegisterVariable (&sv_maxvelocity);
 	Cvar_RegisterVariable (&sv_gravity);
 	Cvar_RegisterVariable (&sv_friction);
