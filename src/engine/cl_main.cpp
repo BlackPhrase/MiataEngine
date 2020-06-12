@@ -1339,11 +1339,8 @@ void CL_SendCmd (void)
 
 	if (cls.signon == SIGNONS)
 	{
-	// get basic movement from keyboard
-		CL_BaseMove (&cmd);
-	
-	// allow mice or other external controllers to add to the move
-		IN_Move (&cmd);
+		// Allow the client game module to generate a movement user cmd that'll be sent over to the server
+		gpClGame->CreateMove(cmd);
 	
 	// send the unreliable message
 		CL_SendMove (&cmd);
