@@ -24,8 +24,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 server_t		sv;
 server_static_t	svs;
 
-cvar_t	sv_timeout = {"timeout","65"};		// seconds without any message
-cvar_t	sv_zombietime = {"zombietime", "2"};	// seconds to sink messages after disconnect
+cvar_t	sv_timeout = {"sv_timeout","65"};		// seconds without any message
+cvar_t	sv_zombietime = {"sv_zombietime", "2"};	// seconds to sink messages after disconnect
+
 
 char	localmodels[MAX_MODELS][5];			// inline model names for precache
 
