@@ -216,6 +216,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //==============================================
 
 
+// svc_print messages have an id, so messages can be filtered
+#define	PRINT_LOW			0
+#define	PRINT_MEDIUM		1
+#define	PRINT_HIGH			2
+#define	PRINT_CHAT			3	// also go to chat buffer
+
 //
 // temp entity events
 //
