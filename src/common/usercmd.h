@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 typedef struct usercmd_s
 {
 	byte	msec;
-	vec3_t	viewangles; // TODO: angles in qw
+	vec3_t	angles; // TODO: viewangles in NQ
 
 // intended velocities
 	float	forwardmove;
