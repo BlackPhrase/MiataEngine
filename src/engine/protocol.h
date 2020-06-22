@@ -215,6 +215,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 //==============================================
 
+#define DEFAULT_SOUND_PACKET_VOLUME 255
+#define DEFAULT_SOUND_PACKET_ATTENUATION 1.0
 
 // svc_print messages have an id, so messages can be filtered
 #define	PRINT_LOW			0
