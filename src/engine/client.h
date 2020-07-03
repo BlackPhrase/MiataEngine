@@ -159,7 +159,9 @@ typedef struct
 typedef enum {
 ca_dedicated, 		// a dedicated server with no ability to start a client
 ca_disconnected, 	// full screen console with no connection
-ca_connected		// valid netcon, talking to a server
+ca_connected,		// valid netcon, talking to a server
+ca_onserver,		// processing data lists, donwloading, etc
+ca_active			// everything is in, so frames can be rendered
 } cactive_t;
 
 //
@@ -205,6 +207,10 @@ extern client_static_t	cls;
 //
 typedef struct
 {
+	int			servercount;	// server identification for prespawns
+
+	char		serverinfo[MAX_SERVERINFO_STRING];
+	
 	int			movemessages;	// since connecting to this server
 								// throw out the first couple, so the player
 								// doesn't accidentally do something the 
@@ -279,6 +285,9 @@ typedef struct
 	int			num_statics;	// held in cl_staticentities array
 	entity_t	viewent;			// the gun model
 
+	// all player information
+	player_info_t	players[MAX_CLIENTS];
+	
 	int			cdtrack, looptrack;	// cd audio
 
 // frag scoreboard

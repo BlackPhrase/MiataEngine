@@ -78,8 +78,7 @@ typedef enum {
 ca_disconnected, 	// full screen console with no connection
 ca_demostart,		// starting up a demo
 ca_connected,		// netchan_t established, waiting for svc_serverdata
-ca_onserver,		// processing data lists, donwloading, etc
-ca_active			// everything is in, so frames can be rendered
+
 } cactive_t;
 
 
@@ -103,9 +102,7 @@ extern client_static_t	cls;
 //
 typedef struct
 {
-	int			servercount;	// server identification for prespawns
-
-	char		serverinfo[MAX_SERVERINFO_STRING];
+	
 
 	int			parsecount;		// server message counter
 	int			validsequence;	// this is the sequence number of the last good
@@ -182,8 +179,7 @@ typedef struct
 
 	entity_t	viewent;		// weapon model
 
-// all player information
-	player_info_t	players[MAX_CLIENTS];
+
 } client_state_t;
 
 
