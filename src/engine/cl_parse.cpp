@@ -701,10 +701,10 @@ void CL_ParseStaticSound (void)
 	int			i;
 	
 	for (i=0 ; i<3 ; i++)
-		org[i] = MSG_ReadCoord ();
-	sound_num = MSG_ReadByte ();
-	vol = MSG_ReadByte ();
-	atten = MSG_ReadByte ();
+		org[i] = MSG_ReadCoord (net_message);
+	sound_num = MSG_ReadByte (net_message);
+	vol = MSG_ReadByte (net_message);
+	atten = MSG_ReadByte (net_message);
 	
 	S_StaticSound (cl.sound_precache[sound_num], org, vol, atten);
 }
@@ -734,14 +734,14 @@ void CL_ParseServerMessage (void)
 //
 // parse the message
 //
-	MSG_BeginReading ();
+	MSG_BeginReading (net_message);
 	
 	while (1)
 	{
 		if (msg_badread)
 			Host_Error ("CL_ParseServerMessage: Bad server message");
 
-		cmd = MSG_ReadByte ();
+		cmd = MSG_ReadByte (net_message);
 
 		if (cmd == -1)
 		{
