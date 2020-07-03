@@ -763,7 +763,9 @@ void CL_ParseServerMessage (void)
 		switch (cmd)
 		{
 		default:
-			Host_Error ("CL_ParseServerMessage: Illegible server message\n");
+			// Let the client game handle this message first
+			if(!gClGame.ParseServerMessage(cmd, net_message))
+				Host_Error ("CL_ParseServerMessage: Illegible server message\n");
 			break;
 			
 		case svc_nop:
