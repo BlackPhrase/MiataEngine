@@ -3,7 +3,6 @@ include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/scitech/include
 )
 
-add_subdirectory(ctf)
 add_subdirectory(game)
 
 #add_subdirectory(ref_gl)
