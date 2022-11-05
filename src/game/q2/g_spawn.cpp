@@ -1,5 +1,6 @@
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
+Copyright (C) 2018, 2022 BlackPhrase
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 typedef struct
 {
-	char	*name;
+	const char	*name;
 	void	(*spawn)(edict_t *ent);
 } spawn_t;
 
@@ -316,7 +317,7 @@ void ED_CallSpawn (edict_t *ent)
 ED_NewString
 =============
 */
-char *ED_NewString (char *string)
+char *ED_NewString (const char *string)
 {
 	char	*newb, *new_p;
 	int		i,l;
@@ -355,7 +356,7 @@ Takes a key/value pair and sets the binary values
 in an edict
 ===============
 */
-void ED_ParseField (char *key, char *value, edict_t *ent)
+void ED_ParseField (const char *key, const char *value, edict_t *ent)
 {
 	field_t	*f;
 	byte	*b;
@@ -415,7 +416,7 @@ char *ED_ParseEdict (char *data, edict_t *ent)
 {
 	qboolean	init;
 	char		keyname[256];
-	char		*com_token;
+	const char		*com_token;
 
 	init = false;
 	memset (&st, 0, sizeof(st));
@@ -521,7 +522,7 @@ void SpawnEntities (char *mapname, char *entities, char *spawnpoint)
 {
 	edict_t		*ent;
 	int			inhibit;
-	char		*com_token;
+	const char		*com_token;
 	int			i;
 	float		skill_level;
 
@@ -645,7 +646,7 @@ void SpawnEntities (char *mapname, char *entities, char *spawnpoint)
 
 #endif
 
-char *single_statusbar = 
+const char *single_statusbar = 
 "yb	-24 "
 
 // health
@@ -703,7 +704,7 @@ char *single_statusbar =
 "endif "
 ;
 
-char *dm_statusbar =
+const char *dm_statusbar =
 "yb	-24 "
 
 // health

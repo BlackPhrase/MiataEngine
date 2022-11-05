@@ -1,5 +1,6 @@
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
+Copyright (C) 2019-2020, 2022 BlackPhrase
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -151,7 +152,7 @@ void Sys_Error (char *error, ...)
 	gi.error (ERR_FATAL, "%s", text);
 }
 
-void Com_Printf (char *msg, ...)
+void Com_Printf (const char *msg, ...)
 {
 	va_list		argptr;
 	char		text[1024];
