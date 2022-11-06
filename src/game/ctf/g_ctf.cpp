@@ -1,5 +1,6 @@
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
+Copyright (C) 2018, 2022 BlackPhrase
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -72,7 +73,7 @@ cvar_t *matchstarttime;
 cvar_t *admin_password;
 cvar_t *warp_list;
 
-char *ctf_statusbar =
+const char *ctf_statusbar =
 "yb	-24 "
 
 // health
@@ -193,7 +194,7 @@ char *ctf_statusbar =
 "endif "
 ;
 
-static char *tnames[] = {
+static const char *tnames[] = {
 	"item_tech1", "item_tech2", "item_tech3", "item_tech4",
 	NULL
 };
@@ -324,7 +325,7 @@ void CTFInit(void)
 
 /*--------------------------------------------------------------------------*/
 
-char *CTFTeamName(int team)
+const char *CTFTeamName(int team)
 {
 	switch (team) {
 	case CTF_TEAM1:
@@ -335,7 +336,7 @@ char *CTFTeamName(int team)
 	return "UKNOWN";
 }
 
-char *CTFOtherTeamName(int team)
+const char *CTFOtherTeamName(int team)
 {
 	switch (team) {
 	case CTF_TEAM1:
@@ -363,7 +364,7 @@ edict_t *SelectRandomDeathmatchSpawnPoint (void);
 edict_t *SelectFarthestDeathmatchSpawnPoint (void);
 float	PlayersRangeFromSpot (edict_t *spot);
 
-void CTFAssignSkin(edict_t *ent, char *s)
+void CTFAssignSkin(edict_t *ent, const char *s)
 {
 	int playernum = ent-g_edicts-1;
 	char *p;
@@ -444,7 +445,7 @@ edict_t *SelectCTFSpawnPoint (edict_t *ent)
 	int		count = 0;
 	int		selection;
 	float	range, range1, range2;
-	char	*cname;
+	const char	*cname;
 
 	if (ent->client->resp.ctf_state)
 		if ( (int)(dmflags->value) & DF_SPAWN_FARTHEST)
@@ -523,7 +524,7 @@ void CTFFragBonuses(edict_t *targ, edict_t *inflictor, edict_t *attacker)
 	gitem_t *flag_item, *enemy_flag_item;
 	int otherteam;
 	edict_t *flag, *carrier;
-	char *c;
+	const char *c;
 	vec3_t v1, v2;
 
 	if (targ->client && attacker->client) {
@@ -681,7 +682,7 @@ void CTFCheckHurtCarrier(edict_t *targ, edict_t *attacker)
 
 void CTFResetFlag(int ctf_team)
 {
-	char *c;
+	const char *c;
 	edict_t *ent;
 
 	switch (ctf_team) {
@@ -1517,7 +1518,8 @@ void CTFWeapon_Grapple (edict_t *ent)
 
 void CTFTeam_f (edict_t *ent)
 {
-	char *t, *s;
+	char *t;
+	const char *s;
 	int desired_team;
 
 	t = gi.args();
@@ -2139,7 +2141,7 @@ SAY_TEAM
 // This array is in 'importance order', it indicates what items are
 // more important when reporting their names.
 struct {
-	char *classname;
+	const char *classname;
 	int priority;
 } loc_names[] = 
 {
@@ -3001,7 +3003,7 @@ pmenu_t nochasemenu[] = {
 
 void CTFJoinTeam(edict_t *ent, int desired_team)
 {
-	char *s;
+	const char *s;
 
 	PMenu_Close(ent);
 

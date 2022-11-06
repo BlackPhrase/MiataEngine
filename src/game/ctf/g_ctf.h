@@ -1,5 +1,6 @@
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
+Copyright (C) 2018, 2022 BlackPhrase
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -109,9 +110,9 @@ void CTFSpawn(void);
 void SP_info_player_team1(edict_t *self);
 void SP_info_player_team2(edict_t *self);
 
-char *CTFTeamName(int team);
-char *CTFOtherTeamName(int team);
-void CTFAssignSkin(edict_t *ent, char *s);
+const char *CTFTeamName(int team);
+const char *CTFOtherTeamName(int team);
+void CTFAssignSkin(edict_t *ent, const char *s);
 void CTFAssignTeam(gclient_t *who);
 edict_t *SelectCTFSpawnPoint (edict_t *ent);
 qboolean CTFPickup_Flag(edict_t *ent, edict_t *other);
@@ -173,7 +174,7 @@ qboolean CTFCheckRules(void);
 void SP_misc_ctf_banner (edict_t *ent);
 void SP_misc_ctf_small_banner (edict_t *ent);
 
-extern char *ctf_statusbar;
+extern const char *ctf_statusbar;
 
 void UpdateChaseCam(edict_t *ent);
 void ChaseNext(edict_t *ent);

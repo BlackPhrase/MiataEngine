@@ -1,5 +1,6 @@
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
+Copyright (C) 2019-2020, 2022 BlackPhrase
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -240,7 +241,7 @@ typedef struct
 
 typedef struct gitem_s
 {
-	char		*classname;	// spawning name
+	const char		*classname;	// spawning name
 	qboolean	(*pickup)(struct edict_s *ent, struct edict_s *other);
 	void		(*use)(struct edict_s *ent, struct gitem_s *item);
 	void		(*drop)(struct edict_s *ent, struct gitem_s *item);
@@ -256,7 +257,7 @@ typedef struct gitem_s
 	int			count_width;		// number of digits to display by icon
 
 	int			quantity;		// for ammo how much, for weapons how much is used per shot
-	char		*ammo;			// for weapons
+	const char		*ammo;			// for weapons
 	int			flags;			// IT_* flags
 
 	int			weapmodel;		// weapon model index (for weapons)
@@ -317,7 +318,7 @@ typedef struct
 
 	// intermission state
 	float		intermissiontime;		// time the intermission was started
-	char		*changemap;
+	const char		*changemap;
 	int			exitintermission;
 	vec3_t		intermission_origin;
 	vec3_t		intermission_angle;
@@ -363,7 +364,7 @@ typedef struct
 	int			lip;
 	int			distance;
 	int			height;
-	char		*noise;
+	const char		*noise;
 	float		pausetime;
 	char		*item;
 	char		*gravity;
@@ -595,7 +596,7 @@ typedef enum {
 
 typedef struct
 {
-	char	*name;
+	const char	*name;
 	int		ofs;
 	fieldtype_t	type;
 	int		flags;
@@ -638,7 +639,7 @@ void Touch_Item (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf
 //
 qboolean	KillBox (edict_t *ent);
 void	G_ProjectSource (vec3_t point, vec3_t distance, vec3_t forward, vec3_t right, vec3_t result);
-edict_t *G_Find (edict_t *from, int fieldofs, char *match);
+edict_t *G_Find (edict_t *from, int fieldofs, const char *match);
 edict_t *findradius (edict_t *from, vec3_t org, float rad);
 edict_t *G_PickTarget (char *targetname);
 void	G_UseTargets (edict_t *ent, edict_t *activator);
@@ -735,7 +736,7 @@ qboolean FacingIdeal(edict_t *self);
 //
 // g_weapon.c
 //
-void ThrowDebris (edict_t *self, char *modelname, float speed, vec3_t origin);
+void ThrowDebris (edict_t *self, const char *modelname, float speed, vec3_t origin);
 qboolean fire_hit (edict_t *self, vec3_t aim, int damage, int kick);
 void fire_bullet (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick, int hspread, int vspread, int mod);
 void fire_shotgun (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick, int hspread, int vspread, int count, int mod);
@@ -1026,21 +1027,21 @@ struct edict_s
 	int			movetype;
 	int			flags;
 
-	char		*model;
+	const char		*model;
 	float		freetime;			// sv.time when the object was freed
 	
 	//
 	// only used locally in game, not by server
 	//
 	char		*message;
-	char		*classname;
+	const char		*classname;
 	int			spawnflags;
 
 	float		timestamp;
 
 	float		angle;			// set in qe3, -1 = up, -2 = down
 	char		*target;
-	char		*targetname;
+	const char		*targetname;
 	char		*killtarget;
 	char		*team;
 	char		*pathtarget;
@@ -1087,7 +1088,7 @@ struct edict_s
 
 	float		powerarmor_time;
 
-	char		*map;			// target_changelevel
+	const char		*map;			// target_changelevel
 
 	int			viewheight;		// height above origin where eyesight is determined
 	int			takedamage;

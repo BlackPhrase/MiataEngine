@@ -1,5 +1,6 @@
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
+Copyright (C) 2022 BlackPhrase
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -177,7 +178,7 @@ void SP_target_secret (edict_t *ent)
 	level.total_secrets++;
 	// map bug hack
 	if (!stricmp(level.mapname, "mine3") && ent->s.origin[0] == 280 && ent->s.origin[1] == -2048 && ent->s.origin[2] == -624)
-		ent->message = "You have found a secret area.";
+		strcpy(ent->message, "You have found a secret area.");
 }
 
 //==========================================================

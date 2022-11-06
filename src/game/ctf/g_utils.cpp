@@ -1,5 +1,6 @@
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
+Copyright (C) 2018, 2022 BlackPhrase
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -42,7 +43,7 @@ NULL will be returned if the end of the list is reached.
 
 =============
 */
-edict_t *G_Find (edict_t *from, int fieldofs, char *match)
+edict_t *G_Find (edict_t *from, int fieldofs, const char *match)
 {
 	char	*s;
 

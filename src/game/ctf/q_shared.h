@@ -1,5 +1,6 @@
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
+Copyright (C) 2019-2020, 2022 BlackPhrase
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -214,15 +215,15 @@ void RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point, 
 //=============================================
 
 char *COM_SkipPath (char *pathname);
-void COM_StripExtension (char *in, char *out);
+void COM_StripExtension (const char *in, char *out);
 void COM_FileBase (char *in, char *out);
 void COM_FilePath (char *in, char *out);
 void COM_DefaultExtension (char *path, char *extension);
 
-char *COM_Parse (char **data_p);
+const char *COM_Parse (char **data_p);
 // data is an in/out parm, returns a parsed out token
 
-void Com_sprintf (char *dest, int size, char *fmt, ...);
+void Com_sprintf (char *dest, int size, const char *fmt, ...);
 
 void Com_PageInMemory (byte *buffer, int size);
 
@@ -243,7 +244,7 @@ float	BigFloat (float l);
 float	LittleFloat (float l);
 
 void	Swap_Init (void);
-char	*va(char *format, ...);
+char	*va(const char *format, ...);
 
 //=============================================
 
@@ -254,10 +255,10 @@ char	*va(char *format, ...);
 #define	MAX_INFO_VALUE		64
 #define	MAX_INFO_STRING		512
 
-char *Info_ValueForKey (char *s, char *key);
-void Info_RemoveKey (char *s, char *key);
-void Info_SetValueForKey (char *s, char *key, char *value);
-qboolean Info_Validate (char *s);
+const char *Info_ValueForKey (const char *s, const char *key);
+void Info_RemoveKey (char *s, const char *key);
+void Info_SetValueForKey (char *s, const char *key, const char *value);
+qboolean Info_Validate (const char *s);
 
 /*
 ==============================================================
@@ -295,7 +296,7 @@ void	Sys_FindClose (void);
 
 // this is only here so the functions in q_shared.c and q_shwin.c can link
 void Sys_Error (char *error, ...);
-void Com_Printf (char *msg, ...);
+void Com_Printf (const char *msg, ...);
 
 
 /*

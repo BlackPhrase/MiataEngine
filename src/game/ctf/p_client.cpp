@@ -1,5 +1,6 @@
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
+Copyright (C) 2018, 2022 BlackPhrase
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -184,7 +185,7 @@ void player_pain (edict_t *self, edict_t *other, float kick, int damage)
 
 qboolean IsFemale (edict_t *ent)
 {
-	char		*info;
+	const char		*info;
 
 	if (!ent->client)
 		return false;
@@ -199,8 +200,8 @@ qboolean IsFemale (edict_t *ent)
 void ClientObituary (edict_t *self, edict_t *inflictor, edict_t *attacker)
 {
 	int			mod;
-	char		*message;
-	char		*message2;
+	const char		*message;
+	const char		*message2;
 	qboolean	ff;
 
 
@@ -860,7 +861,7 @@ edict_t *SelectCoopSpawnPoint (edict_t *ent)
 {
 	int		index;
 	edict_t	*spot = NULL;
-	char	*target;
+	const char	*target;
 
 	index = ent->client - game.clients;
 
@@ -1306,7 +1307,7 @@ The game can override any of the settings in place
 */
 void ClientUserinfoChanged (edict_t *ent, char *userinfo)
 {
-	char	*s;
+	const char	*s;
 	int		playernum;
 
 	// check for malformed or illegal info strings
@@ -1372,7 +1373,7 @@ loadgames will.
 */
 qboolean ClientConnect (edict_t *ent, char *userinfo)
 {
-	char	*value;
+	const char	*value;
 
 	// check to see if they are on the banned IP list
 	value = Info_ValueForKey (userinfo, "ip");

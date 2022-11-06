@@ -1,5 +1,6 @@
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
+Copyright (C) 2022 BlackPhrase
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -834,7 +835,7 @@ G_SetClientSound
 */
 void G_SetClientSound (edict_t *ent)
 {
-	char	*weap;
+	const char	*weap;
 
 	if (ent->client->resp.game_helpchanged != game.helpchanged)
 	{
