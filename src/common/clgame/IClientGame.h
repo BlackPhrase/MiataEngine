@@ -46,7 +46,7 @@ struct clgame_export_t
 	void (*Frame)();
 	
 	///
-	bool (*ParseServerMessage)(int cmd, sizebuf_t &net_message);
+	bool (*ParseServerMessage)(int cmd, const sizebuf_t &net_message);
 	
 	///
 	void (*CreateMove)(usercmd_t &cmd); // TODO: GenerateMove?

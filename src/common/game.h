@@ -1,5 +1,6 @@
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
+Copyright (C) 2019-2022, 2022 BlackPhrase
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -177,7 +178,7 @@ typedef struct
 
 	// add commands to the server console as if they were typed in
 	// for map changing, etc
-	void	(*AddCommandString) (char *text);
+	void	(*AddCommandString) (const char *text);
 
 	void	(*DebugGraph) (float value, int color);
 } game_import_t;
