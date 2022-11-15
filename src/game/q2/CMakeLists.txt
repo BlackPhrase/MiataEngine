@@ -1,4 +1,4 @@
-project(Miata-game)
+project(miata-game-q2)
 
 add_definitions(-DC_ONLY)
 

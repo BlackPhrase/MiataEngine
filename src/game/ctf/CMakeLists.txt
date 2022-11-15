@@ -1,4 +1,4 @@
-project(Miata-ctf)
+project(miata-game-ctf)
 
 add_definitions(-DC_ONLY)
 
